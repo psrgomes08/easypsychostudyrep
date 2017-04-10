@@ -87,7 +87,11 @@ WSGI_APPLICATION = 'easypsychostudy.wsgi.application'
 #        'PORT': '5432',
 #    }
 #}
-DATABASES['default'] =  dj_database_url.config() # heroku
+db_from_env = dj_database_url.config()
+
+db_from_env = dj_database_url.config()
+DATABASES = {}
+DATABASES['default'].update(db_from_env)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') #heroku
 
 # Password validation
