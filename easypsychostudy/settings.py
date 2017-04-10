@@ -89,9 +89,9 @@ WSGI_APPLICATION = 'easypsychostudy.wsgi.application'
 #}
 
 db_from_env = dj_database_url.config()
-DATABASES = {}
-DATABASES['default'].update(db_from_env)
-
+DATABASES = {
+    'default': dj_database_url.config(default=DATABASE_URL)
+}
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') #heroku
 
 # Password validation
