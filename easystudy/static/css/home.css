@@ -1,0 +1,19 @@
+/* Applies round styling and fixed position on the right down corner of the screen */
+.round-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 50%;
+}
+
+/* Applies a shadow on the button */
+.round-btn:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 12px 16px 0 rgba(0,0,0,0.19);
+}
+
+/* Makes a button fixed */
+.fixed-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}

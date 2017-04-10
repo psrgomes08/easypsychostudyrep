@@ -1,0 +1,148 @@
+{% load static %}
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Easy Psycho Study - Recolha</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ie10-viewport-bug-workaround.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cover.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+
+</head>
+
+<body onload="setBackgroundColor();">
+
+<div class="site-wrapper">
+
+    <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+            <div id="inside-page" class="inner cover">
+
+                <div id="div-general-info">
+                    <h1 id="formName" class="cover-heading"></h1>
+                    <p id="formDescription" class="lead"></p>
+
+                    <label>ID do Participante</label>
+                    <p align="center"><input style="width: 70%;" type='text' class='form-control' id="id-participante"></p><br/>
+
+                    <p class="lead">
+                        <button class="btn btn-lg btn-success" onclick="cleanAndStart()"><span
+                                class="glyphicon glyphicon-play-circle"></span> Começar
+                        </button>
+                    </p>
+                </div>
+
+                <div id="div-description"></div>
+
+                <div id="div-stimulus"></div>
+
+                <div id="div-questions"></div>
+
+                <div id="div-SAMScales"></div>
+
+                <div id="div-stimulus-video"></div>
+
+            </div>
+
+            <div id="footer" class="mastfoot">
+                <div class="inner">
+                    <a href="{% url 'home' %}" class="btn btn-md btn-danger" role="button" title="Voltar ao painel">
+                        <span class="glyphicon glyphicon-remove-circle"></span> Cancelar</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+<!-- JavaScript
+    ================================================== -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/toastr.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/data_collection.js' %}"></script>
+
+<script>
+    var participantsIDList = {{participantsIDList|safe}};
+
+    var src = ('{{formConfiguration|safe}}').replace(/[\n]/g, '\\n');
+    var formConfiguration = JSON.parse(src);
+
+    document.getElementById("formName").innerHTML = formConfiguration.nome;
+
+    var formatedDescription = formConfiguration.descricao;
+    formatedDescription = formatedDescription.replace(/\n/g, "<br/>");
+    document.getElementById("formDescription").innerHTML = formatedDescription;
+
+    var sizeOfForm = 0;
+    if (formConfiguration.hasOwnProperty("passos")) {
+        sizeOfForm = formConfiguration.passos.length;
+    }
+    var newForm = [];
+    var auxForRandomize = [];
+
+    for (var i = 0; i < sizeOfForm; i++) {
+        if (formConfiguration.passos[i].hasOwnProperty("fixo")) {
+            if (auxForRandomize.length > 0) {
+                auxForRandomize = shuffleArray(auxForRandomize);
+                newForm = newForm.concat(auxForRandomize);
+                auxForRandomize = []; // cleans the auxiliary array
+            }
+            newForm.push(formConfiguration.passos[i].nPasso);
+        } else {
+            auxForRandomize.push(formConfiguration.passos[i].nPasso);
+        }
+    }
+
+    // if after the loop there are still non fixed steps, randomizes them and adds them to the new randomized form
+    if (auxForRandomize.length > 0) {
+        auxForRandomize = shuffleArray(auxForRandomize);
+        newForm = newForm.concat(auxForRandomize);
+    }
+
+    var currentIndex = 0;
+    var step = newForm[currentIndex];
+
+    var endMessage = '<p><b><h2>Questionário terminado.</h2></b><br/>Agradecemos a sua colaboração.</p><br/>';
+    var endButton = '<button class="btn btn-md btn-success" onclick="endDataCollection()">' +
+            '<span class="glyphicon glyphicon-check"></span> Terminar</button>';
+
+    var valenceImage = "{% static 'images/valencia.png' %}";
+    var dominanceImage = "{% static 'images/dominancia.png' %}";
+    var arousalImage = "{% static 'images/alerta.png' %}";
+
+    var idForm = formConfiguration.id;
+
+    var csrfToken = "{{ csrf_token }}";
+    var urlToPost = "{% url 'data-collection' 'idForm' %}";
+    var onSuccess = "{% url 'home' %}";
+
+    /**
+     * Loads the background color selected by the creator of the form.
+     */
+    function setBackgroundColor() {
+        backgroundColor = formConfiguration.corFundo;
+
+        if(backgroundColor == "preto") {
+            document.body.style.background = "#000000";
+            document.body.style.color = "#ffffff";
+        } else {
+            document.body.style.background = "#ffffff";
+            document.body.style.color = "#000000";
+        }
+    }
+
+</script>

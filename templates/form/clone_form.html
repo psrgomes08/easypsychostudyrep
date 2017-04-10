@@ -1,0 +1,159 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Easy Psycho Study - Clonar questionário</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ie10-viewport-bug-workaround.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/new_form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand navbar-title-white">Clonar questionário</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li style="margin-right: 10px;">
+                    <button onclick="visualization()" class="btn btn-default navbar-btn"
+                            title="Pré-visualizar questionário"><span
+                            class="glyphicon glyphicon-eye-open"></span> Pré-Visualizar
+                    </button>
+                    <button class="btn btn-default navbar-btn" title="Ajuda"><span
+                            class="glyphicon glyphicon-question-sign"></span> Ajuda
+                    </button>
+                    <button class="btn btn-success navbar-btn" onclick="submitForm()"
+                            title="Submeter questionário"><span
+                            class="glyphicon glyphicon-floppy-saved"></span> Guardar
+                    </button>
+                    <button class="btn btn-danger navbar-btn" data-toggle="modal"
+                            data-target="#modal-for-cancel" title="Cancelar a criação do questionário">
+                        <span class="glyphicon glyphicon-floppy-remove"></span> Cancelar
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal  for canceling form creation -->
+<div class="modal fade" id="modal-for-cancel" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <p align="center">Tem certeza que deseja cancelar a criação deste questionário?</p>
+                <p align="center">
+                    <button type="button" class="btn btn-success" value="click" id="cancel-form">
+                        <span class="glyphicon glyphicon-ok"></span> Sim
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><span
+                            class="glyphicon glyphicon-remove"></span> Não
+                    </button>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<br/>
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-sm-3"></div>
+
+        <div class="col-sm-6">
+            <form id="form-questionnaire">
+                <div class="form-group">
+                    <label for="form-name">Nome do questionário</label>
+                    <input type="text" class="form-control" id="form-name">
+                </div>
+                <div class="form-group">
+                    <label for="form-description">Descrição do questionário</label>
+                    <textarea class="form-control" rows="3" id="form-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Estilo do questionário</label><br/>
+                    <label class="radio-inline"><input type="radio" id="radio-black" name="optradio" value="preto">Fundo
+                        preto</label>
+                    <label class="radio-inline"><input type="radio" id="radio-white" name="optradio" value="branco">Fundo
+                        branco</label>
+                </div>
+                <div id="content-added-by-user" class="form-group">
+                    <!-- Here stays the content inserted by the user -->
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-3"></div>
+
+    </div>
+
+    <div class="btn-fixed-down">
+        <p>
+            <button style='width:150px; background-color: #222; color: #FFF;' class="btn btn-md" id="add-break"
+                    title="Criar nova tarefa">
+                <span class="glyphicon glyphicon-align-justify"></span> Criar Tarefa
+            </button>
+        </p>
+        <p>
+            <button style='width:150px; background-color: #222; color: #FFF;' class="btn btn-md" id="add-break-multiple"
+                    title="Criar novo conjunto de tarefas">
+                <span class="glyphicon glyphicon-align-justify"></span> Criar Conjunto
+            </button>
+        </p>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/toastr.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/new_form.js' %}"></script>
+<script src="{% static 'js/clone_form.js' %}"></script>
+
+<script>
+    var csrfToken = "{{ csrf_token }}";
+    var urlToPost = "{% url 'new-form' %}";
+    var onSuccess = "{% url 'home' %}";
+    var defaultThumbnail = "{% static 'images/forms_icon.png' %}";
+    var urlToVisualization = "{% url 'preview-form' %}";
+
+    var src = ('{{formConfig|safe}}').replace(/[\n]/g, '\\n');
+
+    var formConfiguration = JSON.parse(src);
+
+    document.getElementById("form-name").value = document.getElementById("form-name").defaultValue = formConfiguration.nome; // loads name
+    document.getElementById("form-description").value = document.getElementById("form-name").defaultValue = formConfiguration.descricao; // loads description
+
+    // loads color
+    if (formConfiguration.corFundo == "preto") {
+        $("#radio-black").prop("checked", true);
+
+    } else {
+        $("#radio-white").prop("checked", true);
+    }
+
+    var sizeOfForm = 0;
+    if (formConfiguration.hasOwnProperty("passos")) {
+        sizeOfForm = formConfiguration.passos.length;
+    }
+</script>

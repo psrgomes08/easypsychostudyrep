@@ -1,0 +1,322 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Easy Psycho Study - Editar questionário</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ie10-viewport-bug-workaround.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/new_form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand navbar-title-white">Editar questionário</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li style="margin-right: 10px;">
+                    <button onclick="visualization()" class="btn btn-default navbar-btn"
+                            title="Pré-visualizar questionário"><span
+                            class="glyphicon glyphicon-eye-open"></span> Pré-Visualizar
+                    </button>
+                    <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#modal-for-help"
+                            title="Ajuda"><span
+                            class="glyphicon glyphicon-question-sign"></span> Ajuda
+                    </button>
+                    <button class="btn btn-success navbar-btn" onclick="submitForm()"
+                            title="Submeter questionário"><span
+                            class="glyphicon glyphicon-floppy-saved"></span> Guardar
+                    </button>
+                    <button class="btn btn-danger navbar-btn" data-toggle="modal"
+                            data-target="#modal-for-cancel" title="Cancelar a criação do questionário">
+                        <span class="glyphicon glyphicon-floppy-remove"></span> Cancelar
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal  for help -->
+<div class="modal fade" id="modal-for-help" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <p style="font-size: large; font-weight: bold;" align="center">Como editar um questionário</p>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: medium;"><b>Defina as propriedades gerais do questionário</b></p>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-add-form-name"><span class="glyphicon glyphicon-chevron-right"></span> Defina o
+                    Nome e a Descrição
+                </button>
+                <br/>
+
+                <div id="d-add-form-name" class="collapse">
+                    O nome e descrição do questionário são apresentados aos participantes no começo de uma recolha.<br/>
+                    1. Em <b>Nome do questionário</b> defina o nome que lhe deseja atribuir.<br/>
+                    2. Em <b>Descrição do questionário</b> defina a descrição que lhe deseja atribuir.<br/>
+                    <br>
+                </div>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-add-form-color"><span class="glyphicon glyphicon-chevron-right"></span> Defina a
+                    Cor
+                </button>
+                <br/>
+
+                <div id="d-add-form-color" class="collapse">
+                    A cor do questionário é apresentada durante toda a recolha ao participante.<br/>
+                    1. Clique na caixa de cor apresentada em <b>Cor de fundo do questionário</b> e selecione a cor de
+                    fundo que deseja.
+                    <br/>
+                </div>
+
+                <br/><br/>
+                <p style="font-size: medium;"><b>Adicione elementos ao questionário</b></p>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse" data-target="#d-add-step">
+                    <span class="glyphicon glyphicon-chevron-right"></span> Adicione Passos
+                </button>
+                <br/>
+
+                <div id="d-add-step" class="collapse">
+                    Os passos tornam o seu questionário fácil de ler e completar pelos participantes.<br/>
+                    1. Clique em <b>Adicionar passo</b> <span class="glyphicon glyphicon-align-justify"></span>.<br/>
+                    2. Dê um nome ao seu passo. Se não o prentender fazer, o nome padrão será "Passo n".<br/>
+                    <br/>
+                </div>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-add-question"><span class="glyphicon glyphicon-chevron-right"></span> Adicione
+                    uma Questão
+                </button>
+                <br/>
+
+                <div id="d-add-question" class="collapse">
+                    Para adicionar uma ou mais questões a um passo:<br/>
+                    1. Clique em <b>Adicionar questão</b> <span class="glyphicon glyphicon-pencil"></span> dentro do
+                    Passo que pretende as vezes que forem necessárias correspondendo ao número
+                    de questões que pretende fazer.<br/>
+                    2. Em <b>Questão proposta</b> defina a pergunta que deseja apresentar aos participantes.<br/>
+                    <br/>
+                </div>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-add-stimulus"><span class="glyphicon glyphicon-chevron-right"></span> Adicione
+                    um Estímulo
+                </button>
+                <br/>
+
+                <div id="d-add-stimulus" class="collapse">
+                    <span class="glyphicon glyphicon-warning-sign"></span> Só pode adicionar <b>UM</b> estímulo a cada
+                    passo.<br/><br/>
+                    Para adicionar um estímulo a um passo:<br/>
+                    1. Clique em <b>Adicionar estímulo</b> <span class="glyphicon glyphicon-picture"></span> dentro do
+                    Passo que pretende.<br/>
+                    2. Clique em <b>Escolher ficheiro</b> e selecione a imagem que pretende.<br/>
+                    3. Clique em <span class="glyphicon glyphicon-refresh"></span> <b>Carregar</b> para a sua imagem ser
+                    armazenada.<br/>
+                    4. Em <b>Tempo de apresentação do estímulo</b> defina a duração de apresentação da imagem aos
+                    participantes.<br/>
+                    <br/>
+                </div>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-add-scale"><span class="glyphicon glyphicon-chevron-right"></span> Adicione uma
+                    Escala
+                </button>
+                <br/>
+
+                <div id="d-add-scale" class="collapse">
+                    <span class="glyphicon glyphicon-warning-sign"></span> Só pode adicionar uma escala a um passo que
+                    contenha um estímulo.<br/><br/>
+                    Para adicionar uma escala a um estímulo:<br/>
+                    1. Clique em <b>Adicionar escala SAM</b> <span class="glyphicon glyphicon-record"></span> dentro do
+                    Passo que pretende.<br/>
+                    2. Selecione em <b>Escalas a apresentar</b> as escalas que pretende que sejam apresentadas aos
+                    participantes após a apresentação do estímulo naquele Passo.<br/>
+                    <br/>
+                </div>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-add-description"><span class="glyphicon glyphicon-chevron-right"></span>
+                    Adicione uma Secção
+                </button>
+                <br/>
+
+                <div id="d-add-description" class="collapse">
+                    <span class="glyphicon glyphicon-warning-sign"></span> Uma secção inicia uma nova fase do
+                    questionário.<br/><br/>
+                    Para adicionar uma secção a um passo:<br/>
+                    1. Clique em <b>Adicionar secção</b> <span class="glyphicon glyphicon-option-horizontal"></span>
+                    dentro do Passo que pretende.<br/>
+                    2. Em <b>Descrição</b> defina a mensagem que quer apresentar aos participantes quando se iniciar a
+                    nova fase do questionário.<br/>
+                    <br/>
+                </div>
+
+                <br/><br/>
+                <p style="font-size: medium;"><b>Elimine passos ou o questionário</b></p>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-delete-step"><span class="glyphicon glyphicon-chevron-right"></span> Elimine um
+                    Passo
+                </button>
+                <br/>
+
+                <div id="d-delete-step" class="collapse">
+                    Para eliminar um passo:<br/>
+                    1. Clique em <b>Apagar passo</b> <span class="glyphicon glyphicon-remove"></span> dentro do Passo
+                    que pretende.<br/>
+                    <br/>
+                </div>
+
+                <button class="btn btn-md btn-default btn-transparent" data-toggle="collapse"
+                        data-target="#d-delete-form"><span class="glyphicon glyphicon-chevron-right"></span> Elimine o
+                    Questionário
+                </button>
+                <br/>
+
+                <div id="d-delete-form" class="collapse">
+                    Para eliminar o questionário que está a elaborar:<br/>
+                    1. Clique em <span class="glyphicon glyphicon-remove"></span> <b>Cancelar</b> na barra preta do topo
+                    da pagina.<br/>
+                    <br/>
+                </div>
+
+                <p align="center">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar
+                    </button>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal  for canceling form creation -->
+<div class="modal fade" id="modal-for-cancel" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <p align="center">Tem certeza que deseja cancelar a edição deste questionário?</p>
+                <p align="center">
+                    <button type="button" class="btn btn-success" value="click" id="cancel-form">
+                        <span class="glyphicon glyphicon-ok"></span> Sim
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><span
+                            class="glyphicon glyphicon-remove"></span> Não
+                    </button>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<br/>
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-sm-3"></div>
+
+        <div class="col-sm-6">
+            <form id="form-questionnaire">
+                <div class="form-group">
+                    <label for="form-name">Nome do questionário</label>
+                    <input type="text" class="form-control" id="form-name">
+                </div>
+                <div class="form-group">
+                    <label for="form-description">Descrição do questionário</label>
+                    <textarea class="form-control" rows="3" id="form-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Estilo do questionário</label><br/>
+                    <label class="radio-inline"><input type="radio" id="radio-black" name="optradio" value="preto">Fundo
+                        preto</label>
+                    <label class="radio-inline"><input type="radio" id="radio-white" name="optradio" value="branco">Fundo
+                        branco</label>
+                </div>
+                <div id="content-added-by-user" class="form-group">
+                    <!-- Here stays the content inserted by the user -->
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-3"></div>
+
+    </div>
+
+    <div class="btn-fixed-down">
+        <p>
+            <button style='width:150px; background-color: #222; color: #FFF;' class="btn btn-md" id="add-break"
+                    title="Criar nova tarefa">
+                <span class="glyphicon glyphicon-align-justify"></span> Criar Tarefa
+            </button>
+        </p>
+        <p>
+            <button style='width:150px; background-color: #222; color: #FFF;' class="btn btn-md" id="add-break-multiple"
+                    title="Criar novo conjunto de tarefas">
+                <span class="glyphicon glyphicon-align-justify"></span> Criar Conjunto
+            </button>
+        </p>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/toastr.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/edit_form.js' %}"></script>
+<script src="{% static 'js/clone_form.js' %}"></script>
+
+<script>
+    var csrfToken = "{{ csrf_token }}";
+    var onSuccess = "{% url 'home' %}";
+    var defaultThumbnail = "{% static 'images/forms_icon.png' %}";
+    var formID = "{{formID}}";
+    var urlToPost = "{% url 'edit-form' formID %}";
+    var urlToVisualization = "{% url 'preview-form' %}";
+
+    var src = ('{{formConfig|safe}}').replace(/[\n]/g, '\\n');
+
+    var formConfiguration = JSON.parse(src);
+
+    document.getElementById("form-name").value = document.getElementById("form-name").defaultValue = formConfiguration.nome; // loads name
+    document.getElementById("form-description").value = document.getElementById("form-name").defaultValue = formConfiguration.descricao; // loads description
+
+    // loads color
+    if (formConfiguration.corFundo == "preto") {
+        $("#radio-black").prop("checked", true);
+
+    } else {
+        $("#radio-white").prop("checked", true);
+    }
+
+    var sizeOfForm = 0;
+    if (formConfiguration.hasOwnProperty("passos")) {
+        sizeOfForm = formConfiguration.passos.length;
+    }
+</script>
