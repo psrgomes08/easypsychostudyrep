@@ -17,8 +17,12 @@ toastr.options = {
 };
 
 var url;
+var formIDURLGeneration = "";
+var formURL = "";
 
-// Invites an user to access a form
+/**
+ * Invites an user to access a form.
+ */
 $('#grant-access').click(function () {
     var u = document.getElementById("grant-user");
     var username = u.options[u.selectedIndex].text;
@@ -46,54 +50,102 @@ $('#grant-access').click(function () {
     });
 });
 
-// Gets the correct form ID for URL generation
-var formURL = "";
-var formIDURLGeneration = "";
+/**
+ * Gets the correct form ID for URL generation.
+ */
 $('#modal-for-link-share').on('show.bs.modal', function (e) {
-    // http://127.0.0.1:8000/recolha/solkhs6bu9400qfuzyn8f47vi/p002
+    var location = window.location.href;
+    location = location.split("painel");
+    console.log(location[0]);
+
+    var serverURL = location[0];
     formIDURLGeneration = $(e.relatedTarget).data('form-id');
-    formURL = "http://127.0.0.1:8000/recolhaparticipante/" + formIDURLGeneration;
+    formURL = serverURL + "recolhaparticipante/" + formIDURLGeneration;
     $(e.currentTarget).find('#form-url').html("");
-    $(e.currentTarget).find('#form-token').html("");
+    //$(e.currentTarget).find('#form-token').html("");
 });
 
+/**
+ * Generates a link for long distance data collection.
+ */
 $('#generate-link').on("click", function () {
     participantIDInLink = $('#participant-in-link').val();
-    tokenForParticipant = Math.random().toString(10).substring(2);
 
-    $.ajax({
-        url: urlToCheckParticipants,
-        type: 'POST',
-        data: {
-            idForm: formIDURLGeneration,
-            participantID: participantIDInLink,
-            token: tokenForParticipant,
-            csrfmiddlewaretoken: csrfToken
-        },
-        success: function () {
-            $('#form-url').html('<br/><label>Link para partilha:</label><br/><p>' + formURL + "/" + participantIDInLink + '</p>');
-            $('#form-token').html('<br/><label>Senha de acesso:</label><br/><p>' + tokenForParticipant + '</p>');
-        },
-        error: function (data) {
-            if(data.responseText == "ERROR_1") {
-                $('#form-url').html('<br/><p><b>Este ID já foi atribuído a um participante.</b></p>');
-                $('#form-token').html('');
-            } else if(data.responseText == "ERROR_2") {
-                $('#form-url').html('<br/><p><b>Não foi possível gerar um link de partilha para este formulário.</b></p>');
-                $('#form-token').html('');
-            } else {
-                $('#form-url').html('<br/><label>Link para partilha:</label><br/><p>' + formURL + "/" + participantIDInLink + '</p>');
-                $('#form-token').html('<br/><label>Senha de acesso:</label><br/><p>' + data.responseText + '</p>');
+    if (participantIDInLink == "" || participantIDInLink == null) {
+        $('#form-url').html('<div class="alert alert-danger alert-dismissible" role="alert">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> ' +
+            '<strong>Por favor insira um ID do Participante.</strong></div>');
+    } else {
+
+        tokenForParticipant = Math.random().toString(10).substring(2);
+
+        $.ajax({
+            url: urlToCheckParticipants,
+            type: 'POST',
+            data: {
+                idForm: formIDURLGeneration,
+                participantID: participantIDInLink,
+                token: tokenForParticipant,
+                csrfmiddlewaretoken: csrfToken
+            },
+            success: function () {
+                $('#form-url').html('<div class="alert alert-info alert-dismissible" role="alert">' +
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                    '<label>Link para recolha remota:</label><br/>' +
+                    '<p><textarea id="js-copytextarea" class="form-control">' + formURL + "/" + participantIDInLink + "?" + tokenForParticipant + '</textarea></p>' +
+                    '<p><button id="js-textareacopybtn" onclick="copyToClipboard()" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Copiar</button></p>' +
+                    '</div>');
+            },
+            error: function (data) {
+                if (data.responseText == "ERROR_1") {
+                    $('#form-url').html('<div class="alert alert-danger alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> ' +
+                        '<strong>Este ID já foi atribuído a um participante deste questionário.</strong></div>');
+                } else if (data.responseText == "ERROR_2") {
+                    $('#form-url').html('<div class="alert alert-danger alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> ' +
+                        '<strong>Não foi possível gerar um link de recolha remota para este questionário.</strong></div>');
+                } else {
+                    $('#form-url').html('<div class="alert alert-info" role="alert">' +
+                        '<label>Link para recolha remota:</label><br/>' +
+                        '<p><textarea id="js-copytextarea" class="form-control">' + formURL + "/" + participantIDInLink + "?" + data.responseText + '</textarea></p>' +
+                        '<p><button id="js-textareacopybtn" onclick="copyToClipboard()" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Copiar</button></p>' +
+                        '</div>');
+                }
             }
-        }
-    });
+        });
+    }
 
 });
 
+/**
+ * Copies a text to clipboard.
+ */
+function copyToClipboard() {
+
+    var copyTextarea = document.getElementById('js-copytextarea');
+
+    copyTextarea.select();
+
+    try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        //console.log('Copying text command was ' + msg);
+        $('#form-url').append('<div class="alert alert-success alert-dismissible" role="alert">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+            '<strong>O link foi copiado!</strong></div>');
+    } catch (err) {
+        $('#form-url').append('<div class="alert alert-danger alert-dismissible" role="alert">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+            '<strong>Não foi possível copiar o link.</strong></div>');
+        //console.log('Oops, unable to copy');
+    }
+}
 
 
-
-// Gets the correct form ID for Inviting Users
+/**
+ * Gets the correct form ID for Inviting Users.
+ */
 $('#modal-for-access-granting').on('show.bs.modal', function (e) {
     formID = $(e.relatedTarget).data('form-id');
     var formName = $(e.relatedTarget).data('form-name');
@@ -101,7 +153,9 @@ $('#modal-for-access-granting').on('show.bs.modal', function (e) {
     $(e.currentTarget).find('#invite-title').text('Convidar utilizador para acesso a "' + formName + '"');
 });
 
-// Gets the correct form ID for URL generation
+/**
+ * Gets the correct form ID for URL generation
+ */
 $('#modal-for-delete').on('show.bs.modal', function (e) {
     var formName = $(e.relatedTarget).data('form-name');
     url = $(e.relatedTarget).data('form-url');
@@ -109,12 +163,16 @@ $('#modal-for-delete').on('show.bs.modal', function (e) {
     $(e.currentTarget).find('#form-message').text('Tem certeza que deseja apagar o questionário "' + formName + '"?'); // populate the paragpraph
 });
 
-// Deletes an archived form
+/**
+ * Deletes an archived form.
+ */
 $('#delete-form').click(function () {
     location.href = url;
 });
 
-// Logouts of the system
+/**
+ * Logouts of the system.
+ */
 $('#system-logout').click(function () {
     location.href = urlLogout;
 });

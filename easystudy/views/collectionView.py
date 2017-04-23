@@ -22,11 +22,13 @@ class DataCollectionForParticipantView(View):
 
             for i in range(0, len(participants_in_form)):
                 if idParticipant == participants_in_form[i].idParticipant:
+                    print("ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
                     raise Http404(
                         "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
 
             # check if it data collection is open or if the form is not archived
             if selected_form.statusType == 'C' or selected_form.isArchived == 'Y':
+                print("ERROR: Either the data collection is not open or the form " + idForm + " is archived.")
                 raise Http404("ERROR: Either the data collection is not open or the form " + idForm + " is archived.")
 
             else:
@@ -40,6 +42,7 @@ class DataCollectionForParticipantView(View):
                 return render(request, "collection/data_collection_participant.html", context)
 
         except ObjectDoesNotExist:
+            print("ERROR: There is no form for this data collection.")
             raise Http404("ERROR: There is no form for this data collection.")
 
     def post(self, request, idForm, idParticipant):
@@ -49,6 +52,7 @@ class DataCollectionForParticipantView(View):
         token = request.POST["token"]
 
         if ParticipantInForm.objects.filter(idParticipant=idParticipant, idForm=idForm):
+            print("ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
             return HttpResponseServerError(
                 "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
 
@@ -63,6 +67,7 @@ class DataCollectionForParticipantView(View):
             pt = ParticipantToken.objects.get(idForm=idForm, idFutureParticipant=idParticipant, token=token)
             pt.delete()
 
+            print("SUCCESS: Form entry successfully saved.")
             return HttpResponse("SUCCESS: Form entry successfully saved.")
 
 

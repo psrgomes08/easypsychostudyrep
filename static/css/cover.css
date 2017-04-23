@@ -13,7 +13,7 @@ input[type=radio] {
 html,
 body {
     height: 100%;
-    background-color: #fff;
+    /*background-color: #fff;*/
     padding-top: 0;
 }
 
@@ -152,4 +152,24 @@ body {
     .cover-container {
         /*width: 700px;*/
     }
+}
+
+.container .img-responsive {
+    display: block;
+    width: auto;
+    max-height: 100%;
+}
+
+.img-responsive {
+    max-height: 600px !important;
+}
+
+.sizer {
+    width: 70%;
+    display: inline-block; /* To center the div containing the videos*/
+    position: inherit; /* To center the div containing the videos*/
+}
+
+textarea {
+    resize: vertical; /* user can resize vertically, but width is fixed */
 }

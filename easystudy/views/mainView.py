@@ -220,28 +220,22 @@ def downloadParticipantsDataCollectedData(request, idForm):
 
             # Create a workbook and add a worksheet.
             workbook = xlsxwriter.Workbook(output)
-            worksheet = workbook.add_worksheet()
-
-            # Format to be applied to the main header
-            mFormat = workbook.add_format()
-            mFormat.set_bold()
-            mFormat.set_text_wrap()
-            mFormat.set_align('center')
-            mFormat.set_bg_color('#17202A')
-            mFormat.set_color('#FFFFFF')
-
-            mFormatW = workbook.add_format()
-            mFormatW.set_bold()
-            mFormatW.set_text_wrap()
-            mFormatW.set_align('center')
-            mFormatW.set_bg_color('#808B96')
-            mFormatW.set_color('#FFFFFF')
+            worksheet = workbook.add_worksheet("Dados Recolhidos")
+            worksheet2 = workbook.add_worksheet("Estímulos")
 
             # Format to be applied to the headers
             hFormat = workbook.add_format()
             hFormat.set_bold()
             hFormat.set_text_wrap()
             hFormat.set_align('center')
+
+            # Format to be applied to the order field
+            oFormat = workbook.add_format()
+            oFormat.set_bold()
+            oFormat.set_text_wrap()
+            oFormat.set_align('center')
+            oFormat.set_bg_color('#17202A')
+            oFormat.set_color('#FFFFFF')
 
             # Format to be applied to the participants
             pFormat = workbook.add_format()
@@ -251,108 +245,91 @@ def downloadParticipantsDataCollectedData(request, idForm):
             col = 0
             row = 0
 
-            m_start_column = col
-            m_end_column = col
+            col_w2 = 0
+            row_w2 = 0
 
             # Add headers
-            worksheet.write_string(1, col, "Início recolha", hFormat)
+            worksheet.write_string(row, col, "Timestamp Recolha", hFormat)
             worksheet.set_column(col, col, 20)  # Width of column set to 20.
             col += 1
-            m_end_column += 1
 
-            worksheet.write_string(1, col, "ID Participante", hFormat)
+            worksheet.write_string(row, col, "ID Participante", hFormat)
             worksheet.set_column(col, col, 15)  # Width of column set to 20.
             col += 1
-            m_end_column += 1
 
-            m_end_column -= 1
-            worksheet.merge_range(row, m_start_column, row, m_end_column, "Dados Gerais", mFormat)
-            # print("Passo: Dados Gerais" + " | start: " + str(m_start_column) + ", end: " + str(m_end_column))
-            m_end_column += 1
+            worksheet2.write_string(row_w2, col_w2, "ID Participante", hFormat)
+            worksheet2.set_column(col_w2, col_w2, 15)  # Width of column set to 20.
+            col_w2 += 1
 
-            row = 1  # row where second header starts
             presentSteps = []
-            # presentStepsNames = []
-            cN = 1  # for header color control
 
             for s in range(0, len(fConfig['passos'])):
-                # print("»» At beginning of circle: " + str(s) + ": " + str(m_end_column))
                 step = fConfig['passos'][s]
                 presentSteps.append(step['nPasso'])
-                # presentStepsNames.append(step['nomePasso'])
-                stepName = step['nomePasso']
-                m_start_column = m_end_column
+
+                if 'descricaoPasso' not in step:
+                    worksheet.write_string(row, col, "Ordem Tarefa", oFormat)
+                    worksheet.set_column(col, col, 10)  # Width of column set to 20.
+                    col += 1
 
                 if 'nomeDoEstimuloVideo' in step:
-                    worksheet.write_string(row, col, "Ordem Tarefa", hFormat)
-                    worksheet.set_column(col, col, 10)  # Width of column set to 20.
-                    col += 1
-                    m_end_column += 1
                     worksheet.write_string(row, col, "Timestamp Estímulo", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
-                    m_end_column += 1
+
                     worksheet.write_string(row, col, "Estímulo", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
-                    m_end_column += 1
+
+                    worksheet2.write_string(row_w2, col_w2, "Estímulo", oFormat)
+                    worksheet2.set_column(col_w2, col_w2, 20)  # Width of column set to 20.
+                    col_w2 += 1
 
                 if 'nomeDoEstimulo' in step:
-                    worksheet.write_string(row, col, "Ordem Tarefa", hFormat)
-                    worksheet.set_column(col, col, 10)  # Width of column set to 20.
-                    col += 1
-                    m_end_column += 1
                     worksheet.write_string(row, col, "Timestamp Estímulo", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
-                    m_end_column += 1
+
                     worksheet.write_string(row, col, "Estímulo", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
-                    m_end_column += 1
+
+                    worksheet2.write_string(row_w2, col_w2, "Estímulo", oFormat)
+                    worksheet2.set_column(col_w2, col_w2, 20)  # Width of column set to 20.
+                    col_w2 += 1
 
                 if 'escalasSAM' in step and len(step['escalasSAM']) > 0:
                     worksheet.write_string(row, col, "Timestamp Escalas", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
-                    m_end_column += 1
+
                     for e in range(0, len(step['escalasSAM'])):
                         worksheet.write_string(row, col, step['escalasSAM'][e], hFormat)
                         worksheet.set_column(col, col, 10)  # Width of column set to 20.
                         col += 1
-                        m_end_column += 1
+
+                        worksheet2.write_string(row_w2, col_w2, step['escalasSAM'][e], oFormat)
+                        worksheet2.set_column(col_w2, col_w2, 10)  # Width of column set to 20.
+                        col_w2 += 1
 
                 if 'questoes' in step:
                     worksheet.write_string(row, col, "Timestamp Questões", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
-                    m_end_column += 1
+
                     for q in range(0, len(step['questoes'])):
                         worksheet.write_string(row, col, step['questoes'][q], hFormat)
                         worksheet.set_column(col, col, 30)  # Width of column set to 20.
                         col += 1
-                        m_end_column += 1
-
-                if 'descricaoPasso' not in step:  # Merges the step name
-                    m_end_column -= 1
-
-                    if (cN % 2 == 0):
-                        worksheet.merge_range(0, m_start_column, 0, m_end_column, stepName, mFormat)
-                    else:
-                        worksheet.merge_range(0, m_start_column, 0, m_end_column, stepName, mFormatW)
-
-                    cN += 1
-
-                    # worksheet.merge_range(0, m_start_column, 0, m_end_column, stepName, mFormat)
-                    # print("Passo: " + stepName + " | start: " + str(m_start_column) + ", end: " + str(m_end_column))
-                    m_end_column += 1
-                    # print("»» At end of cicle of " + str(s) + ": " + str(m_end_column))
 
             # Headers finished
 
             # Add information from participant
-            row = 2
+            row = 1
             col = 0
+
+            row_w2 = 1
+            col_w2 = 0
 
             for i in range(0, len(pConfig)):
                 worksheet.write_string(row, col, pConfig[i]['timestampRecolha'], pFormat)
@@ -361,77 +338,90 @@ def downloadParticipantsDataCollectedData(request, idForm):
                 worksheet.write_string(row, col, pConfig[i]['idParticipante'], pFormat)
                 col += 1
 
+                worksheet2.write_string(row_w2, col_w2, pConfig[i]['idParticipante'], pFormat)
+                col_w2 += 1
+
                 collection = pConfig[i]['colheita']
 
                 order = []
                 for o in range(0, len(collection)):
                     order.append(collection[o]['nPasso'])
 
-                # print("»» New Participant ««")
-                # print(" ")
-
                 for z in range(0, len(presentSteps)):
-                    # print("»»»»»» Present step index: " + str(z))
+
                     for j in range(0, len(collection)):
+
                         if collection[j]['nPasso'] == presentSteps[z]:
-                            # print(str(collection[j]['nPasso']) + " | " + str(presentSteps[z]) + " | " + str(presentStepsNames[z]))
-                            # print(" I am at step: " + str(collection[j]['nPasso']))
                             nOrder = order.index(collection[j]['nPasso']) + 1  # order in which appeared
-                            # print(" I appeared at order: " + str(nOrder))
-                            # print("")
+
+                            worksheet.write_string(row, col, str(nOrder), oFormat)  # order
+                            col += 1
 
                             if 'nomeDoEstimuloVideo' in collection[j]:
-                                worksheet.write_string(row, col, str(nOrder), pFormat)  # order
-                                col += 1
                                 worksheet.write_string(row, col, collection[j]['timestampEstimuloVideo'], pFormat)
-                                # print(str(collection[j]['timestampEstimulo']))
-                                col += 1
-                                worksheet.write_string(row, col, collection[j]['nomeDoEstimuloVideo'], pFormat)
-                                # print(str(collection[j]['nomeDoEstimulo']))
                                 col += 1
 
+                                worksheet.write_string(row, col, collection[j]['nomeDoEstimuloVideo'], pFormat)
+                                col += 1
+
+                                worksheet2.write_string(row_w2, col_w2, collection[j]['nomeDoEstimuloVideo'], oFormat)
+                                col_w2 += 1
+
                             if 'nomeDoEstimulo' in collection[j]:
-                                worksheet.write_string(row, col, str(nOrder), pFormat)  # order
-                                col += 1
                                 worksheet.write_string(row, col, collection[j]['timestampEstimulo'], pFormat)
-                                # print(str(collection[j]['timestampEstimulo']))
                                 col += 1
+
                                 worksheet.write_string(row, col, collection[j]['nomeDoEstimulo'], pFormat)
-                                # print(str(collection[j]['nomeDoEstimulo']))
                                 col += 1
+
+                                worksheet2.write_string(row_w2, col_w2, collection[j]['nomeDoEstimulo'], oFormat)
+                                col_w2 += 1
 
                             if 'colheitaEscalas' in collection[j]:
                                 worksheet.write_string(row, col, collection[j]['timestampEscalas'], pFormat)
-                                # print(str(collection[j]['timestampEscalas']))
                                 col += 1
+
                                 if 'alerta' in collection[j]['colheitaEscalas']:
                                     worksheet.write_string(row, col, collection[j]['colheitaEscalas']['alerta'],
                                                            pFormat)
-                                    # print(str(collection[j]['colheitaEscalas']['alerta']))
                                     col += 1
+
+                                    worksheet2.write_string(row_w2, col_w2, collection[j]['colheitaEscalas']['alerta'], pFormat)
+                                    col_w2 += 1
+
                                 if 'valencia' in collection[j]['colheitaEscalas']:
                                     worksheet.write_string(row, col, collection[j]['colheitaEscalas']['valencia'],
                                                            pFormat)
-                                    # print(str(collection[j]['colheitaEscalas']['valencia']))
                                     col += 1
+
+                                    worksheet2.write_string(row_w2, col_w2, collection[j]['colheitaEscalas']['valencia'],
+                                                            pFormat)
+                                    col_w2 += 1
+
                                 if 'dominancia' in collection[j]['colheitaEscalas']:
                                     worksheet.write_string(row, col, collection[j]['colheitaEscalas']['dominancia'],
                                                            pFormat)
-                                    # print(str(collection[j]['colheitaEscalas']['dominancia']))
                                     col += 1
+
+                                    worksheet2.write_string(row_w2, col_w2,
+                                                            collection[j]['colheitaEscalas']['dominancia'],
+                                                            pFormat)
+                                    col_w2 += 1
 
                             if 'colheitaQuestoes' in collection[j]:
                                 arrayQuestoes = collection[j]['colheitaQuestoes']
                                 worksheet.write_string(row, col, collection[j]['timestampQuestoes'], pFormat)
-                                # print(str(collection[j]['timestampQuestoes']))
                                 col += 1
+
                                 for k in range(0, len(arrayQuestoes)):
                                     worksheet.write_string(row, col, arrayQuestoes[k], pFormat)
-                                    # print(str(arrayQuestoes[k]))
                                     col += 1
 
                 col = 0
                 row += 1
+
+                col_w2 = 0
+                row_w2 += 1
 
             # endfor
 

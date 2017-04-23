@@ -1,7 +1,7 @@
 /* Makes buttons background transparent */
 .btn-transparent {
-  background-color: transparent;
-  border-color: transparent;
+    background-color: transparent;
+    border-color: transparent;
 }
 
 .btn-transparent:hover {
@@ -14,6 +14,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
+    z-index: 100; /* brings the button to the front of all elements */
 }
 
 /* Makes the navbar title permanently white */
@@ -21,10 +22,30 @@
     color: white !important;
 }
 
+/*.navbar-title-white:hover {
+    color: #428BCA !important;
+}*/
+
 .right {
     float: right;
 }
 
 .left {
     float: left;
+}
+
+/* Hides button text when collapsing screen */
+@media screen and (max-width: 470px) {
+    .button-text {
+        display: none;
+    }
+}
+
+/* Removes the transparency from toastrs */
+.toast {
+  opacity: 1 !important;
+}
+
+#toast-container > div {
+  opacity: 1 !important;
 }

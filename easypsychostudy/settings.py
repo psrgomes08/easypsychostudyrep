@@ -11,8 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-import dj_database_url #heroku
-DATABASE_URL = 'postgresql:///patricia:1963@localhost/easypsychostudydb'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,8 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'gb!!r=@^qg1(ewq^n3fzukpb=nt-krk01c1laldeqvkxrp-9@n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = False #heroku
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -88,10 +86,18 @@ WSGI_APPLICATION = 'easypsychostudy.wsgi.application'
 #    }
 #}
 
-db_from_env = dj_database_url.config()
 DATABASES = {
-    'default': dj_database_url.config(default=DATABASE_URL)
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django',
+        'USER': 'redacted',
+        'PASSWORD': 'redacted',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
 }
+
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') #heroku
 
 # Password validation
@@ -140,4 +146,4 @@ STATICFILES_FINDERS = (
     #'django.contrib.staticfiles.finders.AppDirectoriesFinder',    #causes verbose duplicate notifications in django 1.9
 )
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
