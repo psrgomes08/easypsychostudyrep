@@ -89,10 +89,10 @@ WSGI_APPLICATION = 'easypsychostudy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django',
-        'USER': 'redacted',
-        'PASSWORD': 'redacted',
-        'HOST': '127.0.0.1',
+        'NAME': 'd8duhvhdigaokg',
+        'USER': 'jscuaqjxyrsnfo',
+        'PASSWORD': 'cdbf80e8a70ad7b39e9800027b651ae8a976d467e40b9ea000c7a8d045eaf498',
+        'HOST': 'ec2-23-23-234-118.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
