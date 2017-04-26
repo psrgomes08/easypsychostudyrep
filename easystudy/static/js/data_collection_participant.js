@@ -69,6 +69,8 @@ function confirmPermission() {
  */
 function endDataCollectionCP() {
 
+    document.getElementById('end-button').style.visibility = 'hidden'; // hides the submission button to avoid multiple posting
+
     dataCollection = JSON.stringify(participantDataCollection);
 
     $.ajax({

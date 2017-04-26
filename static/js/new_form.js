@@ -4,6 +4,7 @@ var breakNumber = 0; // used in addQuestion(n)
 var typeOfStep = [];
 var x = 0; // used in addQuestion(n)
 var formID = Math.random().toString(36).substring(2); // used in sendToJson()
+console.log(formID)
 var formName;
 var multipleImages = [];
 var multipleVideos = [];
@@ -207,7 +208,6 @@ function addSAMScale(n) {
         toastr.error('Já adicionou uma escala a esta tarefa.');
     } else if (($(divWhereToAdd).find("#form-stimulus").length == 0) && ($(divWhereToAdd).find("#video-stimulus-" + n).length == 0)) { // if there is no stimulus -> error
         toastr.error('Só pode adicionar escalas a uma tarefa que contenha um estímulo.');
-        console.log($(divWhereToAdd).find("#video-stimulus-" + n).length);
     } else {
         $(divWhereToAdd).append("" +
             "<br/><div id='form-sam-scales'><p><b>Escalas a apresentar</b></p>" +
@@ -404,13 +404,13 @@ function sendToJSON() {
     var studyConfig = {};
 
     formName = $('#form-name').val();
-    console.log("FormName: " + formName);
+    //console.log("FormName: " + formName);
 
     var formDescription = $('#form-description').val();
-    console.log("formDescription: " + formDescription);
+    //console.log("formDescription: " + formDescription);
 
     var formColor = $('input[name=optradio]:checked', '#form-questionnaire').val();
-    console.log("formColor: " + formColor);
+    //console.log("formColor: " + formColor);
 
     // Adds basic information to JSON
     studyConfig.id = formID;
@@ -443,7 +443,7 @@ function sendToJSON() {
                         $('#' + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').each(function () {
                             if ($(this).is(":checked")) {
                                 configPasso.fixo = $(this).prop("value");
-                                console.log("fixo: " + $(this).prop("value"));
+                                //console.log("fixo: " + $(this).prop("value"));
                             }
                         });
 
@@ -455,7 +455,7 @@ function sendToJSON() {
                             } else {
                                 configPasso.nomePasso = $('#' + breakDiv + "-panel").find('#' + breakDiv + '-name').val();
                             }
-                            console.log("nomePasso: " + configPasso.nomePasso);
+                            //console.log("nomePasso: " + configPasso.nomePasso);
 
                         }
 
@@ -475,7 +475,7 @@ function sendToJSON() {
 
                         if (questionsInBreak.length > 0) {
                             configPasso.questoes = questionsInBreak;
-                            console.log("questoes: " + configPasso.questoes);
+                            //console.log("questoes: " + configPasso.questoes);
                         }
 
                         // Adds selected SAM scales to JSON
@@ -486,18 +486,18 @@ function sendToJSON() {
                             }
                         });
                         configPasso.escalasSAM = selectedSAMScales;
-                        console.log("escalasSAM: " + configPasso.escalasSAM);
+                        //console.log("escalasSAM: " + configPasso.escalasSAM);
 
                         // Adds video stimulus to JSON
                         // Video stimulus name
                         configPasso.nomeDoEstimuloVideo = multipleVideos[o][2];
-                        console.log("nomeDoEstimuloVideo: " + configPasso.nomeDoEstimuloVideo);
+                        //console.log("nomeDoEstimuloVideo: " + configPasso.nomeDoEstimuloVideo);
 
                         // Video stimulus source
                         if (multipleVideos[o][1] != undefined) {
                             var res = multipleVideos[o][1].split("?");
                             configPasso.fonteEstimuloVideo = res[0];
-                            console.log("fonteEstimuloVideo: " + configPasso.fonteEstimuloVideo);
+                            //console.log("fonteEstimuloVideo: " + configPasso.fonteEstimuloVideo);
                         }
 
                         auxPassos.push(configPasso);
@@ -507,8 +507,8 @@ function sendToJSON() {
 
             } // end -- if (typeOfStep[i] == "video")
             else if (typeOfStep[i] == "image") {
-                console.log("Image Step Detected");
-                console.log(multipleImages);
+                //console.log("Image Step Detected");
+                //console.log(multipleImages);
                 for (var o = 0, len = multipleImages.length; o < len; o++) {
                     if (multipleImages[o] !== undefined && multipleImages[o][0] === i) {
                         nStep = nStep + 1;
@@ -522,7 +522,7 @@ function sendToJSON() {
                         $('#' + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').each(function () {
                             if ($(this).is(":checked")) {
                                 configPasso.fixo = $(this).prop("value");
-                                console.log("fixo: " + $(this).prop("value"));
+                                //console.log("fixo: " + $(this).prop("value"));
                             }
                         });
 
@@ -534,7 +534,7 @@ function sendToJSON() {
                             } else {
                                 configPasso.nomePasso = $('#' + breakDiv + "-panel").find('#' + breakDiv + '-name').val();
                             }
-                            console.log("nomePasso: " + configPasso.nomePasso);
+                            //console.log("nomePasso: " + configPasso.nomePasso);
 
                         }
 
@@ -554,7 +554,7 @@ function sendToJSON() {
 
                         if (questionsInBreak.length > 0) {
                             configPasso.questoes = questionsInBreak;
-                            console.log("questoes: " + configPasso.questoes);
+                            //console.log("questoes: " + configPasso.questoes);
                         }
 
                         // Adds selected SAM scales to JSON
@@ -565,18 +565,18 @@ function sendToJSON() {
                             }
                         });
                         configPasso.escalasSAM = selectedSAMScales;
-                        console.log("escalasSAM: " + configPasso.escalasSAM);
+                        //console.log("escalasSAM: " + configPasso.escalasSAM);
 
                         // Image stimulus name and extension
                         configPasso.nomeDoEstimulo = multipleImages[o][2];
-                        console.log("nomeDoEstimulo: " + configPasso.nomeDoEstimulo);
+                        //console.log("nomeDoEstimulo: " + configPasso.nomeDoEstimulo);
 
                         // Image stimulus source in Base 64
                         configPasso.fonteEstimulo = multipleImages[o][1];
 
                         // Image stimulus time
                         configPasso.tempoEstimulo = $('#' + breakDiv).find('#form-stimulus-time').val();
-                        console.log("tempoEstimulo: " + configPasso.tempoEstimulo);
+                        //console.log("tempoEstimulo: " + configPasso.tempoEstimulo);
 
                         auxPassos.push(configPasso);
                     }
@@ -592,20 +592,20 @@ function sendToJSON() {
                 var configPasso = {};
 
                 configPasso.nPasso = nStep;
-                console.log("nPasso: " + nStep);
+                //console.log("nPasso: " + nStep);
 
                 // Checks if the step is fixed or not
                 $('#' + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').each(function () {
                     if ($(this).is(":checked")) {
                         configPasso.fixo = $(this).prop("value");
-                        console.log("fixo: " + $(this).prop("value"));
+                        //console.log("fixo: " + $(this).prop("value"));
                     }
                 });
 
                 // Adds description of step to JSON
                 if ($('#' + breakDiv).find('#fixed-description').length == 1) {
                     configPasso.descricaoPasso = $('#' + breakDiv).find('#fixed-description').val();
-                    console.log("descricaoPasso: " + configPasso.descricaoPasso);
+                    //console.log("descricaoPasso: " + configPasso.descricaoPasso);
                 }
 
                 // Adds name of step to JSON
@@ -616,7 +616,7 @@ function sendToJSON() {
                     } else {
                         configPasso.nomePasso = $('#' + breakDiv + "-panel").find('#' + breakDiv + '-name').val();
                     }
-                    console.log("nomePasso: " + configPasso.nomePasso);
+                    //console.log("nomePasso: " + configPasso.nomePasso);
 
                 }
 
@@ -636,7 +636,7 @@ function sendToJSON() {
 
                 if (questionsInBreak.length > 0) {
                     configPasso.questoes = questionsInBreak;
-                    console.log("questoes: " + configPasso.questoes);
+                    //console.log("questoes: " + configPasso.questoes);
                 }
 
                 auxPassos.push(configPasso);
@@ -674,6 +674,10 @@ function saveThumbnail() {
     }
     reader.readAsDataURL(file);
     toastr.success('A miniatura do questionário foi carregada.');
+
+    if (document.querySelector('#previous-thumbnail') != null) {
+        document.querySelector('#previous-thumbnail').innerHTML = "";
+    }
 }
 
 /**
@@ -704,7 +708,7 @@ function getFileNames(n) {
     if (n == 0) {   // for the thumbnail
         var thumbTextInput = $('#form-thumbnail').find('#files-selected');
         var file = document.querySelector('#form-thumbnail input[type=file').files[0].name;
-        console.log("Thumbnail: " + file);
+        //console.log("Thumbnail: " + file);
         thumbTextInput.val(file);
         toastr.info('Não se esqueça de <span class="glyphicon glyphicon-import"></span> <b>Carregar</b> a miniatura selecionada.');
 

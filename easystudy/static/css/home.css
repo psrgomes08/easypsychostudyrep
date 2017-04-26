@@ -19,6 +19,7 @@
 }
 
 /* For stretching buttons on navbar collapse */
+/* CSS that should be displayed if width is equal to or less than N px goes here */
 @media (max-width: 767px) {
     .btn.btn-wide {
         width: 100%;

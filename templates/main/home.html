@@ -47,16 +47,26 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand navbar-title-white">Painel Principal</a>
+            <p class="navbar-text"><strong>Olá, {{user}}!</strong></p>
         </div>
         <div id="navbar" class="navbar-collapse collapse navbar-right">
 
-            <button class="btn btn-default navbar-btn btn-wide" data-toggle="modal"
+            <button class="btn btn-default navbar-btn btn-wide" type="button" data-toggle="modal"
                     data-target="#modal-for-full-screen"><span class="glyphicon glyphicon-resize-full"></span> Expandir
             </button>
-            <button class="btn btn-info navbar-btn btn-wide"><span
+
+            <button class="btn btn-primary navbar-btn btn-wide" data-toggle="modal"
+                    data-target="#modal-for-notifications" type="button">
+                <span class="glyphicon glyphicon-envelope"></span> Notificações <span class="badge"
+                                                                                      id="notifications-badge">0</span>
+            </button>
+
+            <button class="btn btn-info navbar-btn btn-wide" type="button"><span
                     class="glyphicon glyphicon-question-sign"></span> Ajuda
             </button>
-            <button class="btn btn-danger navbar-btn btn-wide" data-toggle="modal" data-target="#modal-for-logout">
+
+            <button class="btn btn-danger navbar-btn btn-wide" type="button" data-toggle="modal"
+                    data-target="#modal-for-logout">
                 <span class="glyphicon glyphicon-off"></span> Sair
             </button>
 
@@ -65,6 +75,27 @@
 </nav>
 
 <body>
+
+<!-- Modal  for notifications -->
+<div class="modal fade" id="modal-for-notifications" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">Notificações</p>
+            </div>
+            <div class="modal-body">
+                <div id="user-notifications">
+
+                </div> <!-- ./user-notifications -->
+            </div> <!-- ./modal-body -->
+        </div> <!-- ./modal-content -->
+
+    </div>
+</div>
+<!-- ./modal-for-notifications -->
 
 <!-- Modal  for full screen -->
 <div class="modal fade" id="modal-for-full-screen" role="dialog">
@@ -77,13 +108,14 @@
                 <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">Modo Ecrã Inteiro</p>
             </div>
             <div class="modal-body">
-                <p align="center">Para entrar ou sair do modo de ecrã inteiro, carregue na tecla <b>F11</b> do seu
+                <p align="center">Para entrar ou sair do modo de ecrã inteiro, carregue na tecla <kbd>F11</kbd> do seu
                     teclado.</p>
             </div>
         </div>
 
     </div>
 </div>
+<!-- ./modal-for-full-screen -->
 
 <!-- Modal  for system logout -->
 <div class="modal fade" id="modal-for-logout" role="dialog">
@@ -110,6 +142,7 @@
 
     </div>
 </div>
+<!-- ./modal-for-logout -->
 
 <br/>
 
@@ -145,7 +178,7 @@
                             </button>
 
                             <a href="{% url 'close-data-collection' i.idForm %}"
-                               class="btn btn-sm btn-warning btn-block"
+                               class="btn btn-sm btn-danger btn-block"
                                role="button">
                                 <span class="glyphicon glyphicon-lock"></span> Fechar Recolhas</a>
                         </p>
@@ -156,7 +189,8 @@
                                 <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
                                         data-target="#modal-for-access-granting"
                                         data-form-id="{{i.idForm}}"
-                                        data-form-name="{{i.idForm.formName}}"><span class="glyphicon glyphicon-user"></span>
+                                        data-form-name="{{i.idForm.formName}}"><span
+                                        class="glyphicon glyphicon-user"></span>
                                     Convidar
                                 </button>
                             </div>
@@ -182,7 +216,8 @@
                             </div>
 
                             <div class="btn-group">
-                                <button onclick="editForm('{{i.idForm}}')" type="button" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-edit"></span>
+                                <button onclick="editForm('{{i.idForm}}')" type="button" class="btn btn-sm btn-default">
+                                    <span class="glyphicon glyphicon-edit"></span>
                                     Editar
                                 </button>
                             </div>
@@ -205,7 +240,8 @@
                                         Recolha Remota</p>
                                 </div>
                                 <div class="modal-body">
-                                    <p align="center">Pode efetuar uma recolha remota através da geração de um link especial.</p>
+                                    <p align="center">Pode efetuar uma recolha remota através da geração de um link
+                                        especial.</p>
 
                                     <div class="input-group">
 
@@ -215,7 +251,9 @@
                                     </div>
                                     <br/>
                                     <p align="center">
-                                        <button id="generate-link" class="btn btn-primary"><span class="glyphicon glyphicon-link"></span> Gerar</button>
+                                        <button id="generate-link" class="btn btn-primary"><span
+                                                class="glyphicon glyphicon-link"></span> Gerar
+                                        </button>
                                     </p>
 
                                     <p align="center" id="form-url"></p>
@@ -251,7 +289,7 @@
                                         <label for="grant-permission">Permissão a atribuir:</label>
                                         <select class="form-control" id="grant-permission">
                                             <option value="O">Administrador</option>
-                                            <option value="R">Convidado</option>
+                                            <option value="R">Leitor</option>
                                         </select>
                                     </div>
                                     <p align="center">
@@ -296,7 +334,8 @@
                             <span class="glyphicon glyphicon-check"></span> Abrir Recolhas</a>
 
                         <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span class="glyphicon glyphicon-list-alt"></span>
+                                class="btn btn-sm btn-primary btn-block"><span
+                                class="glyphicon glyphicon-list-alt"></span>
                             Descarregar Recolhas
                         </button>
 
@@ -322,73 +361,75 @@
 
     <div class="panel-footer">
         <span class="glyphicon glyphicon-folder-close"></span> <b>Os Meus Questionários (Arquivados)</b>
-    </div>
-    <br/>
-    <div class="row">
-        {% for i in ownedArchivedForms %}
 
-        <div class="col-sm-6 col-md-3">
+        <br/><br/>
+        <div class="row">
+            {% for i in ownedArchivedForms %}
 
-            <div class="thumbnail">
+            <div class="col-sm-6 col-md-3">
 
-                <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
+                <div class="thumbnail">
 
-                <div class="caption">
+                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
 
-                    <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
+                    <div class="caption">
 
-                    <!-- buttons -->
-                    <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                            class="btn btn-sm btn-primary btn-block"><span class="glyphicon glyphicon-list-alt"></span>
-                        Descarregar Recolhas
-                    </button>
+                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
 
-                    <a href="{% url 'clone-form' i.idForm %}" class="btn btn-sm btn-default btn-block"
-                       role="button">
-                        <span class="glyphicon glyphicon-duplicate"></span> Clonar Questionário</a>
+                        <!-- buttons -->
+                        <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
+                                class="btn btn-sm btn-primary btn-block"><span
+                                class="glyphicon glyphicon-list-alt"></span>
+                            Descarregar Recolhas
+                        </button>
 
-                    <button type="button" class="btn btn-sm btn-danger btn-block" data-toggle="modal"
-                            data-target="#modal-for-delete" data-form-name="{{i.idForm.formName}}"
-                            data-form-url="{% url 'delete-form' i.idForm %}">
-                        <span class="glyphicon glyphicon-trash"></span> Apagar
-                    </button>
-                    <!-- end of buttons -->
+                        <a href="{% url 'clone-form' i.idForm %}" class="btn btn-sm btn-default btn-block"
+                           role="button">
+                            <span class="glyphicon glyphicon-duplicate"></span> Clonar Questionário</a>
 
-                </div> <!-- ./caption -->
+                        <button type="button" class="btn btn-sm btn-danger btn-block" data-toggle="modal"
+                                data-target="#modal-for-delete" data-form-name="{{i.idForm.formName}}"
+                                data-form-url="{% url 'delete-form' i.idForm %}">
+                            <span class="glyphicon glyphicon-trash"></span> Apagar
+                        </button>
+                        <!-- end of buttons -->
 
-            </div> <!-- ./thumbnail -->
+                    </div> <!-- ./caption -->
 
-            <!-- Modal  for deleting form -->
-            <div class="modal fade" id="modal-for-delete" role="dialog">
-                <div class="modal-dialog">
+                </div> <!-- ./thumbnail -->
 
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">
-                                Apagar Questionário</p>
+                <!-- Modal  for deleting form -->
+                <div class="modal fade" id="modal-for-delete" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">
+                                    Apagar Questionário</p>
+                            </div>
+                            <div class="modal-body">
+                                <p align="center" id="form-message"></p>
+                                <p align="center">
+                                    <button type="button" class="btn btn-success" value="click" id="delete-form">
+                                        <span class="glyphicon glyphicon-ok"></span> Sim
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal"><span
+                                            class="glyphicon glyphicon-remove"></span> Não
+                                    </button>
+                                </p>
+                            </div>
                         </div>
-                        <div class="modal-body">
-                            <p align="center" id="form-message"></p>
-                            <p align="center">
-                                <button type="button" class="btn btn-success" value="click" id="delete-form">
-                                    <span class="glyphicon glyphicon-ok"></span> Sim
-                                </button>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal"><span
-                                        class="glyphicon glyphicon-remove"></span> Não
-                                </button>
-                            </p>
-                        </div>
+
                     </div>
-
                 </div>
-            </div>
 
-        </div> <!-- ./col-sm-6 col-md-3 -->
+            </div> <!-- ./col-sm-6 col-md-3 -->
 
-        {% endfor %}
-    </div> <!-- ./row -->
+            {% endfor %}
+        </div> <!-- ./row -->
+    </div> <!-- ./panel-footer -->
 
 </div> <!-- End of panel for user forms -->
 
@@ -423,7 +464,8 @@
                             <span class="glyphicon glyphicon-edit"></span> Efetuar Recolha</a>
 
                         <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span class="glyphicon glyphicon-list-alt"></span>
+                                class="btn btn-sm btn-primary btn-block"><span
+                                class="glyphicon glyphicon-list-alt"></span>
                             Descarregar Recolhas
                         </button>
                         <!-- end of buttons -->
@@ -450,7 +492,8 @@
 
                         <!-- buttons -->
                         <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span class="glyphicon glyphicon-list-alt"></span>
+                                class="btn btn-sm btn-primary btn-block"><span
+                                class="glyphicon glyphicon-list-alt"></span>
                             Descarregar Recolhas
                         </button>
                         <!-- end of buttons -->
@@ -468,34 +511,35 @@
 
     <div class="panel-footer">
         <span class="glyphicon glyphicon-folder-close"></span> <b>Questionários Partilhados Comigo (Arquivados)</b>
-    </div>
-    <br/>
-    <div class="row">
-        {% for i in sharedArchivedForms %}
 
-        <div class="col-sm-6 col-md-3">
+        <br/><br/>
+        <div class="row">
+            {% for i in sharedArchivedForms %}
 
-            <div class="thumbnail">
-                <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
+            <div class="col-sm-6 col-md-3">
 
-                <div class="caption">
+                <div class="thumbnail">
+                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
 
-                    <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
+                    <div class="caption">
 
-                    <!-- buttons -->
-                    <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                            class="btn btn-sm btn-primary"
-                            style="width:230px;"><span class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
-                    </button>
-                    <!-- end of buttons -->
+                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
 
-                </div> <!-- ./caption -->
-            </div> <!-- ./thumbnail -->
+                        <!-- buttons -->
+                        <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
+                                class="btn btn-sm btn-primary btn-block"><span
+                                class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
+                        </button>
+                        <!-- end of buttons -->
 
-        </div> <!-- ./col-sm-6 col-md-3 -->
+                    </div> <!-- ./caption -->
+                </div> <!-- ./thumbnail -->
 
-        {% endfor %}
-    </div>
+            </div> <!-- ./col-sm-6 col-md-3 -->
+
+            {% endfor %}
+        </div> <!-- ./row -->
+    </div> <!-- ./panel-footer -->
 
 </div>
 
@@ -532,6 +576,7 @@
         $(".se-pre-con").fadeOut();
         $("#panel-user").show();
         $("#panel-shared").show();
+        numberOfNotifications(); // loads number of notifications
     });
 
     var defaultThumbnail = "{% static 'images/forms_icon.png' %}";
@@ -545,6 +590,10 @@
     var urlToDataRequest = "{% url 'data-collection-request' %}";
     var onSuccessDataRequest = "{% url 'download-xls' 'identifier' %}";
     var urlToCheckParticipants = "{% url 'check-participant' %}";
+    var urlForNotifications = "{% url 'get-notifications' %}";
+    var urlForNNotifications = "{% url 'get-n-notifications' %}";
+    var urlForDeleteNotifications = "{% url 'delete-notifications' %}";
+    var dingSound = "{% static 'sounds/ding_sound.mp3' %}";
 
     /**
      * Checks if a form can be edited.
@@ -564,7 +613,7 @@
                 window.location.href = onSuccessEdit;
             },
             error: function () {
-                toastr.error('Não pode editar questionários que já tenham recolhas efetuadas.');
+                toastr.error('Não pode editar questionários que já contenham recolhas efetuadas.');
             }
         });
     }

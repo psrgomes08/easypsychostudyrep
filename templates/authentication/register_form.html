@@ -1,0 +1,109 @@
+{% load static %}
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Easy Psycho Study - Novo Utilizador</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ie10-viewport-bug-workaround.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cover.css' %}">
+
+</head>
+
+<body>
+
+<div class="site-wrapper">
+
+    <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+            <div class="inner cover">
+                <p align="center"><img class="img-responsive" src="{% static 'images/easy_psycho_logo.png' %}"></p>
+                <h2>Registar Novo Utilizador</h2><br/>
+
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nome Utilizador:</label><br/>
+                        {{ form.username }}
+                    </div>
+                    <div class="form-group">
+                        <label>Primeiro Nome:</label><br/>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-group">
+                        <label>Último Nome:</label><br/>
+                        {{ form.last_name }}
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label><br/>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label>Palavra-passe:</label><br/>
+                        {{ form.password1 }}
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar palavra-passe:</label><br/>
+                        {{ form.password2 }}
+                    </div>
+
+                    <button type="submit" class="save btn btn-primary"><span
+                            class="glyphicon glyphicon-user"></span> Registar
+                    </button>
+
+                    <br/><br/>
+                    {% if form.errors %}
+                        {% for error in form.username.errors %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                            </div>
+                        {% endfor %}
+
+                        {% for error in form.email.errors %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                            </div>
+                        {% endfor %}
+
+                        {% for error in form.password1.errors %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                            </div>
+                        {% endfor %}
+
+                        {% for error in form.password2.errors %}
+                            <div class="alert alert-danger alert-dismissable">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>
+
+<!-- JavaScript
+    ================================================== -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>

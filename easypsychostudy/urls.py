@@ -23,9 +23,10 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^painel$', HomeView.as_view(), name='home'),
     url(r'^$', UserLoginView.as_view(), name='login'),
+    url(r'^registar$', UserRegisterView.as_view(), name='register'),
     url(r'^criarquestionario$', NewFormView.as_view(), name='new-form'),
     url(r'^logout/', views.logout, name='logout'),
-    url(r'^descarregarconfiguracoes/([a-zA-Z0-9S]+)$', views.downloadJSON, name='download-json'),  # not implemented
+    url(r'^descarregarconfiguracoes/([a-zA-Z0-9S]+)$', views.downloadJSON, name='download-json'),  # NOT BEING USED
     url(r'^apagarquestionario/([a-zA-Z0-9S]+)$', views.deleteStudyForm, name='delete-form'),
     url(r'^recolha/([a-zA-Z0-9S]+)$', DataCollectionView.as_view(), name='data-collection'),
     url(r'^recolhaparticipante/([a-zA-Z0-9S]+)/([a-zA-Z0-9S]+)$', DataCollectionForParticipantView.as_view(),
@@ -45,4 +46,7 @@ urlpatterns = [
     url(r'^descarregar', views.downloadDataCollectionRequest, name='data-collection-request'),
     url(r'^verificaridparticipante', views.checkParticipantID, name='check-participant'),
     url(r'^verificartoken', views.checkTokenForParticipant, name='check-token'),
+    url(r'^apagarNotificacoes', views.deleteNotifications, name='delete-notifications'),
+    url(r'^notificacoes', views.getNotifications, name='get-notifications'),
+    url(r'^nnotificacoes', views.getNNotifications, name='get-n-notifications'),
 ]

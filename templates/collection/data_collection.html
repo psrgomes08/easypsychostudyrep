@@ -120,7 +120,7 @@
     var step = newForm[currentIndex];
 
     var endMessage = '<p><b><h2>Questionário terminado.</h2></b><br/>Agradecemos a sua colaboração.</p><br/>';
-    var endButton = '<button class="btn btn-md btn-success" onclick="endDataCollection()">' +
+    var endButton = '<button id="end-button" class="btn btn-md btn-success" onclick="endDataCollection()">' +
             '<span class="glyphicon glyphicon-check"></span> Terminar</button>';
 
     var valenceImage = "{% static 'images/valencia.png' %}";

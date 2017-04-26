@@ -35,7 +35,7 @@ class Permission(models.Model):
         ('R', 'Reader'),
     )
     idPermission = models.AutoField(primary_key=True)
-    username = models.ForeignKey(User)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
     idForm = models.ForeignKey(Form, on_delete=models.CASCADE)
     permissionType = models.CharField(max_length=1, choices=PERMISSION_TYPE, default='R')
 
@@ -77,3 +77,21 @@ class ParticipantToken(models.Model):
 
     def __str__(self):
         return str(self.idFutureParticipant)
+
+# ######################################################################## #
+# Notifications for users
+# ######################################################################## #
+class UserNotification(models.Model):
+    SEVERITY_LEVEL = (
+        ('I', 'Info'),
+        ('D', 'Danger'),
+        ('W', 'Warning'),
+    )
+
+    idUserNotification = models.AutoField(primary_key=True)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField(blank=True, null=True)
+    severityLevel = models.CharField(max_length=1, choices=SEVERITY_LEVEL, default='I')
+
+    def __str__(self):
+        return str(self.idUserNotification)

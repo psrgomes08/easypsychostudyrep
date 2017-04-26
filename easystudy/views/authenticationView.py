@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from easystudy.forms import UserLoginForm
+from easystudy.forms import UserLoginForm, UserRegistrationForm
 from django.views import View
+from django.contrib.auth.forms import UserCreationForm
 
 try:
     from BytesIO import BytesIO
 except ImportError:
     from io import BytesIO
 
+
 # ######################################################################## #
-# For user authentication.
+# For user login.
 # ######################################################################## #
 class UserLoginView(View):
     form_class = UserLoginForm
@@ -35,11 +37,37 @@ class UserLoginView(View):
             user = authenticate(username=username, password=password)
             login(request, user)
 
-            #print(request.user.is_authenticated())
+            # print(request.user.is_authenticated())
 
             # redirect
             if request.user.is_authenticated():
                 request.session['username'] = username  # saves the username in the session
                 return redirect('home')
+
+        return render(request, self.template_name, {'form': form})
+
+
+# ######################################################################## #
+# For user registration.
+# ######################################################################## #
+class UserRegisterView(View):
+    template_name = "authentication/register_form.html"
+
+    # display blank form
+    def get(self, request):
+        if request.session.has_key('username'):
+            return redirect('home')
+
+        else:
+            form = UserRegistrationForm()
+            return render(request, self.template_name, {'form': form})
+
+    # process form data
+    def post(self, request):
+        form = UserRegistrationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('home')
 
         return render(request, self.template_name, {'form': form})

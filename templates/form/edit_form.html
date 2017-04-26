@@ -132,6 +132,11 @@
                 </div> <!-- end of form style -->
 
                 <label>Miniatura do questionário</label><br/> <!-- form thumbnail -->
+                <div id="previous-thumbnail">
+                    <p>Previamente carregada</p>
+                </div>
+
+                <p>Obs.: Ao carregar uma miniatura nova, irá apagar a previamente carregada.</p>
                 <div class="input-group" id="form-thumbnail">
                     <label class="input-group-btn">
                         <span class="btn btn-default">
@@ -209,10 +214,19 @@
 
     var src = ('{{formConfig|safe}}').replace(/[\n]/g, '\\n');
 
+    var formThumbnail = "{{formThumbnail}}";
+
     var formConfiguration = JSON.parse(src);
 
     document.getElementById("form-name").value = document.getElementById("form-name").defaultValue = formConfiguration.nome; // loads name
     document.getElementById("form-description").value = document.getElementById("form-name").defaultValue = formConfiguration.descricao; // loads description
+
+    if (formThumbnail != "" && formThumbnail != "/static/images/forms_icon.png") {
+        document.querySelector("#previous-thumbnail").innerHTML += '<img height="100" src="' + formThumbnail + '"><br/><br/>';
+    }
+    else {
+        document.querySelector("#previous-thumbnail").innerHTML += '<img height="100" src="' + defaultThumbnail + '"><br/><br/>';
+    }
 
     // loads color
     if (formConfiguration.corFundo == "preto") {

@@ -642,6 +642,8 @@ function nextDecider() {
  */
 function endDataCollection() {
 
+    document.getElementById('end-button').style.visibility = 'hidden'; // hides the submission button to avoid multiple posting
+
     dataCollection = JSON.stringify(participantDataCollection);
 
     $.ajax({
@@ -657,7 +659,7 @@ function endDataCollection() {
             window.location.href = onSuccess;   // redirects to home
         },
         error: function () {
-            toastr.error('Ocorreu um problema na gravação da recolha do participante.');
+            toastr.error('Ocorreu um problema na submissão das suas respostas. <b>Por favor entre em contacto com o responsável.</b>');
         }
     });
 

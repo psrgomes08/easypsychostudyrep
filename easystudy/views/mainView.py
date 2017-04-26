@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
-from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken
+from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseServerError
 from django.db import IntegrityError
@@ -13,6 +13,7 @@ try:
     from BytesIO import BytesIO
 except ImportError:
     from io import BytesIO
+
 
 # ######################################################################## #
 # Checks if a form has participants to download a data collection.
@@ -58,15 +59,33 @@ def grantAccess(request):
             p.idForm = idF
             p.permissionType = permissionType
             p.save()
-            response = HttpResponse("Permission was granted!")
-            return response
+
+            # Start of push notification
+            un = UserNotification()
+            un.username = user
+            if permissionType == "R":
+                permissionString = "Leitor"
+            else:
+                permissionString = "Administrador"
+            un.message = "Foi-lhe concedida a permissão de " + permissionString + " para o questionário " + idForm + " - «" + idF.formName + "», pelo utilizador " + \
+                         request.session['username'] + "."
+            un.severityLevel = "I"
+            un.save()
+            print("SUCCESS: Notification PERMISSION pushed to user " + user.username)
+            # End of push notifications
+
+            print("SUCCESS: Permission " + permissionType + "to user " + username + " was granted!")
+            return HttpResponse("SUCCESS: Permission " + permissionType + "to user " + username + " was granted!")
+
         except IntegrityError:
-            response = HttpResponseServerError("The user already has the selected permission for the selected form.")
-            return response
+            print(
+                "ERROR: The user " + username + " already has the permission " + permissionType + " for the form " + idForm + ".")
+            return HttpResponseServerError(
+                "ERROR: The user " + username + " already has the permission " + permissionType + " for the form " + idForm + ".")
 
 
 # ######################################################################## #
-# Closes the data collecting of a form.
+# Archives a form.
 # ######################################################################## #
 def archiveForm(request, idForm):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -80,6 +99,39 @@ def archiveForm(request, idForm):
             if selectedForm.statusType == 'C' and selectedForm.isArchived == 'N':
                 selectedForm.isArchived = 'Y'
                 selectedForm.save()
+
+                # Start of push notifications
+                try:
+                    permission = Permission.objects.filter(idForm=idForm)  # get all permissions for that form
+
+                    for i in range(0, len(permission)):  # adds notification to users in the list of permissions
+                        if permission[i].username.username != request.session[
+                            'username']:  # avoids adding a notification to the user who performed the action
+
+                            # When archiving a form, all the previous notifications for opening and closing that form are useless.
+                            # Therefore they are deleted.
+                            existingNotifications = UserNotification.objects.all()
+                            for j in range(0, len(existingNotifications)):
+                                if idForm in existingNotifications[j].message and "fechadas" in existingNotifications[
+                                    j].message:
+                                    existingNotifications[j].delete()
+                                if idForm in existingNotifications[j].message and "abertas" in existingNotifications[
+                                    j].message:
+                                    existingNotifications[j].delete()
+
+                            un = UserNotification()
+                            un.username = User.objects.get(username=permission[i].username.username)
+                            un.message = "O questionário " + idForm + " - «" + selectedForm.formName + "», foi arquivado pelo utilizador " + \
+                                         request.session['username'] + "."
+                            un.severityLevel = "D"
+                            un.save()
+                            print("SUCCESS: Notification ARCHIVED pushed to user " + permission[i].username.username)
+
+                except IntegrityError:
+                    print("ERROR: There are no permissions associated to the form " + idForm + ".")
+                    return HttpResponseServerError(
+                        "ERROR: There are no permissions associated to the form " + idForm + ".")
+                    # End of push notifications
 
             return redirect('home')
 
@@ -104,6 +156,35 @@ def closeDataCollection(request, idForm):
                 selectedForm.statusType = 'C'
                 selectedForm.save()
 
+                # Start of push notifications
+                try:
+                    permission = Permission.objects.filter(idForm=idForm)  # get all permissions for that form
+
+                    for i in range(0, len(permission)):  # adds notification to users in the list of permissions
+                        if permission[i].username.username != request.session['username']:
+
+                            # When closing a form, all the previous notifications for opening that form are useless.
+                            # Therefore they are deleted.
+                            existingNotifications = UserNotification.objects.all()
+                            for j in range(0, len(existingNotifications)):
+                                if idForm in existingNotifications[j].message and "abertas" in existingNotifications[
+                                    j].message:
+                                    existingNotifications[j].delete()
+
+                            un = UserNotification()
+                            un.username = User.objects.get(username=permission[i].username.username)
+                            un.message = "Foram fechadas as recolhas para o questionário " + idForm + " - «" + selectedForm.formName + "», pelo utilizador " + \
+                                         request.session['username'] + "."
+                            un.severityLevel = "W"
+                            un.save()
+                            print("SUCCESS: Notification CLOSED pushed to user " + permission[i].username.username)
+
+                except IntegrityError:
+                    print("ERROR: There are no permissions associated to the form " + idForm + ".")
+                    return HttpResponseServerError(
+                        "ERROR: There are no permissions associated to the form " + idForm + ".")
+                    # End of push notifications
+
             return redirect('home')
 
         except ObjectDoesNotExist:
@@ -126,6 +207,35 @@ def openDataCollection(request, idForm):
             if selectedForm.statusType == 'C' and selectedForm.isArchived != 'Y':
                 selectedForm.statusType = 'O'
                 selectedForm.save()
+
+                # Start of push notifications
+                try:
+                    permission = Permission.objects.filter(idForm=idForm)  # get all permissions for that form
+
+                    for i in range(0, len(permission)):  # adds notification to users in the list of permissions
+                        if permission[i].username.username != request.session['username']:
+
+                            # When opening a form, all the previous notifications for closing that form are useless.
+                            # Therefore they are deleted.
+                            existingNotifications = UserNotification.objects.all()
+                            for j in range(0, len(existingNotifications)):
+                                if idForm in existingNotifications[j].message and "fechadas" in existingNotifications[
+                                    j].message:
+                                    existingNotifications[j].delete()
+
+                            un = UserNotification()
+                            un.username = User.objects.get(username=permission[i].username.username)
+                            un.message = "Foram abertas as recolhas para o questionário " + idForm + " - «" + selectedForm.formName + "», pelo utilizador " + \
+                                         request.session['username'] + "."
+                            un.severityLevel = "W"
+                            un.save()
+                            print("SUCCESS: Notification OPEN pushed to user " + permission[i].username.username)
+
+                except IntegrityError:
+                    print("ERROR: There are no permissions associated to the form " + idForm + ".")
+                    return HttpResponseServerError(
+                        "ERROR: There are no permissions associated to the form " + idForm + ".")
+                    # End of push notifications
 
             return redirect('home')
 
@@ -150,7 +260,7 @@ def logout(request):
 
 # ######################################################################## #
 # For download of a JSON configuration file belonging to a study.
-# (NOT IMPLEMENTED)
+# (NOT BEING USED)
 # ######################################################################## #
 def downloadJSON(request, idForm):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -173,7 +283,7 @@ def downloadJSON(request, idForm):
 
 
 # ######################################################################## #
-# Deletes a selected study in the home page.
+# Deletes a selected form in the home page.
 # ######################################################################## #
 def deleteStudyForm(request, idForm):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -182,7 +292,38 @@ def deleteStudyForm(request, idForm):
     else:
         try:
             selectedForm = Form.objects.get(idForm=idForm)
+            formName = selectedForm.formName  # to be used in notifications
+
+            # Start of push notifications
+            try:
+                permission = Permission.objects.filter(idForm=idForm)  # get all permissions for that form
+
+                for i in range(0, len(permission)):  # adds notification to users in the list of permissions
+                    if permission[i].username.username != request.session['username']:
+
+                        # When deleting a form, all the previous notifications for that form are useless.
+                        # Therefore they are deleted.
+                        existingNotifications = UserNotification.objects.all()
+                        for j in range(0, len(existingNotifications)):
+                            if idForm in existingNotifications[j].message:
+                                existingNotifications[j].delete()
+
+                        un = UserNotification()
+                        un.username = User.objects.get(username=permission[i].username.username)
+                        un.message = "O questionário " + idForm + " - «" + formName + "», foi apagado do sistema pelo utilizador " + \
+                                     request.session['username'] + "."
+                        un.severityLevel = "D"
+                        un.save()
+                        print("SUCCESS: Notification DELETE pushed to user " + permission[i].username.username)
+
+            except IntegrityError:
+                print("ERROR: There are no permissions associated to the form " + idForm + ".")
+                return HttpResponseServerError(
+                    "ERROR: There are no permissions associated to the form " + idForm + ".")
+                # End of push notifications
+
             selectedForm.delete()
+
             return redirect('home')
 
         except ObjectDoesNotExist:
@@ -386,7 +527,8 @@ def downloadParticipantsDataCollectedData(request, idForm):
                                                            pFormat)
                                     col += 1
 
-                                    worksheet2.write_string(row_w2, col_w2, collection[j]['colheitaEscalas']['alerta'], pFormat)
+                                    worksheet2.write_string(row_w2, col_w2, collection[j]['colheitaEscalas']['alerta'],
+                                                            pFormat)
                                     col_w2 += 1
 
                                 if 'valencia' in collection[j]['colheitaEscalas']:
@@ -394,7 +536,8 @@ def downloadParticipantsDataCollectedData(request, idForm):
                                                            pFormat)
                                     col += 1
 
-                                    worksheet2.write_string(row_w2, col_w2, collection[j]['colheitaEscalas']['valencia'],
+                                    worksheet2.write_string(row_w2, col_w2,
+                                                            collection[j]['colheitaEscalas']['valencia'],
                                                             pFormat)
                                     col_w2 += 1
 
@@ -449,14 +592,17 @@ class HomeView(View):
 
         else:
             user = request.session['username']
-            # ownedFormsList = Permission.objects.filter(username__username=user).filter(permissionType='O')
             ownedFormsClosedList = []
             ownedFormsOpenList = []
-            # sharedFormsList = Permission.objects.filter(username__username=user).filter(permissionType='R')
             sharedFormsClosedList = []
             sharedFormsOpenList = []
             ownedArchivedForms = []
             sharedArchivedForms = []
+            #userNotifications = []
+
+            #existingNotifications = UserNotification.objects.filter(username__username=user)
+            #for k in range(0, len(existingNotifications)):
+            #    userNotifications.append(existingNotifications[k])
 
             pO = Permission.objects.filter(username__username=user).filter(permissionType='O').select_related()
 
@@ -486,6 +632,7 @@ class HomeView(View):
             usersList = User.objects.exclude(username=user)
 
             context = {
+                "username": user,
                 "ownedFormsClosedList": ownedFormsClosedList,
                 "ownedFormsOpenList": ownedFormsOpenList,
                 "sharedFormsClosedList": sharedFormsClosedList,
@@ -493,6 +640,8 @@ class HomeView(View):
                 "ownedArchivedForms": ownedArchivedForms,
                 "sharedArchivedForms": sharedArchivedForms,
                 "usersList": usersList,
+                # "userNotifications": userNotifications,
+                #"userNotificationsNumber": len(userNotifications)
             }
 
             return render(request, "main/home.html", context)
@@ -532,3 +681,79 @@ def checkParticipantID(request):
             except IntegrityError:
                 pts = ParticipantToken.objects.get(idForm=idForm, idFutureParticipant=idFutureParticipant)
                 return HttpResponseServerError(pts.token)
+
+
+# ######################################################################## #
+# Deletes all the notifications of a user
+# ######################################################################## #
+def deleteNotifications(request):
+    if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
+        return redirect('login')
+
+    else:
+        try:
+            user = request.session['username']
+            existingNotifications = UserNotification.objects.filter(username__username=user)
+            for i in range(0, len(existingNotifications)):
+                existingNotifications[i].delete()
+
+            print("SUCCESS: The notifications for user " + user + " were deleted.")
+            return HttpResponse("SUCCESS: The notifications for user " + user + " were deleted.")
+
+        except KeyError:
+            print("ERROR: There is no username " + user + ".")
+            return Http404("ERROR: There is no username " + user + ".")
+        except ObjectDoesNotExist:
+            print("ERROR: It was not possible to delete the notifications for user " + user + ".")
+            return HttpResponseServerError(
+                "ERROR: It was not possible to delete the notifications for user " + user + ".")
+
+
+# ######################################################################## #
+# Gets all the notifications of a user
+# ######################################################################## #
+def getNotifications(request):
+    if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
+        return redirect('login')
+
+    else:
+        userNotifications = []
+
+        try:
+            user = request.session['username']
+            existingNotifications = UserNotification.objects.filter(username__username=user)
+            for k in range(0, len(existingNotifications)):
+                userNotifications.append([existingNotifications[k].message, existingNotifications[k].severityLevel])
+
+            return HttpResponse(json.dumps(userNotifications), content_type="application/json")
+
+        except KeyError:
+            print("ERROR: There is no username " + user + ".")
+            return Http404("ERROR: There is no username " + user + ".")
+        except ObjectDoesNotExist:
+            print("ERROR: It was not possible to get the notifications for user " + user + ".")
+            return HttpResponseServerError(
+                "ERROR: It was not possible to get the notifications for user " + user + ".")
+
+
+# ######################################################################## #
+# Gets the number of notifications of a user
+# ######################################################################## #
+def getNNotifications(request):
+    if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
+        return redirect('login')
+
+    else:
+        try:
+            user = request.session['username']
+            existingNotifications = UserNotification.objects.filter(username__username=user)
+
+            return HttpResponse(json.dumps(len(existingNotifications)), content_type="application/json")
+
+        except KeyError:
+            print("ERROR: There is no username " + user + ".")
+            return Http404("ERROR: There is no username " + user + ".")
+        except ObjectDoesNotExist:
+            print("ERROR: It was not possible to get the notifications for user " + user + ".")
+            return HttpResponseServerError(
+                "ERROR: It was not possible to get the notifications for user " + user + ".")

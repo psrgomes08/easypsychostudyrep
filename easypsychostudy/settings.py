@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'gb!!r=@^qg1(ewq^n3fzukpb=nt-krk01c1laldeqvkxrp-9@n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -147,3 +147,15 @@ STATICFILES_FINDERS = (
 )
 
 #STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# Memory size for image uploads
+# https://docs.djangoproject.com/en/1.11/ref/settings/#data-upload-max-memory-size
+# 2.5MB - 2621440
+# 5MB - 5242880
+# 10MB - 10485760
+# 20MB - 20971520
+# 50MB - 5242880
+# 100MB 104857600
+# 250MB - 214958080
+# 500MB - 429916160
+DATA_UPLOAD_MAX_MEMORY_SIZE = 429916160

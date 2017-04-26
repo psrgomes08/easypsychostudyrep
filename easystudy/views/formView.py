@@ -83,10 +83,12 @@ class EditFormView(View):
             try:
                 f = Form.objects.get(idForm=idForm)
                 formConfig = f.formConfig
+                formThumbnail = f.formThumbnail
 
                 context = {
                     "formID": idForm,
                     "formConfig": formConfig,
+                    "formThumbnail": formThumbnail,
                 }
 
                 return render(request, "form/edit_form.html", context)
@@ -179,9 +181,11 @@ class CloneFormView(View):
             try:
                 f = Form.objects.get(idForm=idForm)
                 formConfig = f.formConfig
+                formThumbnail = f.formThumbnail
 
                 context = {
                     "formConfig": formConfig,
+                    "formThumbnail": formThumbnail,
                 }
 
                 return render(request, "form/clone_form.html", context)

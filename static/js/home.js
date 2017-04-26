@@ -19,6 +19,114 @@ toastr.options = {
 var url;
 var formIDURLGeneration = "";
 var formURL = "";
+var nNotifications = 0;
+
+/**
+ * Gets the number of notifications of the user.
+ */
+function numberOfNotifications() {
+    $.ajax({
+        url: urlForNNotifications,
+        type: 'GET',
+
+        success: function (data) {
+            if(nNotifications != data && data != 0) {
+                var audio = new Audio(dingSound);
+                audio.play();
+            }
+            $(document).find('#notifications-badge').text(data);
+            nNotifications = data;
+        },
+        error: function (data) {
+            console.log(data.responseText);
+        }
+    });
+}
+
+setInterval(numberOfNotifications, 60000); // keeps the number of notifications updated every 1 minute
+
+/**
+ * Retrieves all the notifications from the user.
+ */
+$('#modal-for-notifications').on('show.bs.modal', function (e) {
+
+    $(e.currentTarget).find('#user-notifications').html("");
+
+    $.ajax({
+        url: urlForNotifications,
+        type: 'GET',
+
+        success: function (data) {
+
+            if (data.length == 0) { // there are no notifications
+                $(e.currentTarget).find('#user-notifications').append('' +
+                    '<div class="alert alert-success" role="alert">' +
+                    '<p align="center"><strong><span class="glyphicon glyphicon-ok-sign"></span> Não tem notificações novas. </strong></p>' +
+                    '</div>');
+            }
+            else { // there are notifications
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i][1] == 'I') {
+                        $(e.currentTarget).find('#user-notifications').append('' +
+                            '<div class="alert alert-info" role="alert">' +
+                            '<p align="center"><strong><span class="glyphicon glyphicon-info-sign"></span> Informação: </strong>' + data[i][0] + '</p>' +
+                            '</div>');
+                    }
+                    else if (data[i][1] == 'W') {
+                        $(e.currentTarget).find('#user-notifications').append('' +
+                            '<div class="alert alert-warning" role="alert">' +
+                            '<p align="center"><strong><span class="glyphicon glyphicon-exclamation-sign"></span> Alerta: </strong>' + data[i][0] + '</p>' +
+                            '</div>');
+                    }
+                    else { // 'D'
+                        $(e.currentTarget).find('#user-notifications').append('' +
+                            '<div class="alert alert-danger" role="alert">' +
+                            '<p align="center"><strong><span class="glyphicon glyphicon-warning-sign"></span> Atenção: </strong>' + data[i][0] + '</p>' +
+                            '</div>');
+                    }
+                }
+
+                $(e.currentTarget).find('#user-notifications').append('' +
+                    '<p align="center"><button class="btn btn-danger" type="button" onclick="deleteNotifications()">' +
+                    '<span class="glyphicon glyphicon-trash"></span> Apagar Todas' +
+                    '</button></p>');
+
+            }
+
+        },
+        error: function (data) {
+            console.log(data.responseText);
+        }
+    });
+
+});
+
+/**
+ * Deletes all the notifications of the user.
+ */
+function deleteNotifications() {
+    $.ajax({
+        url: urlForDeleteNotifications,
+        type: 'POST',
+        data: {
+            csrfmiddlewaretoken: csrfToken
+        },
+        success: function (data) {
+            document.getElementById("user-notifications").innerHTML = '' +
+                '<div class="alert alert-success" role="alert">' +
+                '<p align="center"><strong><span class="glyphicon glyphicon-ok-sign"></span> Não tem notificações novas. </strong></p>' +
+                '</div>';
+
+            numberOfNotifications(); // update badge of notifications
+
+            //console.log(data.responseText);
+        },
+        error: function (data) {
+            console.log(data.responseText);
+        }
+    });
+}
 
 /**
  * Invites an user to access a form.
@@ -56,7 +164,7 @@ $('#grant-access').click(function () {
 $('#modal-for-link-share').on('show.bs.modal', function (e) {
     var location = window.location.href;
     location = location.split("painel");
-    console.log(location[0]);
+    //console.log(location[0]);
 
     var serverURL = location[0];
     formIDURLGeneration = $(e.relatedTarget).data('form-id');
@@ -77,7 +185,7 @@ $('#generate-link').on("click", function () {
             '<strong>Por favor insira um ID do Participante.</strong></div>');
     } else {
 
-        tokenForParticipant = Math.random().toString(10).substring(2);
+        tokenForParticipant = Math.random().toString(32).substring(2); //10
 
         $.ajax({
             url: urlToCheckParticipants,
