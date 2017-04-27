@@ -598,11 +598,11 @@ class HomeView(View):
             sharedFormsOpenList = []
             ownedArchivedForms = []
             sharedArchivedForms = []
-            #userNotifications = []
+            userNotifications = []
 
-            #existingNotifications = UserNotification.objects.filter(username__username=user)
-            #for k in range(0, len(existingNotifications)):
-            #    userNotifications.append(existingNotifications[k])
+            existingNotifications = UserNotification.objects.filter(username__username=user)
+            for k in range(0, len(existingNotifications)):
+                userNotifications.append(existingNotifications[k])
 
             pO = Permission.objects.filter(username__username=user).filter(permissionType='O').select_related()
 
@@ -641,7 +641,7 @@ class HomeView(View):
                 "sharedArchivedForms": sharedArchivedForms,
                 "usersList": usersList,
                 # "userNotifications": userNotifications,
-                #"userNotificationsNumber": len(userNotifications)
+                "userNotificationsNumber": len(userNotifications),
             }
 
             return render(request, "main/home.html", context)

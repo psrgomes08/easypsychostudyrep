@@ -19,12 +19,12 @@ toastr.options = {
 var url;
 var formIDURLGeneration = "";
 var formURL = "";
-var nNotifications = 0;
 
 /**
  * Gets the number of notifications of the user.
  */
 function numberOfNotifications() {
+    console.log("notifications before ajax: " + nNotifications);
     $.ajax({
         url: urlForNNotifications,
         type: 'GET',
@@ -36,6 +36,7 @@ function numberOfNotifications() {
             }
             $(document).find('#notifications-badge').text(data);
             nNotifications = data;
+            console.log("notifications after ajax: " + nNotifications);
         },
         error: function (data) {
             console.log(data.responseText);

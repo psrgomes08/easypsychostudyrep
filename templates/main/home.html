@@ -52,8 +52,11 @@
         <div id="navbar" class="navbar-collapse collapse navbar-right">
 
             <button class="btn btn-default navbar-btn btn-wide" type="button" data-toggle="modal"
-                    data-target="#modal-for-full-screen"><span class="glyphicon glyphicon-resize-full"></span> Expandir
+                    data-target="#modal-for-full-screen"><span class="glyphicon glyphicon-fullscreen"></span> Expandir
             </button>
+
+            <a href="{% url 'new-form' %}" class="btn btn-success navbar-btn btn-wide" role="button">
+                <span class="glyphicon glyphicon-edit"></span> Criar Questionário</a>
 
             <button class="btn btn-primary navbar-btn btn-wide" data-toggle="modal"
                     data-target="#modal-for-notifications" type="button">
@@ -543,9 +546,11 @@
 
 </div>
 
+<!--
 <a href="{% url 'new-form' %}" class="btn fixed-btn" role="button" data-toggle="tooltip" data-placement="left"
    title="Criar novo questionário" style="background-color: #222; color: #FFF;">
     <span class="glyphicon glyphicon-edit"></span> Criar Questionário</a>
+    -->
 
 </body>
 </html>
@@ -568,6 +573,8 @@
 
 <script>
 
+    var nNotifications = 0;
+
     /**
      * Wait for window load.
      */
@@ -576,6 +583,7 @@
         $(".se-pre-con").fadeOut();
         $("#panel-user").show();
         $("#panel-shared").show();
+        nNotifications = "{{userNotificationsNumber}}"; // allows comparison and unecessary ring sounds
         numberOfNotifications(); // loads number of notifications
     });
 

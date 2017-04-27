@@ -58,36 +58,39 @@
                     <button type="submit" class="save btn btn-primary"><span
                             class="glyphicon glyphicon-user"></span> Registar
                     </button>
+                    <button type="button" id="cancel-button" class="btn btn-danger"><span
+                            class="glyphicon glyphicon-remove"></span> Cancelar
+                    </button>
 
                     <br/><br/>
                     {% if form.errors %}
-                        {% for error in form.username.errors %}
-                            <div class="alert alert-danger alert-dismissable">
-                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
-                            </div>
-                        {% endfor %}
+                    {% for error in form.username.errors %}
+                    <div class="alert alert-danger alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                        <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                    </div>
+                    {% endfor %}
 
-                        {% for error in form.email.errors %}
-                            <div class="alert alert-danger alert-dismissable">
-                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
-                            </div>
-                        {% endfor %}
+                    {% for error in form.email.errors %}
+                    <div class="alert alert-danger alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                        <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                    </div>
+                    {% endfor %}
 
-                        {% for error in form.password1.errors %}
-                            <div class="alert alert-danger alert-dismissable">
-                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
-                            </div>
-                        {% endfor %}
+                    {% for error in form.password1.errors %}
+                    <div class="alert alert-danger alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                        <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                    </div>
+                    {% endfor %}
 
-                        {% for error in form.password2.errors %}
-                            <div class="alert alert-danger alert-dismissable">
-                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-                                <strong>Ocorreu um problema: </strong> {{ error|escape }}
-                            </div>
-                        {% endfor %}
+                    {% for error in form.password2.errors %}
+                    <div class="alert alert-danger alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                        <strong>Ocorreu um problema: </strong> {{ error|escape }}
+                    </div>
+                    {% endfor %}
                     {% endif %}
                 </form>
 
@@ -107,3 +110,14 @@
     ================================================== -->
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+<script>
+    var onCancel = "{% url 'login' %}";
+
+    /**
+     * Cancel button.
+     */
+    $('#cancel-button').click(function () {
+        location.href = onCancel;
+    });
+</script>

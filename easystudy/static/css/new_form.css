@@ -12,7 +12,7 @@
 /* Fixes buttons at the right bottom corner */
 .btn-fixed-down {
     position: fixed;
-    bottom: 20px;
+    bottom: 30px;
     right: 20px;
     z-index: 100; /* brings the button to the front of all elements */
 }
@@ -48,4 +48,10 @@
 
 #toast-container > div {
   opacity: 1 !important;
+}
+
+.mandatory {
+    color: red;
+    font-weight: bold;
+    font-size: large;
 }

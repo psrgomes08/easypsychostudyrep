@@ -3,8 +3,11 @@ var breakNumber = 0; // used in addQuestion(n)
 //var images = []; // used in sendToJson()
 var typeOfStep = [];
 var x = 0; // used in addQuestion(n)
-var formID = Math.random().toString(36).substring(2); // used in sendToJson()
-console.log(formID)
+
+//var formID = Math.random().toString(36).substring(2);
+var formID = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'); // used in sendToJson()
+// console.log("Este é o ID do Form: " + formID);
+
 var formName;
 var multipleImages = [];
 var multipleVideos = [];
@@ -20,13 +23,25 @@ toastr.options = {
     "onclick": null,
     "showDuration": "0",
     "hideDuration": "0",
-    "timeOut": "15000",
+    "timeOut": "10000",
     "extendedTimeOut": "5000",
     "showEasing": "swing",
     "hideEasing": "linear",
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
 };
+
+/**
+ * Generates a random string to be used in formID.
+ * @param length size of the string
+ * @param chars list of allowed characters
+ * @returns {string} random string
+ */
+function randomString(length, chars) {
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
+}
 
 /**
  * Adds a textbox field in the form
@@ -269,6 +284,7 @@ $(document).ready(function () {
             "<li><button class='btn btn-block btn-transparent' type='button' onclick='addSAMScale(" + breakNumber + ")'><span class='glyphicon glyphicon-record'></span> Escalas</button></li>" +
             "<li><button class='btn btn-block btn-transparent' type='button' onclick='addStimulusMultiple(" + breakNumber + ")'><span class='glyphicon glyphicon-picture'></span> Imagens</button></li>" +
             "<li><button class='btn btn-block btn-transparent' type='button' onclick='addStimulusVideo(" + breakNumber + ")'><span class='glyphicon glyphicon-film'></span> Vídeos</button></li>" +
+            "<li class='divider'></li>" +
             "<li><button class='btn btn-block btn-transparent' type='button' onclick='addDescriptionField(" + breakNumber + ")'><span class='glyphicon glyphicon-font'></span> Instruções</button></li>" +
             "<li><button class='btn btn-block btn-transparent' type='button' onclick='deleteBreak(" + breakNumber + ")'><span class='glyphicon glyphicon-remove'></span> Apagar</button></li>" +
             "</ul>" +
@@ -414,7 +430,7 @@ function sendToJSON() {
 
     // Adds basic information to JSON
     studyConfig.id = formID;
-    console.log("formID: " + formID);
+    //console.log("formID: " + formID);
 
     studyConfig.nome = formName;
     studyConfig.descricao = formDescription;
@@ -710,7 +726,7 @@ function getFileNames(n) {
         var file = document.querySelector('#form-thumbnail input[type=file').files[0].name;
         //console.log("Thumbnail: " + file);
         thumbTextInput.val(file);
-        toastr.info('Não se esqueça de <span class="glyphicon glyphicon-import"></span> <b>Carregar</b> a miniatura selecionada.');
+        //toastr.info('Não se esqueça de <span class="glyphicon glyphicon-import"></span> <b>Carregar</b> a miniatura selecionada.');
 
     } else {
         var breakDiv = "break-" + n;
@@ -722,7 +738,7 @@ function getFileNames(n) {
             text += file + " ";
         }
         filesTextInput.val(text);
-        toastr.info('Não se esqueça de <span class="glyphicon glyphicon-import"></span> <b>Carregar</b> as imagens selecionadas.');
+        //toastr.info('Não se esqueça de <span class="glyphicon glyphicon-import"></span> <b>Carregar</b> as imagens selecionadas.');
     }
 }
 
@@ -789,6 +805,12 @@ function submitForm() {
     var res = verifyStringFields();
 
     if (res == true) {
+        $('#modal-for-saves').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#modal-for-saves').modal('show');
+
         var configuration = sendToJSON();
 
         $.ajax({
@@ -806,6 +828,7 @@ function submitForm() {
             },
             error: function () {
                 toastr.error('Ocorreu um erro na gravação do questionário.');
+                $('#modal-for-saves').modal('hide');
             }
         });
 
@@ -819,6 +842,12 @@ function visualization() {
     var res = verifyStringFields();
 
     if (res == true) {
+        $('#modal-for-visualization').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#modal-for-visualization').modal('show');
+
         var configuration = sendToJSON();
 
         $.ajax({
@@ -830,8 +859,10 @@ function visualization() {
             },
             success: function () {
                 window.open(urlToVisualization); // opens pre-visualization
+                $('#modal-for-visualization').modal('hide');
             },
             error: function () {
+                $('#modal-for-visualization').modal('hide');
                 toastr.error('Não é possível gerar uma pré-visualização do questionário.');
             }
         });

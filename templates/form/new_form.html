@@ -91,23 +91,43 @@
 <div class="container">
     <div class="row">
 
-        <div class="col-sm-3"></div>
+        <div class="col-sm-3">
+
+            <div class="alert alert-success alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <span class="glyphicon glyphicon-ok-sign"></span> O seu questionário <strong>deve conter sempre</strong>:
+                <ul>
+                    <li>Nome;</li>
+                    <li>Descrição;</li>
+                    <li>Estilo (branco/preto);</li>
+                    <li>Uma ou mais tarefas com elementos.</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-info alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <span class="glyphicon glyphicon-info-sign"></span> Clique sempre no botão <strong><span
+                    class="glyphicon glyphicon-import"></span> Carregar</strong> quando fizer importação de imagens após
+                a pesquisa, caso contrário estas não aparecerão no seu questionário.
+            </div>
+
+        </div> <!-- ./ col-sm-3 -->
 
         <div class="col-sm-6">
             <form id="form-questionnaire">
 
                 <div class="form-group"> <!-- form name -->
-                    <label for="form-name">Nome do questionário</label>
+                    <label for="form-name">Nome do questionário</label> <span class="mandatory">*</span>
                     <input type="text" class="form-control" id="form-name">
                 </div> <!-- end of form name -->
 
                 <div class="form-group"> <!-- form description -->
-                    <label for="form-description">Descrição do questionário</label>
+                    <label for="form-description">Descrição do questionário</label> <span class="mandatory">*</span>
                     <textarea class="form-control" rows="3" id="form-description"></textarea>
                 </div> <!-- end of form description -->
 
                 <div class="form-group"> <!-- form style -->
-                    <label>Estilo do questionário</label><br/>
+                    <label>Estilo do questionário</label><span class="mandatory">*</span><br/>
                     <label class="radio-inline"><input type="radio" name="optradio" value="preto">Fundo
                         preto</label>
                     <label class="radio-inline"><input type="radio" name="optradio" value="branco">Fundo
@@ -144,9 +164,39 @@
                 data-toggle="tooltip" data-placement="left" title="Criar nova tarefa">
             <span class="glyphicon glyphicon-align-justify"></span> Criar Tarefa
         </button>
-    </div> <!-- ./btn-fixed-down -->
+    </div>
 
 </div>
+
+<!-- Modal for Saves -->
+<div id="modal-for-saves" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <p align="center"><strong>Aguarde...</strong></p>
+                <p align="center">O seu questionário está a ser processado.</p>
+            </div>
+        </div>
+
+    </div>
+</div> <!-- ./ modal-for-saves -->
+
+<!-- Modal for Pre-visualization -->
+<div id="modal-for-visualization" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <p align="center"><strong>Aguarde...</strong></p>
+                <p align="center">A pré-visualização está a ser gerada.</p>
+            </div>
+        </div>
+
+    </div>
+</div> <!-- ./ modal-for-visualization -->
 
 </body>
 </html>
