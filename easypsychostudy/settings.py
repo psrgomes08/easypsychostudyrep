@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'gb!!r=@^qg1(ewq^n3fzukpb=nt-krk01c1laldeqvkxrp-9@n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -75,24 +75,13 @@ WSGI_APPLICATION = 'easypsychostudy.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-#DATABASES = {
-#     'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'easypsychostudydb',
-#        'USER': 'patricia',
-#        'PASSWORD': '1963',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
-#}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd8duhvhdigaokg',
-        'USER': 'jscuaqjxyrsnfo',
-        'PASSWORD': 'cdbf80e8a70ad7b39e9800027b651ae8a976d467e40b9ea000c7a8d045eaf498',
-        'HOST': 'ec2-23-23-234-118.compute-1.amazonaws.com',
+        'NAME': 'd2trllo83jkpm8',
+        'USER': 'cukssmtfiwvawo',
+        'PASSWORD': '7733088fb11220b95a5797f8f0b454e8e9da60275643f5f2e2380ad48ea7a2d7',
+        'HOST': 'ec2-54-235-120-27.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
