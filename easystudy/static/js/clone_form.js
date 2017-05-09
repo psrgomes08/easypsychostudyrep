@@ -165,7 +165,7 @@ function addStimulusMultipleCloneForm(n) {
             '<div id="form-stimulus" class="input-group">' +
             '<label class="input-group-btn">' +
             '<span class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span> Pesquisar' +
-            '<input style="display: none;" type="file" accept="image/gif, image/jpeg, image/png" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
+            '<input style="display: none;" type="file" accept="image/gif, image/jpeg, image/jpg, image/png" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
             '<button id="btn-load-' + n + '" class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
             '</label>' +
             '<input id="files-selected" type="text" class="form-control" readonly>' +

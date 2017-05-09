@@ -43,3 +43,15 @@
     max-height: 100px;
     overflow-y: scroll;
 }
+
+/* Applies glyphicon to panel collapse */
+.panel-heading a:after {
+    font-family: 'Glyphicons Halflings';
+    content: "\e114";
+    float: right;
+    color: white;
+}
+
+.panel-heading a.collapsed:after {
+    content: "\e080";
+}
