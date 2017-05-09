@@ -10,6 +10,7 @@ from django.db import IntegrityError
 import xlsxwriter
 import string
 import random
+import urllib.parse
 
 try:
     from BytesIO import BytesIO
@@ -541,6 +542,9 @@ def downloadParticipantsDataCollectedData(request, idForm):
             # desired filename
             formName = f.formName
             formName = formName.replace(",", " ").replace(".", " ").replace(" ", "_")
+
+            formName = urllib.parse.quote(formName)
+
             filename = formName + '_dados_recolhidos' + '.xlsx'
 
             # Create a workbook and add a worksheet.
