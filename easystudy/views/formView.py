@@ -31,9 +31,9 @@ class PreviewFormView(View):
 
                 return render(request, "form/preview_form.html", context)
 
-            except KeyError:
-                print("ERROR: The key form_config_preview is not present.")
-                return HttpResponseServerError("ERROR: The preview can not be generated.")
+            except Exception as e:
+                print("ERROR: " + str(e))
+                return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request):
         formConfigPreview = request.POST.get("formConfig")
@@ -43,9 +43,9 @@ class PreviewFormView(View):
             request.session['form_config_preview'] = formConfigPreview
             return HttpResponse("SUCCESS: The key form_config_preview was stored in session.")
 
-        except KeyError:
-            print("ERROR: The key form_config_preview is not present.")
-            return HttpResponseServerError("ERROR: The preview can not be generated.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -66,9 +66,9 @@ def editFormRequest(request):
             else:
                 return HttpResponse("Success.")
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form for this data collection.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -93,9 +93,10 @@ class EditFormView(View):
 
                 return render(request, "form/edit_form.html", context)
 
-            except ObjectDoesNotExist:
-                print("Either the entry or form don't exist.")
-                raise Http404("There is no form for this data collection.")
+
+            except Exception as e:
+                print("ERROR: " + str(e))
+                return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request, idForm):
         idForm = request.POST["idForm"]
@@ -117,9 +118,10 @@ class EditFormView(View):
                 f.save()
                 return HttpResponse("Form successfully edited.")
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form for this data collection.")
+
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -141,32 +143,37 @@ class NewFormView(View):
         formConfig = request.POST["formConfig"]
         formThumbnail = request.POST["formThumbnail"]
 
-        # formConfig = json.loads(formConfig)
+        try:
+            # formConfig = json.loads(formConfig)
 
-        f = Form(idForm=idForm, formName=formName, formConfig=formConfig, formThumbnail=formThumbnail)
+            f = Form(idForm=idForm, formName=formName, formConfig=formConfig, formThumbnail=formThumbnail)
 
-        # Checks if there is already a study with that ID
-        if Form.objects.filter(idForm=idForm):
-            response = HttpResponseServerError("The form could not be submited.")
+            # Checks if there is already a study with that ID
+            if Form.objects.filter(idForm=idForm):
+                response = HttpResponseServerError("The form could not be submited.")
 
-        else:
-            f.save()
-            username = request.session['username']
-            p = Permission()
-            user = User.objects.get(username=username)
-            p.username = user
-            idF = Form.objects.get(idForm=idForm)
-            p.idForm = idF
-            p.permissionType = 'O'  # the creator has owner permission
-            p.save()
+            else:
+                f.save()
+                username = request.session['username']
+                p = Permission()
+                user = User.objects.get(username=username)
+                p.username = user
+                idF = Form.objects.get(idForm=idForm)
+                p.idForm = idF
+                p.permissionType = 'O'  # the creator has owner permission
+                p.save()
 
-            # Delete the session form preview because it was saved.
-            if request.session.has_key('form_config_preview'):
-                del request.session['form_config_preview']
+                # Delete the session form preview because it was saved.
+                if request.session.has_key('form_config_preview'):
+                    del request.session['form_config_preview']
 
-            response = HttpResponse("Form successfully sent.")
+                response = HttpResponse("Form successfully sent.")
 
-        return response
+            return response
+
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -190,9 +197,10 @@ class CloneFormView(View):
 
                 return render(request, "form/clone_form.html", context)
 
-            except ObjectDoesNotExist:
-                print("Either the entry or form don't exist.")
-                raise Http404("There is no form for this data collection.")
+
+            except Exception as e:
+                print("ERROR: " + str(e))
+                return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request, idForm):
         idForm = request.POST["idForm"]
@@ -202,22 +210,27 @@ class CloneFormView(View):
 
         # formConfig = json.loads(formConfig)
 
-        f = Form(idForm=idForm, formName=formName, formConfig=formConfig, formThumbnail=formThumbnail)
+        try:
+            f = Form(idForm=idForm, formName=formName, formConfig=formConfig, formThumbnail=formThumbnail)
 
-        # Checks if there is already a study with that ID
-        if Form.objects.filter(idForm=idForm):
-            response = HttpResponseServerError("The form could not be submited.")
+            # Checks if there is already a study with that ID
+            if Form.objects.filter(idForm=idForm):
+                response = HttpResponseServerError("The form could not be submited.")
 
-        else:
-            f.save()
-            username = request.session['username']
-            p = Permission()
-            user = User.objects.get(username=username)
-            p.username = user
-            idF = Form.objects.get(idForm=idForm)
-            p.idForm = idF
-            p.permissionType = 'O'  # the creator has owner permission
-            p.save()
-            response = HttpResponse("Form successfully sent.")
+            else:
+                f.save()
+                username = request.session['username']
+                p = Permission()
+                user = User.objects.get(username=username)
+                p.username = user
+                idF = Form.objects.get(idForm=idForm)
+                p.idForm = idF
+                p.permissionType = 'O'  # the creator has owner permission
+                p.save()
+                response = HttpResponse("Form successfully sent.")
 
-        return response
+            return response
+
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
