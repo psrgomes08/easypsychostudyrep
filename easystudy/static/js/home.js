@@ -254,6 +254,8 @@ $('#save-form-options').click(function () {
         scaleExplained = 'Y';
     }
 
+    console.log(idTrialForm);
+
     $.ajax({
         url: urlToPostSpecialConfigs,
         type: 'POST',

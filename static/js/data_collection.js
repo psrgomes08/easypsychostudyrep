@@ -353,7 +353,7 @@ function displayScaleExplaining() {
  * Checks if the user has selected a trial form for this form.
  */
 function hasTrialForm() {
-    if (trialFormID != "") {
+    if (trialFormID != "NA") {
         $("#div-instructions").empty();
         $("#div-instructions").html('<p align="center">Antes de realizar este questionário ser-lhe-á apresentado um questionário' +
             ' de treino para que possa ficar familiarizado com o tipo de questões que irão surgir.<br/>' +
@@ -370,14 +370,16 @@ function hasTrialForm() {
  */
 function requestTrialForm() {
 
-    var trialWindow = window.open(urlToTrialForm);
+    var trialWindow = window.open(urlToTrialForm);   // redirects to home
 
     // Detects when the trial window is closed
-    trialWindow.onunload = function() {
+    trialWindow.onunload = function () {
         $("#div-instructions").empty();
         $("#div-instructions").html('' +
             '<button type="button" onclick="nextDecider()" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-play-circle"></span> Iniciar Questionário</button>')
     }
+
+
 }
 
 /**

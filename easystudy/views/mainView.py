@@ -1058,10 +1058,17 @@ class SpecialConfigsView(View):
 
         try:
             fsc = FormSpecialConfigs.objects.get(idForm=idForm)
+
             response = []
-            response.append(fsc.idTrialForm.idForm)
+
+            if(fsc.idTrialForm != None):
+                response.append(fsc.idTrialForm.idForm)
+            else:
+                response.append("NA")
             response.append(fsc.scaleExplained)
 
+            print(
+                "SUCCESS: " + str(response))
             return HttpResponse(json.dumps(response), content_type="application/json")
 
         except Exception as e:
@@ -1078,10 +1085,12 @@ class SpecialConfigsView(View):
             scaleExplained = request.POST.get("scaleExplained")
 
             try:
-                if idTrialForm == "":
+                if idTrialForm == "NA":
                     try:
                         fsc = FormSpecialConfigs.objects.get(idForm=idForm)
-                        fsc.delete()
+                        fsc.idTrialForm = None
+                        fsc.scaleExplained = scaleExplained
+                        fsc.save()
 
                         # grants permission of reader to users that have permission of access to the form
                         p = Permission.objects.filter(idForm=idForm).exclude(
@@ -1099,9 +1108,9 @@ class SpecialConfigsView(View):
                                       request.session['username'] + "."
                             pushNotification(user.username, idForm, message, 'D')
 
-                        print("SUCCESS: The special form configurations for form " + idForm + " were deleted.")
+                        print("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
                         return HttpResponse(
-                            "SUCCESS: The special form configurations for form " + idForm + " were deleted.")
+                            "SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
 
                     except ObjectDoesNotExist:
                         print("SUCCESS: The form " + idForm + " has no special configurations.")
@@ -1147,8 +1156,8 @@ class SpecialConfigsView(View):
                                       request.session['username'] + "."
                             pushNotification(user.username, idForm, message, 'I')
 
-                    print("SUCCESS: The special configs were edited.")
-                    return HttpResponse("SUCCESS: The special configs were edited.")
+                    print("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
+                    return HttpResponse("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
 
                 except ObjectDoesNotExist:  # If it does not exists, saves.
                     sc = FormSpecialConfigs()
@@ -1188,8 +1197,8 @@ class SpecialConfigsView(View):
                             message = "O questionário \"" + fT.formName + "\" foi selecionado como questionário de treino de \"" + f.formName + "\"."
                             pushNotification(user.username, idForm, message, 'I')
 
-                    print("SUCCESS: The special configs were saved.")
-                    return HttpResponse("SUCCESS: The special configs were saved.")
+                    print("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
+                    return HttpResponse("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
 
             except Exception as e:
                 print("ERROR: " + str(e))

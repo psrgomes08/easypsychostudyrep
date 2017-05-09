@@ -2,10 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification, FormSpecialConfigs
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpResponseServerError
+from django.http import HttpResponseServerError
 from django.contrib.auth.models import User
-from django.db import IntegrityError
 
 try:
     from BytesIO import BytesIO
@@ -27,15 +25,18 @@ class DataCollectionForParticipantView(View):
                 if idParticipant == participants_in_form[i].idParticipant:
                     print(
                         "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
-                    raise Http404(
+                    return HttpResponseServerError(
                         "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
 
             scaleExplained = 'N'
-            trialFormID = ""
+            trialFormID = "NA"
             specialConfigs = FormSpecialConfigs.objects.filter(idForm=idForm)
 
             if len(specialConfigs) == 1:
-                trialFormID = specialConfigs[0].idTrialForm.idForm
+                if specialConfigs[0].idTrialForm == None:
+                    trialFormID = "NA"
+                else:
+                    trialFormID = specialConfigs[0].idTrialForm.idForm
                 scaleExplained = specialConfigs[0].scaleExplained
 
             # check if it data collection is open or if the form is not archived
@@ -129,11 +130,14 @@ class DataCollectionView(View):
                     participants.append(idP)  # list of IDs for integrity check
 
                 scaleExplained = 'N'
-                trialFormID = ""
+                trialFormID = "NA"
                 specialConfigs = FormSpecialConfigs.objects.filter(idForm=idForm)
 
                 if len(specialConfigs) == 1:
-                    trialFormID = specialConfigs[0].idTrialForm.idForm
+                    if specialConfigs[0].idTrialForm == None:
+                        trialFormID = "NA"
+                    else:
+                        trialFormID = specialConfigs[0].idTrialForm.idForm
                     scaleExplained = specialConfigs[0].scaleExplained
 
                 # check if it data collection is open or if the form is not archived
@@ -201,16 +205,23 @@ def checkTokenForParticipant(request):
 # Generates a trial form for the participant.
 # ######################################################################## #
 def getTrialForm(request, idFormTrial):
-    try:
-        f = Form.objects.get(idForm=idFormTrial)
-        formConfig = f.formConfig
 
-        context = {
-            "formConfiguration": formConfig,
-        }
+    print(idFormTrial)
 
-        return render(request, "collection/trial_data_collection.html", context)
+    if(idFormTrial == "NA"):
+        return HttpResponseServerError("ERROR: The trial form you tried to open is not configured.")
 
-    except Exception as e:
-        print("ERROR: " + str(e))
-        return HttpResponseServerError("ERROR: " + str(e))
+    else:
+        try:
+            f = Form.objects.get(idForm=idFormTrial)
+            formConfig = f.formConfig
+
+            context = {
+                "formConfiguration": formConfig,
+            }
+
+            return render(request, "collection/trial_data_collection.html", context)
+
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
