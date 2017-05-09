@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification
+from .models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification, FormSpecialConfigs
 
 
 # ######################################################################## #
@@ -37,7 +37,14 @@ class ParticipantTokenAdmin(admin.ModelAdmin):
 # Notifications for users
 # ######################################################################## #
 class UserNotificationAdmin(admin.ModelAdmin):
-    list_display = ["__str__", "username", "message", "severityLevel"]
+    list_display = ["__str__", "username", "message", "severityLevel", "idForm"]
+
+
+# ######################################################################## #
+# Special Configurations associated with a form
+# ######################################################################## #
+class FormSpecialConfigsAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "idForm", "idTrialForm", "scaleExplained"]
 
 
 admin.site.register(Form, FormAdmin)
@@ -45,3 +52,4 @@ admin.site.register(Permission, PermissionAdmin)
 admin.site.register(ParticipantInForm, ParticipantInFormAdmin)
 admin.site.register(ParticipantToken, ParticipantTokenAdmin)
 admin.site.register(UserNotification, UserNotificationAdmin)
+admin.site.register(FormSpecialConfigs, FormSpecialConfigsAdmin)

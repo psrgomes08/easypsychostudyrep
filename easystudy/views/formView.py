@@ -32,8 +32,8 @@ class PreviewFormView(View):
                 return render(request, "form/preview_form.html", context)
 
             except KeyError:
-                print("The key form_config_preview is not present.")
-                return HttpResponseServerError("The preview can not be generated.")
+                print("ERROR: The key form_config_preview is not present.")
+                return HttpResponseServerError("ERROR: The preview can not be generated.")
 
     def post(self, request):
         formConfigPreview = request.POST.get("formConfig")
@@ -41,11 +41,11 @@ class PreviewFormView(View):
         # Set a session value
         try:
             request.session['form_config_preview'] = formConfigPreview
-            return HttpResponse("Success")
+            return HttpResponse("SUCCESS: The key form_config_preview was stored in session.")
 
         except KeyError:
-            print("The key form_config_preview is not present.")
-            return HttpResponseServerError("The preview can not be generated.")
+            print("ERROR: The key form_config_preview is not present.")
+            return HttpResponseServerError("ERROR: The preview can not be generated.")
 
 
 # ######################################################################## #

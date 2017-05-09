@@ -161,7 +161,7 @@ body {
 }
 
 .img-responsive {
-    max-height: 600px !important;
+    max-height: 550px !important;
 }
 
 .sizer {
@@ -172,4 +172,16 @@ body {
 
 textarea {
     resize: vertical; /* user can resize vertically, but width is fixed */
+}
+
+.center-div {
+    /* position: fixed; */
+    margin: auto;
+    /* top: 0; */
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    /* height: 100px; */
+    /* border-radius: 3px; */
 }

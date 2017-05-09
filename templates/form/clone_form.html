@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="{% static 'css/new_form.css' %}">
     <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/clone_form.css' %}">
 
 </head>
 
@@ -159,9 +160,9 @@
                     <label class="input-group-btn">
                         <span class="btn btn-default">
                             <span class="glyphicon glyphicon-folder-open"></span> Pesquisar
-                            <input style="display: none;" type="file" id="input-thumbnail" onchange="getFileNames(0)">
+                            <input style="display: none;" type="file" accept="image/gif, image/jpeg, image/png" id="input-thumbnail" onchange="getFileNames(0)">
                         </span>
-                        <button class="btn btn-info" type="button" onclick="saveThumbnail()"><span
+                        <button id="btn-load-thumbnail" class="btn btn-primary" type="button" onclick="saveThumbnail()"><span
                                 class="glyphicon glyphicon-import"></span>Carregar
                         </button>
                     </label>
@@ -180,8 +181,7 @@
     </div>
 
     <div class="btn-fixed-down">
-        <button style="background-color: #222; color: #FFF;" class="btn btn-md" id="add-break"
-                data-toggle="tooltip" data-placement="left" title="Criar nova tarefa">
+        <button class="btn btn-md btn-grey" id="add-break">
             <span class="glyphicon glyphicon-align-justify"></span> Criar Tarefa
         </button>
     </div> <!-- ./btn-fixed-down -->

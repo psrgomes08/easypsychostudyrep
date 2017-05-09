@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification
+from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification, FormSpecialConfigs
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseServerError
 from django.contrib.auth.models import User
@@ -30,6 +30,14 @@ class DataCollectionForParticipantView(View):
                     raise Http404(
                         "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
 
+            scaleExplained = 'N'
+            trialFormID = ""
+            specialConfigs = FormSpecialConfigs.objects.filter(idForm=idForm)
+
+            if len(specialConfigs) == 1:
+                trialFormID = specialConfigs[0].idTrialForm.idForm
+                scaleExplained = specialConfigs[0].scaleExplained
+
             # check if it data collection is open or if the form is not archived
             if selected_form.statusType == 'C' or selected_form.isArchived == 'Y':
                 print("ERROR: Either the data collection is not open or the form " + idForm + " is archived.")
@@ -41,6 +49,8 @@ class DataCollectionForParticipantView(View):
                 context = {
                     "formConfiguration": formConfiguration,  # sends the form configuration in the get page
                     "idParticipant": idParticipant,
+                    "trialFormID": trialFormID,
+                    "scaleExplained": scaleExplained,
                 }
 
                 return render(request, "collection/data_collection_participant.html", context)
@@ -120,6 +130,14 @@ class DataCollectionView(View):
                     idP = participantsInForm[i].idParticipant
                     participants.append(idP)  # list of IDs for integrity check
 
+                scaleExplained = 'N'
+                trialFormID = ""
+                specialConfigs = FormSpecialConfigs.objects.filter(idForm=idForm)
+
+                if len(specialConfigs) == 1:
+                    trialFormID = specialConfigs[0].idTrialForm.idForm
+                    scaleExplained = specialConfigs[0].scaleExplained
+
                 # check if it data collection is open or if the form is not archived
                 if selectedForm.statusType == 'C' or selectedForm.isArchived == 'Y':
                     return redirect('home')
@@ -130,6 +148,8 @@ class DataCollectionView(View):
                     context = {
                         "formConfiguration": formConfiguration,  # sends the form configuration in the get page
                         "participantsIDList": participants,
+                        "trialFormID": trialFormID,
+                        "scaleExplained": scaleExplained,
                     }
 
                     return render(request, "collection/data_collection.html", context)
@@ -158,7 +178,7 @@ class DataCollectionView(View):
 
 
 # ######################################################################## #
-# Checks if the token inserted by the participant is correct
+# Checks if the token inserted by the participant is correct.
 # ######################################################################## #
 def checkTokenForParticipant(request):
     idForm = request.POST.get("idForm")
@@ -171,3 +191,22 @@ def checkTokenForParticipant(request):
 
     except ObjectDoesNotExist:
         return HttpResponseServerError("ERROR: The token is not correct.")
+
+
+# ######################################################################## #
+# Generates a trial form for the participant.
+# ######################################################################## #
+def getTrialForm(request, idFormTrial):
+    try:
+        f = Form.objects.get(idForm=idFormTrial)
+        formConfig = f.formConfig
+
+        context = {
+            "formConfiguration": formConfig,
+        }
+
+        return render(request, "collection/trial_data_collection.html", context)
+
+    except Exception as e:
+        print(e)
+        return HttpResponseServerError(e)

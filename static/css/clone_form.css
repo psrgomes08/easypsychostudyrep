@@ -1,0 +1,49 @@
+/* To show an image when hover on list of loaded images */
+.thumb {
+    position: relative;
+}
+
+.thumb img {
+    border: 1px solid #000;
+    vertical-align: bottom;
+    width: 100px;
+}
+
+.thumb:hover {
+    z-index: 1;
+}
+
+.thumb span {
+    position: absolute;
+    visibility: hidden;
+}
+
+.thumb:hover span {
+    visibility: visible;
+    top: 37px;
+    left: 37px;
+}
+
+a {
+    color: black;
+}
+
+/* unvisited link */
+a:link {
+    color: black;
+}
+
+/* visited link */
+a:visited {
+    color: black;
+}
+
+/* mouse over link */
+a:hover {
+    color: black;
+}
+
+/* selected link */
+a:active {
+    color: black;
+}

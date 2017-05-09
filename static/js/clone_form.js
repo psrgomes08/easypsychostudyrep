@@ -18,7 +18,13 @@ $(document).ready(function () {
                 // Adds Image
                 if ((formConfiguration.passos[i].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[i].fonteEstimulo.length > 0)) {
 
+                    /*
                     document.querySelector('#ul-step-' + stepNumber).innerHTML += "<li class='list-group-item'>" + formConfiguration.passos[i].nomeDoEstimulo + "</li>";
+                    */
+
+                    document.querySelector('#ul-step-' + stepNumber).innerHTML += "<li class='list-group-item'>" +
+                        "<a class='thumb'>" + formConfiguration.passos[i].nomeDoEstimulo + "<span><img src='" + formConfiguration.passos[i].fonteEstimulo + "'>" +
+                        "</span></a></li>";
 
                     multipleImages.push([stepNumber, formConfiguration.passos[i].fonteEstimulo, formConfiguration.passos[i].nomeDoEstimulo]);
                 }
@@ -63,10 +69,23 @@ $(document).ready(function () {
             // Adds Image
             if ((formConfiguration.passos[i].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[i].fonteEstimulo.length > 0)) {
 
+                /*
                 document.querySelector('#' + breakDiv).innerHTML += "<br/><div id='previous-images-" + stepNumber + "'><p><b>Imagens previamente carregadas</b></p>" +
                     "<ul class='list-group' id='ul-step-" + stepNumber + "'>" +
                     "<li class='list-group-item'>" + formConfiguration.passos[i].nomeDoEstimulo + "</li>" +
                     "</ul></div>";
+                    */
+
+                document.querySelector('#' + breakDiv).innerHTML += "<br/><div id='previous-images-" + stepNumber + "'><p><b>Imagens previamente carregadas</b></p>" +
+                    "<ul class='list-group' id='ul-step-" + stepNumber + "'>" +
+                    "<li class='list-group-item'><a class='thumb'>" + formConfiguration.passos[i].nomeDoEstimulo + "" +
+                    "<span><img src='" + formConfiguration.passos[i].fonteEstimulo + "'>" +
+                    "</span></a></li>" +
+                    "</ul></div>";
+
+                /*
+                <a class="thumb">Ola<span><img src="http://static-files1.modthesims2.com/customavatars/avatar1232227_2.gif"></span></a>
+                 */
 
                 addStimulusMultipleCloneForm(stepNumber);
                 $('#' + breakDiv).find('#form-stimulus-time').val(formConfiguration.passos[i].tempoEstimulo);
@@ -146,8 +165,8 @@ function addStimulusMultipleCloneForm(n) {
             '<div id="form-stimulus" class="input-group">' +
             '<label class="input-group-btn">' +
             '<span class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span> Pesquisar' +
-            '<input style="display: none;" type="file" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
-            '<button class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
+            '<input style="display: none;" type="file" accept="image/gif, image/jpeg, image/png" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
+            '<button id="btn-load-' + n + '" class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
             '</label>' +
             '<input id="files-selected" type="text" class="form-control" readonly>' +
             '</div>' +

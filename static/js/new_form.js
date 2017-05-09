@@ -187,8 +187,8 @@ function addStimulusMultiple(n) {
             '<div id="form-stimulus" class="input-group">' +
             '<label class="input-group-btn">' +
             '<span class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span> Pesquisar' +
-            '<input style="display: none;" type="file" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
-            '<button class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
+            '<input style="display: none;" type="file" accept="image/gif, image/jpeg, image/png" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
+            '<button id="btn-load-' + n + '"  class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
             '</label>' +
             '<input id="files-selected" type="text" class="form-control" readonly>' +
             '</div>' +
@@ -724,9 +724,16 @@ function getFileNames(n) {
     if (n == 0) {   // for the thumbnail
         var thumbTextInput = $('#form-thumbnail').find('#files-selected');
         var file = document.querySelector('#form-thumbnail input[type=file').files[0].name;
-        //console.log("Thumbnail: " + file);
         thumbTextInput.val(file);
-        //toastr.info('Não se esqueça de <span class="glyphicon glyphicon-import"></span> <b>Carregar</b> a miniatura selecionada.');
+
+        // Checks if the file extension is valid
+        var fileExtension = file.substr(file.lastIndexOf('.') + 1);
+        if (fileExtension != "gif" && fileExtension != "jpeg" && fileExtension != "png") {
+            $('#btn-load-thumbnail').attr("disabled", true);
+            toastr.error('<strong>Erro na leitura do ficheiro ' + file + '.</strong> Por favor carregue um ficheiro com extensão <i>.gif</i>, <i>.jpeg</i> ou <i>.png</i>.');
+        } else {
+            $('#btn-load-thumbnail').attr("disabled", false);
+        }
 
     } else {
         var breakDiv = "break-" + n;
@@ -735,10 +742,21 @@ function getFileNames(n) {
 
         for (var x = 0; x < document.querySelector('#break-' + n + ' input[type=file]').files.length; x++) {
             file = document.querySelector('#break-' + n + ' input[type=file]').files[x].name;
+
+            // Checks if the file extension is valid
+            var fileExtension = file.substr(file.lastIndexOf('.') + 1);
+            if (fileExtension != "gif" && fileExtension != "jpeg" && fileExtension != "png") {
+                $('#btn-load-' + n).attr("disabled", true);
+                toastr.error('<strong>Erro na leitura do ficheiro ' + file + '.</strong> Por favor carregue um ficheiro com extensão <i>.gif</i>, <i>.jpeg</i> ou <i>.png</i>.');
+                text += file + " ";
+                break;
+            }
+
             text += file + " ";
+            $('#btn-load-' + n).attr("disabled", false);
         }
+
         filesTextInput.val(text);
-        //toastr.info('Não se esqueça de <span class="glyphicon glyphicon-import"></span> <b>Carregar</b> as imagens selecionadas.');
     }
 }
 

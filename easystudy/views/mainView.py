@@ -3,11 +3,13 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
-from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification
+from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification, FormSpecialConfigs
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponseServerError
 from django.db import IntegrityError
 import xlsxwriter
+import string
+import random
 
 try:
     from BytesIO import BytesIO
@@ -27,16 +29,17 @@ def downloadDataCollectionRequest(request):
 
         try:
             p = ParticipantInForm.objects.filter(idForm=idForm)
+
             if len(p) == 0:
-                print("The selected form has no data collected.")
-                return HttpResponseServerError("The selected form has no data collected.")
+                print("ERROR: No data collected in form " + idForm + ".")
+                return HttpResponseServerError("ERROR: No data collected in form " + idForm + ".")
 
             else:
-                return HttpResponse("Success.")
+                return HttpResponse("SUCCESS: The form " + idForm + " has data to be collected.")
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form for this data collection.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -51,37 +54,133 @@ def grantAccess(request):
         username = request.POST["username"]
         permissionType = request.POST["permissionType"]
 
+        previousAccessToForm = False
+
         try:
-            p = Permission()
+            f = Form.objects.get(idForm=idForm)
             user = User.objects.get(username=username)
-            p.username = user
-            idF = Form.objects.get(idForm=idForm)
-            p.idForm = idF
-            p.permissionType = permissionType
-            p.save()
 
-            # Start of push notification
-            un = UserNotification()
-            un.username = user
-            if permissionType == "R":
-                permissionString = "Leitor"
-            else:
-                permissionString = "Administrador"
-            un.message = "Foi-lhe concedida a permissão de " + permissionString + " para o questionário " + idForm + " - «" + idF.formName + "», pelo utilizador " + \
-                         request.session['username'] + "."
-            un.severityLevel = "I"
-            un.save()
-            print("SUCCESS: Notification PERMISSION pushed to user " + user.username)
-            # End of push notifications
+            p = Permission.objects.filter(username=user, idForm=idForm)
 
-            print("SUCCESS: Permission " + permissionType + "to user " + username + " was granted!")
-            return HttpResponse("SUCCESS: Permission " + permissionType + "to user " + username + " was granted!")
+            # Start of Permission handling
+            if len(p) == 1:  # already has access to form
+                previousAccessToForm = True
 
-        except IntegrityError:
-            print(
-                "ERROR: The user " + username + " already has the permission " + permissionType + " for the form " + idForm + ".")
+                if p[0].permissionType == 'O':  # permission Owner can not be downgraded
+                    if permissionType == 'O' or permissionType == 'R':
+                        print(
+                            "ERROR: The user " + username + " already has Owner permission for the form " + idForm + ". This permission can not be altered.")
+                        # return HttpResponseServerError("ERROR_1: The user " + username + " already has Owner permission for the form " + idForm + ". This permission can not be altered.")
+                        return HttpResponseServerError(
+                            "O utilizador " + username + " já possui permissões de Administrador para o questionário \"" + f.formName + "\" que não podem ser alteradas.")
+
+                else:  # p[0].permissionType == 'R'
+                    if permissionType == 'O':
+                        # upgrade permission
+                        p[0].permissionType = 'O'
+                        p[0].save()
+
+                        # PUSH NOTIFICATION
+                        message = "A sua permissão para o questionário \"" + f.formName + "\", foi subida para Administrador pelo utilizador " + \
+                                  request.session['username'] + "."
+                        pushNotification(username, idForm, message, 'S')
+
+                        # return HttpResponse("SUCCESS_1: The user " + username + " now has Owner permission for the form " + idForm + ".")
+                        return HttpResponse(
+                            "O utilizador " + username + " tem agora permissões de Administrador para o questionário \"" + f.formName + "\".")
+
+                    else:  # permissionType == 'R'
+                        print(
+                            "ERROR: The user " + username + " already has Reader permission for the form " + idForm + ".")
+                        # return HttpResponseServerError("ERROR_2: The user " + username + " already has Reader permission for the form " + idForm + ".")
+                        return HttpResponseServerError(
+                            "O utilizador " + username + " já possui permissões de Leitor para o questionário \"" + f.formName + "\".")
+
+            if len(p) == 0:  # does not have access to form
+                previousAccessToForm = False
+
+                newP = Permission()
+                newP.username = user
+                newP.idForm = f
+                newP.permissionType = permissionType
+                newP.save()  # grant permission
+
+                # PUSH NOTIFICATION
+                if permissionType == 'O':
+                    message = "Foi-lhe concedida a permissão de Administrador para o questionário \"" + f.formName + "\", pelo utilizador " + \
+                              request.session['username'] + "."
+                    pushNotification(username, idForm, message, 'S')
+                else:
+                    message = "Foi-lhe concedida a permissão de Leitor para o questionário \"" + f.formName + "\", pelo utilizador " + \
+                              request.session['username'] + "."
+                    pushNotification(username, idForm, message, 'S')
+
+            # End of Permission handling
+
+            # Start of Trial Permission handling
+            fsc = FormSpecialConfigs.objects.filter(idForm=idForm)
+
+            if len(fsc) == 0:  # does not have a trial form associated - END
+                print("SUCCESS: The permission was granted and this form has no trial form associated with it.")
+                # return HttpResponse("SUCCESS_2: The permission was granted and this form has no trial form associated with it.")
+                if permissionType == 'R':
+                    return HttpResponse(
+                        "Foi concedida a permissão de Leitor ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
+                else:
+                    return HttpResponse(
+                        "Foi concedida a permissão de Administrador ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
+
+            if len(fsc) == 1:  # has trial
+                idT = fsc[0].idTrialForm.idForm  # id of the trial form
+                idTN = fsc[0].idTrialForm.formName  # name of the trial form
+                pForT = Permission.objects.filter(username=user,
+                                                  idForm=idT)  # to check if user already can access the trial form
+
+                if len(pForT) == 1:  # already can access the trial form - END
+
+                    if not previousAccessToForm:  # user did not have previous access to form
+                        # PUSH NOTIFICATION
+                        message = "O questionário \"" + idTN + "\" ao qual já tem acesso, foi associado como questionário de treino de \"" + f.formName + "\"."
+                        pushNotification(username, idForm, message, 'I')
+
+                        print(
+                            "SUCCESS: The permission for access to the form " + idForm + " was granted and the user already has access to the trial form " + idT + ".")
+                        if permissionType == 'R':
+                            return HttpResponse(
+                                "Foi concedida a permissão de Leitor ao utilizador " + username + " para o questionário \"" + f.formName + "\" e este já possui permissões para o questionário de treino associado.")
+                        else:
+                            return HttpResponse(
+                                "Foi concedida a permissão de Administrador ao utilizador " + username + " para o questionário \"" + f.formName + "\" e este já possui permissões para o questionário de treino associado.")
+
+                if len(pForT) == 0:  # does not have permissions for the trial form
+                    if not previousAccessToForm:
+                        newP = Permission()
+                        newP.username = user
+                        newP.idForm = Form.objects.get(idForm=idT)
+                        newP.permissionType = 'R'
+                        newP.save()  # grant Reader access to trial form
+
+                        # PUSH NOTIFICATION
+                        message = "O questionário \"" + idTN + "\" foi associado como questionário de treino de \"" + f.formName + "\", ao qual lhe foi dado acesso como Leitor pelo utilizador " + \
+                                  request.session['username'] + "."
+                        pushNotification(username, idForm, message, 'I')
+
+                        print("SUCCESS: The permission for the trial form " + idT + " was granted to the user.")
+                        # return HttpResponse("SUCCESS_4: The permission for the trial form " + idT + " was granted to the user.")
+                        if permissionType == 'R':
+                            return HttpResponse(
+                                "Foi concedida a permissão de Leitor ao utilizador " + username + " para o questionário \"" + f.formName + "\" e a permissão de Leitor para o respetivo questionário de treino associado.")
+                        else:
+                            return HttpResponse(
+                                "Foi concedida a permissão de Administrador ao utilizador " + username + " para o questionário \"" + f.formName + "\" e a permissão de Leitor para o respetivo questionário de treino associado.")
+
+                            # End of Trial Permission handling
+
+        except Exception as e:
+            print("ERROR: " + str(e))
+            # return HttpResponseServerError("ERROR: " + str(e))
             return HttpResponseServerError(
-                "ERROR: The user " + username + " already has the permission " + permissionType + " for the form " + idForm + ".")
+                "Ocorreu um erro. Por favor tente novamente ou contacte o administrador do sistema.")
 
 
 # ######################################################################## #
@@ -110,34 +209,27 @@ def archiveForm(request, idForm):
 
                             # When archiving a form, all the previous notifications for opening and closing that form are useless.
                             # Therefore they are deleted.
-                            existingNotifications = UserNotification.objects.all()
+                            existingNotifications = UserNotification.objects.filter(idForm=idForm)
                             for j in range(0, len(existingNotifications)):
-                                if idForm in existingNotifications[j].message and "fechadas" in existingNotifications[
-                                    j].message:
+                                if "fechadas" in existingNotifications[j].message:
                                     existingNotifications[j].delete()
-                                if idForm in existingNotifications[j].message and "abertas" in existingNotifications[
-                                    j].message:
+                                if "abertas" in existingNotifications[j].message:
                                     existingNotifications[j].delete()
 
-                            un = UserNotification()
-                            un.username = User.objects.get(username=permission[i].username.username)
-                            un.message = "O questionário " + idForm + " - «" + selectedForm.formName + "», foi arquivado pelo utilizador " + \
-                                         request.session['username'] + "."
-                            un.severityLevel = "D"
-                            un.save()
-                            print("SUCCESS: Notification ARCHIVED pushed to user " + permission[i].username.username)
+                            message = "O questionário \"" + selectedForm.formName + "\", foi arquivado pelo utilizador " + \
+                                      request.session['username'] + "."
+                            pushNotification(permission[i].username.username, idForm, message, 'D')
 
-                except IntegrityError:
-                    print("ERROR: There are no permissions associated to the form " + idForm + ".")
-                    return HttpResponseServerError(
-                        "ERROR: There are no permissions associated to the form " + idForm + ".")
+                except Exception as e:
+                    print("ERROR: " + str(e))
+                    return HttpResponseServerError("ERROR: " + str(e))
                     # End of push notifications
 
             return redirect('home')
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form with this ID to be archived.")
+        except Exception as e:
+            print(e)
+            return HttpResponseServerError(e)
 
 
 # ######################################################################## #
@@ -165,31 +257,25 @@ def closeDataCollection(request, idForm):
 
                             # When closing a form, all the previous notifications for opening that form are useless.
                             # Therefore they are deleted.
-                            existingNotifications = UserNotification.objects.all()
+                            existingNotifications = UserNotification.objects.filter(idForm=idForm)
                             for j in range(0, len(existingNotifications)):
-                                if idForm in existingNotifications[j].message and "abertas" in existingNotifications[
-                                    j].message:
+                                if "abertas" in existingNotifications[j].message:
                                     existingNotifications[j].delete()
 
-                            un = UserNotification()
-                            un.username = User.objects.get(username=permission[i].username.username)
-                            un.message = "Foram fechadas as recolhas para o questionário " + idForm + " - «" + selectedForm.formName + "», pelo utilizador " + \
-                                         request.session['username'] + "."
-                            un.severityLevel = "W"
-                            un.save()
-                            print("SUCCESS: Notification CLOSED pushed to user " + permission[i].username.username)
+                            message = "Foram fechadas as recolhas para o questionário \"" + selectedForm.formName + "\", pelo utilizador " + \
+                                      request.session['username'] + "."
+                            pushNotification(permission[i].username.username, idForm, message, 'W')
 
-                except IntegrityError:
-                    print("ERROR: There are no permissions associated to the form " + idForm + ".")
-                    return HttpResponseServerError(
-                        "ERROR: There are no permissions associated to the form " + idForm + ".")
+                except Exception as e:
+                    print("ERROR: " + str(e))
+                    return HttpResponseServerError("ERROR: " + str(e))
                     # End of push notifications
 
             return redirect('home')
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form with this ID to be closed.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            raise HttpResponse("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -217,31 +303,25 @@ def openDataCollection(request, idForm):
 
                             # When opening a form, all the previous notifications for closing that form are useless.
                             # Therefore they are deleted.
-                            existingNotifications = UserNotification.objects.all()
+                            existingNotifications = UserNotification.objects.filter(idForm=idForm)
                             for j in range(0, len(existingNotifications)):
-                                if idForm in existingNotifications[j].message and "fechadas" in existingNotifications[
-                                    j].message:
+                                if "fechadas" in existingNotifications[j].message:
                                     existingNotifications[j].delete()
 
-                            un = UserNotification()
-                            un.username = User.objects.get(username=permission[i].username.username)
-                            un.message = "Foram abertas as recolhas para o questionário " + idForm + " - «" + selectedForm.formName + "», pelo utilizador " + \
-                                         request.session['username'] + "."
-                            un.severityLevel = "W"
-                            un.save()
-                            print("SUCCESS: Notification OPEN pushed to user " + permission[i].username.username)
+                            message = "Foram abertas as recolhas para o questionário \"" + selectedForm.formName + "\", pelo utilizador " + \
+                                      request.session['username'] + "."
+                            pushNotification(permission[i].username.username, idForm, message, 'W')
 
-                except IntegrityError:
-                    print("ERROR: There are no permissions associated to the form " + idForm + ".")
-                    return HttpResponseServerError(
-                        "ERROR: There are no permissions associated to the form " + idForm + ".")
+                except Exception as e:
+                    print("ERROR: " + str(e))
+                    return HttpResponseServerError("ERROR: " + str(e))
                     # End of push notifications
 
             return redirect('home')
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form with this ID to be opened.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -251,35 +331,145 @@ def logout(request):
     try:
         del request.session['username']  # deletes the stored session
 
-    except KeyError:
-        print("The key username is not present.")
-        return HttpResponseServerError("The logout could not be performed.")
+    except Exception as e:
+        print("ERROR: " + str(e))
+        return HttpResponseServerError("ERROR: " + str(e))
 
     return redirect('login')  # redirects to the login page
 
 
 # ######################################################################## #
 # For download of a JSON configuration file belonging to a study.
-# (NOT BEING USED)
 # ######################################################################## #
 def downloadJSON(request, idForm):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
         return redirect('login')
 
     else:
-        filename = idForm + '_config' + '.txt'
+        configArray = []
 
         try:
             selectedForm = Form.objects.get(idForm=idForm)
             formConfig = selectedForm.formConfig
-            response = HttpResponse(formConfig, content_type='application/force-download')
+            formThumb = selectedForm.formThumbnail
+
+            formName = selectedForm.formName
+            formName = formName.replace(" ", "_")
+            filename = formName + '_config' + '.psyconfig'
+
+            configArray.append(formThumb)
+            configArray.append(formConfig)
+
+            pF = ParticipantInForm.objects.filter(idForm=idForm)
+
+            for i in range(0, len(pF)):
+                configArray.append(pF[i].dataCollection)
+
+            configJson = json.dumps(configArray)
+
+            response = HttpResponse(configJson, content_type='application/force-download')
             response['Content-Type'] = 'application/force-download'
             response['Content-Disposition'] = "attachment; filename=" + filename
             return response
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form with this ID therefore no configuration file to be downloaded.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            raise Http404("ERROR: " + str(e))
+
+
+# ######################################################################## #
+# For upload of a JSON configuration file.
+# ######################################################################## #
+def uploadJSON(request):
+    if not request.session.has_key('username'):
+        return redirect('login')
+
+    else:
+        changedID = False  # aux variable
+
+        uploadedFormConfig = request.POST.get("uploadedFormConfig")
+
+        aux = json.loads(uploadedFormConfig)
+
+        # aux positions explained:
+        # Position 0: thumbnail
+        # Position 1: formConfig
+        # Position 2 - n: participantConfig
+
+        if len(aux) == 0:
+            return HttpResponseServerError("ERROR: The file length is 0.")
+
+        formThumbnail = aux[0]
+
+        for i in range(1, len(aux)):
+            config = json.loads(aux[i])
+
+            # formConfig:
+            if i == 1:
+                idForm = config['id']
+                formName = config['nome']
+                formConfig = json.dumps(config)
+
+                try:
+                    fAux = Form.objects.filter(idForm=idForm)
+
+                    if len(fAux) == 0:  # checks if there is not a form with the id of the form trying to be uploaded
+                        f = Form(idForm=idForm, formName=formName, formConfig=formConfig, formThumbnail=formThumbnail)
+                        f.save()
+
+                        p = Permission(username=User.objects.get(username=request.session['username']),
+                                       idForm=Form.objects.get(idForm=idForm), permissionType='O')
+                        p.save()
+
+                    else:  # there is already a form with that ID
+                        size = len(fAux)
+                        newID = ""
+                        while size != 0:  # generates a random id and checks if it exists
+                            newID = id_generator()
+                            fAux = Form.objects.filter(idForm=newID)
+                            size = len(fAux)
+
+                        config['id'] = newID
+                        changedID = True
+                        idForm = config['id']
+                        formName = config['nome']
+                        formConfig = json.dumps(config)
+                        f = Form(idForm=idForm, formName=formName, formConfig=formConfig, formThumbnail=formThumbnail)
+                        f.save()
+
+                        p = Permission(username=User.objects.get(username=request.session['username']),
+                                       idForm=Form.objects.get(idForm=idForm), permissionType='O')
+                        p.save()
+
+                except Exception as e:
+                    return HttpResponseServerError("ERROR: " + str(e))
+
+            # participantConfig
+            else:
+                if changedID:
+                    config['id'] = newID
+
+                idForm = config['id']
+                idParticipant = config['idParticipante']
+                dataCollection = json.dumps(config)
+
+                try:
+                    p = ParticipantInForm(idForm=Form.objects.get(idForm=idForm), idParticipant=idParticipant,
+                                          dataCollection=dataCollection)
+                    p.save()
+
+                except Exception as e:
+                    return HttpResponseServerError("ERROR: " + str(e))
+
+        return HttpResponse("SUCCESS: Form uploaded successfully.")
+
+
+# ######################################################################## #
+# Generates a random id (auxiliary function).
+# (Used in uploadJSON).
+# ######################################################################## #
+def id_generator(size=32, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 
 # ######################################################################## #
@@ -299,36 +489,30 @@ def deleteStudyForm(request, idForm):
                 permission = Permission.objects.filter(idForm=idForm)  # get all permissions for that form
 
                 for i in range(0, len(permission)):  # adds notification to users in the list of permissions
-                    if permission[i].username.username != request.session['username']:
+                    if permission[i].username.username != request.session[
+                        'username']:  # avoids adding a notification to the user who performed the action
 
-                        # When deleting a form, all the previous notifications for that form are useless.
-                        # Therefore they are deleted.
-                        existingNotifications = UserNotification.objects.all()
+                        existingNotifications = UserNotification.objects.filter(idForm=idForm)
                         for j in range(0, len(existingNotifications)):
-                            if idForm in existingNotifications[j].message:
-                                existingNotifications[j].delete()
+                            existingNotifications[
+                                j].delete()  # when the form is deleted, all previous notifications are useless, even if not read
 
-                        un = UserNotification()
-                        un.username = User.objects.get(username=permission[i].username.username)
-                        un.message = "O questionário " + idForm + " - «" + formName + "», foi apagado do sistema pelo utilizador " + \
-                                     request.session['username'] + "."
-                        un.severityLevel = "D"
-                        un.save()
-                        print("SUCCESS: Notification DELETE pushed to user " + permission[i].username.username)
+                        message = "O questionário \"" + formName + "\", foi apagado do sistema pelo utilizador " + \
+                                  request.session['username'] + "."
+                        pushNotification(permission[i].username.username, idForm, message, 'D')
 
-            except IntegrityError:
-                print("ERROR: There are no permissions associated to the form " + idForm + ".")
-                return HttpResponseServerError(
-                    "ERROR: There are no permissions associated to the form " + idForm + ".")
+            except Exception as e:
+                print("ERROR: " + str(e))
+                return HttpResponseServerError("ERROR: " + str(e))
                 # End of push notifications
 
             selectedForm.delete()
 
             return redirect('home')
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form with this ID to be deleted.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -362,7 +546,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
             # Create a workbook and add a worksheet.
             workbook = xlsxwriter.Workbook(output)
             worksheet = workbook.add_worksheet("Dados Recolhidos")
-            worksheet2 = workbook.add_worksheet("Estímulos")
 
             # Format to be applied to the headers
             hFormat = workbook.add_format()
@@ -383,11 +566,82 @@ def downloadParticipantsDataCollectedData(request, idForm):
             pFormat.set_text_wrap()
             pFormat.set_align('center')
 
+            ### BEGINING OF Worksheet generation for variables:
+            scalesInForm = []
+            v_col = 0
+            v_row = 0
+            a_col = 0
+            a_row = 0
+            d_col = 0
+            d_row = 0
+            worksheetValence = workbook.add_worksheet("Valência")
+            worksheetArousal = workbook.add_worksheet("Alerta")
+            worksheetDominance = workbook.add_worksheet("Dominância")
+
+            # finds what are the scales in form
+            for s in range(0, len(fConfig['passos'])):
+                step = fConfig['passos'][s]
+                if 'escalasSAM' in step and len(step['escalasSAM']) > 0:
+                    for e in range(0, len(step['escalasSAM'])):
+                        if step['escalasSAM'][e] == 'Valência' and 'Valência' not in scalesInForm:
+                            scalesInForm.append('Valência')
+                        if step['escalasSAM'][e] == 'Alerta' and 'Alerta' not in scalesInForm:
+                            scalesInForm.append('Alerta')
+                        if step['escalasSAM'][e] == 'Dominância' and 'Dominância' not in scalesInForm:
+                            scalesInForm.append('Dominância')
+
+            # print(scalesInForm)
+
+            if 'Valência' in scalesInForm:
+                worksheetValence.write_string(v_row, v_col, "ID Participante", hFormat)
+                worksheetValence.set_column(v_col, v_col, 20)
+
+                v_row = 1
+                for i in range(0, len(pConfig)):
+                    worksheetValence.write_string(v_row, v_col, pConfig[i]['idParticipante'], pFormat)
+                    v_row += 1
+
+                v_row = 0
+                v_col = 1
+
+            if 'Alerta' in scalesInForm:
+                worksheetArousal.write_string(a_row, a_col, "ID Participante", hFormat)
+                worksheetArousal.set_column(a_col, a_col, 20)
+
+                a_row = 1
+                for i in range(0, len(pConfig)):
+                    worksheetArousal.write_string(a_row, a_col, pConfig[i]['idParticipante'], pFormat)
+                    a_row += 1
+
+                a_row = 0
+                a_col = 1
+
+            if 'Dominância' in scalesInForm:
+                worksheetDominance.write_string(d_row, d_col, "ID Participante", hFormat)
+                worksheetDominance.set_column(d_col, d_col, 20)
+
+                d_row = 1
+                for i in range(0, len(pConfig)):
+                    worksheetDominance.write_string(d_row, d_col, pConfig[i]['idParticipante'], pFormat)
+                    d_row += 1
+
+                d_row = 0
+                d_col = 1
+
+            ### END OF Worksheet generation for variables
+
+            #### BEGINING OF Worksheet generation for form:
             col = 0
             row = 0
 
-            col_w2 = 0
-            row_w2 = 0
+            v_row = 0
+            v_col = 1
+
+            a_row = 0
+            a_col = 1
+
+            d_row = 0
+            d_col = 1
 
             # Add headers
             worksheet.write_string(row, col, "Timestamp Recolha", hFormat)
@@ -397,10 +651,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
             worksheet.write_string(row, col, "ID Participante", hFormat)
             worksheet.set_column(col, col, 15)  # Width of column set to 20.
             col += 1
-
-            worksheet2.write_string(row_w2, col_w2, "ID Participante", hFormat)
-            worksheet2.set_column(col_w2, col_w2, 15)  # Width of column set to 20.
-            col_w2 += 1
 
             presentSteps = []
 
@@ -422,10 +672,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
 
-                    worksheet2.write_string(row_w2, col_w2, "Estímulo", oFormat)
-                    worksheet2.set_column(col_w2, col_w2, 20)  # Width of column set to 20.
-                    col_w2 += 1
-
                 if 'nomeDoEstimulo' in step:
                     worksheet.write_string(row, col, "Timestamp Estímulo", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
@@ -434,10 +680,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
                     worksheet.write_string(row, col, "Estímulo", hFormat)
                     worksheet.set_column(col, col, 20)  # Width of column set to 20.
                     col += 1
-
-                    worksheet2.write_string(row_w2, col_w2, "Estímulo", oFormat)
-                    worksheet2.set_column(col_w2, col_w2, 20)  # Width of column set to 20.
-                    col_w2 += 1
 
                 if 'escalasSAM' in step and len(step['escalasSAM']) > 0:
                     worksheet.write_string(row, col, "Timestamp Escalas", hFormat)
@@ -449,9 +691,46 @@ def downloadParticipantsDataCollectedData(request, idForm):
                         worksheet.set_column(col, col, 10)  # Width of column set to 20.
                         col += 1
 
-                        worksheet2.write_string(row_w2, col_w2, step['escalasSAM'][e], oFormat)
-                        worksheet2.set_column(col_w2, col_w2, 10)  # Width of column set to 20.
-                        col_w2 += 1
+                        # Worksheet Valence
+                        if step['escalasSAM'][e] == 'Valência':
+                            if 'nomeDoEstimulo' in step:
+                                worksheetValence.write_string(v_row, v_col, step['nomeDoEstimulo'], hFormat)
+                                worksheetValence.set_column(v_col, v_col, 20)
+                                print("Valência - " + step['nomeDoEstimulo'] + ": " + str(v_row) + "," + str(v_col))
+                                v_col += 1
+                            if 'nomeDoEstimuloVideo' in step:
+                                worksheetValence.write_string(v_row, v_col, step['nomeDoEstimuloVideo'], hFormat)
+                                worksheetValence.set_column(v_col, v_col, 20)
+                                print(
+                                    "Valência - " + step['nomeDoEstimuloVideo'] + ": " + str(v_row) + "," + str(v_col))
+                                v_col += 1
+
+                        # Worksheet Arousal
+                        if step['escalasSAM'][e] == 'Alerta':
+                            if 'nomeDoEstimulo' in step:
+                                worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimulo'], hFormat)
+                                worksheetArousal.set_column(a_col, a_col, 20)
+                                print("Alerta - " + step['nomeDoEstimulo'] + ": " + str(a_row) + "," + str(a_col))
+                                a_col += 1
+                            if 'nomeDoEstimuloVideo' in step:
+                                worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimuloVideo'], hFormat)
+                                worksheetArousal.set_column(a_col, a_col, 20)
+                                print("Alerta - " + step['nomeDoEstimuloVideo'] + ": " + str(a_row) + "," + str(a_col))
+                                a_col += 1
+
+                        # Worksheet Dominance
+                        if step['escalasSAM'][e] == 'Dominância':
+                            if 'nomeDoEstimulo' in step:
+                                worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimulo'], hFormat)
+                                worksheetDominance.set_column(d_col, d_col, 20)
+                                print("Dominância - " + step['nomeDoEstimulo'] + ": " + str(d_row) + "," + str(d_col))
+                                d_col += 1
+                            if 'nomeDoEstimuloVideo' in step:
+                                worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimuloVideo'], hFormat)
+                                worksheetDominance.set_column(d_col, d_col, 20)
+                                print("Dominância - " + step['nomeDoEstimuloVideo'] + ": " + str(d_row) + "," + str(
+                                    d_col))
+                                d_col += 1
 
                 if 'questoes' in step:
                     worksheet.write_string(row, col, "Timestamp Questões", hFormat)
@@ -469,8 +748,14 @@ def downloadParticipantsDataCollectedData(request, idForm):
             row = 1
             col = 0
 
-            row_w2 = 1
-            col_w2 = 0
+            v_row = 1
+            v_col = 1
+
+            a_row = 1
+            a_col = 1
+
+            d_row = 1
+            d_col = 1
 
             for i in range(0, len(pConfig)):
                 worksheet.write_string(row, col, pConfig[i]['timestampRecolha'], pFormat)
@@ -478,9 +763,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
 
                 worksheet.write_string(row, col, pConfig[i]['idParticipante'], pFormat)
                 col += 1
-
-                worksheet2.write_string(row_w2, col_w2, pConfig[i]['idParticipante'], pFormat)
-                col_w2 += 1
 
                 collection = pConfig[i]['colheita']
 
@@ -505,9 +787,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
                                 worksheet.write_string(row, col, collection[j]['nomeDoEstimuloVideo'], pFormat)
                                 col += 1
 
-                                worksheet2.write_string(row_w2, col_w2, collection[j]['nomeDoEstimuloVideo'], oFormat)
-                                col_w2 += 1
-
                             if 'nomeDoEstimulo' in collection[j]:
                                 worksheet.write_string(row, col, collection[j]['timestampEstimulo'], pFormat)
                                 col += 1
@@ -515,41 +794,41 @@ def downloadParticipantsDataCollectedData(request, idForm):
                                 worksheet.write_string(row, col, collection[j]['nomeDoEstimulo'], pFormat)
                                 col += 1
 
-                                worksheet2.write_string(row_w2, col_w2, collection[j]['nomeDoEstimulo'], oFormat)
-                                col_w2 += 1
-
                             if 'colheitaEscalas' in collection[j]:
                                 worksheet.write_string(row, col, collection[j]['timestampEscalas'], pFormat)
                                 col += 1
-
-                                if 'alerta' in collection[j]['colheitaEscalas']:
-                                    worksheet.write_string(row, col, collection[j]['colheitaEscalas']['alerta'],
-                                                           pFormat)
-                                    col += 1
-
-                                    worksheet2.write_string(row_w2, col_w2, collection[j]['colheitaEscalas']['alerta'],
-                                                            pFormat)
-                                    col_w2 += 1
 
                                 if 'valencia' in collection[j]['colheitaEscalas']:
                                     worksheet.write_string(row, col, collection[j]['colheitaEscalas']['valencia'],
                                                            pFormat)
                                     col += 1
 
-                                    worksheet2.write_string(row_w2, col_w2,
-                                                            collection[j]['colheitaEscalas']['valencia'],
-                                                            pFormat)
-                                    col_w2 += 1
+                                    worksheetValence.write_string(v_row, v_col,
+                                                                  collection[j]['colheitaEscalas']['valencia'],
+                                                                  pFormat)
+                                    v_col += 1
+
+                                if 'alerta' in collection[j]['colheitaEscalas']:
+                                    worksheet.write_string(row, col, collection[j]['colheitaEscalas']['alerta'],
+                                                           pFormat)
+                                    col += 1
+
+                                    # a_row = 1
+                                    # a_col = 1
+                                    worksheetArousal.write_string(a_row, a_col,
+                                                                  collection[j]['colheitaEscalas']['alerta'],
+                                                                  pFormat)
+                                    a_col += 1
 
                                 if 'dominancia' in collection[j]['colheitaEscalas']:
                                     worksheet.write_string(row, col, collection[j]['colheitaEscalas']['dominancia'],
                                                            pFormat)
                                     col += 1
 
-                                    worksheet2.write_string(row_w2, col_w2,
-                                                            collection[j]['colheitaEscalas']['dominancia'],
-                                                            pFormat)
-                                    col_w2 += 1
+                                    worksheetDominance.write_string(d_row, d_col,
+                                                                    collection[j]['colheitaEscalas']['dominancia'],
+                                                                    pFormat)
+                                    d_col += 1
 
                             if 'colheitaQuestoes' in collection[j]:
                                 arrayQuestoes = collection[j]['colheitaQuestoes']
@@ -563,10 +842,17 @@ def downloadParticipantsDataCollectedData(request, idForm):
                 col = 0
                 row += 1
 
-                col_w2 = 0
-                row_w2 += 1
+                v_col = 1
+                v_row += 1
+
+                a_col = 1
+                a_row += 1
+
+                d_col = 1
+                d_row += 1
 
             # endfor
+            #### END OF Worksheet generation for form
 
             workbook.close()
 
@@ -577,9 +863,9 @@ def downloadParticipantsDataCollectedData(request, idForm):
 
             return response
 
-        except ObjectDoesNotExist:
-            print("Either the entry or form don't exist.")
-            raise Http404("There is no form for this data collection.")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -598,38 +884,55 @@ class HomeView(View):
             sharedFormsOpenList = []
             ownedArchivedForms = []
             sharedArchivedForms = []
-            userNotifications = []
+            # userNotifications = []
 
+            # to get the number of notifications for the user
             existingNotifications = UserNotification.objects.filter(username__username=user)
-            for k in range(0, len(existingNotifications)):
-                userNotifications.append(existingNotifications[k])
 
+            # for k in range(0, len(existingNotifications)):
+            #    userNotifications.append(existingNotifications[k])
+
+            # Owned forms by user
             pO = Permission.objects.filter(username__username=user).filter(permissionType='O').select_related()
 
             for i in range(0, len(pO)):
                 if pO[i].idForm.isArchived == 'Y':  # if is archived
-                    ownedArchivedForms.append(pO[i])
+                    nP = ParticipantInForm.objects.filter(idForm=pO[i].idForm.idForm)
+                    ownedArchivedForms.append([pO[i], len(nP)])
+
                 else:  # if not archived
                     if pO[i].permissionType == 'O':  # owner
                         if pO[i].idForm.statusType == 'C':  # closed
-                            ownedFormsClosedList.append(pO[i])
-                        else:
-                            ownedFormsOpenList.append(pO[i])  # open
+                            nP = ParticipantInForm.objects.filter(idForm=pO[i].idForm.idForm)
+                            ownedFormsClosedList.append([pO[i], len(nP)])
+                        else:  # open
+                            nP = ParticipantInForm.objects.filter(idForm=pO[i].idForm.idForm)
+                            ownedFormsOpenList.append([pO[i], len(nP)])
 
+            # Guest forms for user
             pG = Permission.objects.filter(username__username=user).filter(permissionType='R').select_related()
 
             for j in range(0, len(pG)):
                 if pG[j].idForm.isArchived == 'Y':
-                    sharedArchivedForms.append(pG[j])
+                    nP = ParticipantInForm.objects.filter(idForm=pG[j].idForm.idForm)
+                    sharedArchivedForms.append([pG[j], len(nP)])
                 else:
                     if pG[j].permissionType == 'R':
                         if pG[j].idForm.statusType == 'C':  # closed
-                            sharedFormsClosedList.append(pG[j])
-                        else:
-                            sharedFormsOpenList.append(pG[j])  # open
+                            nP = ParticipantInForm.objects.filter(idForm=pG[j].idForm.idForm)
+                            sharedFormsClosedList.append([pG[j], len(nP)])
+                        else:  # open
+                            nP = ParticipantInForm.objects.filter(idForm=pG[j].idForm.idForm)
+                            sharedFormsOpenList.append([pG[j], len(nP)])
 
             # to display usernames in access granting
             usersList = User.objects.exclude(username=user)
+
+            # for special form configs
+            formsList = []
+            p = Permission.objects.filter(username__username=user)
+            for i in range(0, len(p)):
+                formsList.append(p[i].idForm)
 
             context = {
                 "username": user,
@@ -640,8 +943,8 @@ class HomeView(View):
                 "ownedArchivedForms": ownedArchivedForms,
                 "sharedArchivedForms": sharedArchivedForms,
                 "usersList": usersList,
-                # "userNotifications": userNotifications,
-                "userNotificationsNumber": len(userNotifications),
+                "userNotificationsNumber": len(existingNotifications),
+                "formsList": formsList,
             }
 
             return render(request, "main/home.html", context)
@@ -700,13 +1003,9 @@ def deleteNotifications(request):
             print("SUCCESS: The notifications for user " + user + " were deleted.")
             return HttpResponse("SUCCESS: The notifications for user " + user + " were deleted.")
 
-        except KeyError:
-            print("ERROR: There is no username " + user + ".")
-            return Http404("ERROR: There is no username " + user + ".")
-        except ObjectDoesNotExist:
-            print("ERROR: It was not possible to delete the notifications for user " + user + ".")
-            return HttpResponseServerError(
-                "ERROR: It was not possible to delete the notifications for user " + user + ".")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -727,13 +1026,9 @@ def getNotifications(request):
 
             return HttpResponse(json.dumps(userNotifications), content_type="application/json")
 
-        except KeyError:
-            print("ERROR: There is no username " + user + ".")
-            return Http404("ERROR: There is no username " + user + ".")
-        except ObjectDoesNotExist:
-            print("ERROR: It was not possible to get the notifications for user " + user + ".")
-            return HttpResponseServerError(
-                "ERROR: It was not possible to get the notifications for user " + user + ".")
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -750,10 +1045,282 @@ def getNNotifications(request):
 
             return HttpResponse(json.dumps(len(existingNotifications)), content_type="application/json")
 
-        except KeyError:
-            print("ERROR: There is no username " + user + ".")
-            return Http404("ERROR: There is no username " + user + ".")
-        except ObjectDoesNotExist:
-            print("ERROR: It was not possible to get the notifications for user " + user + ".")
-            return HttpResponseServerError(
-                "ERROR: It was not possible to get the notifications for user " + user + ".")
+        except Exception as e:
+            return HttpResponseServerError("ERROR: " + str(e))
+
+
+# ######################################################################## #
+# Saves or retrieves special configs of a form
+# ######################################################################## #
+class SpecialConfigsView(View):
+    def get(self, request):
+        idForm = request.GET.get("idForm")
+
+        try:
+            fsc = FormSpecialConfigs.objects.get(idForm=idForm)
+            response = []
+            response.append(fsc.idTrialForm.idForm)
+            response.append(fsc.scaleExplained)
+
+            return HttpResponse(json.dumps(response), content_type="application/json")
+
+        except Exception as e:
+            print(e)
+            return HttpResponseServerError(e)
+
+    def post(self, request):
+        if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
+            return redirect('login')
+
+        else:
+            idForm = request.POST.get("idForm")
+            idTrialForm = request.POST.get("idTrialForm")
+            scaleExplained = request.POST.get("scaleExplained")
+
+            try:
+                if idTrialForm == "":
+                    try:
+                        fsc = FormSpecialConfigs.objects.get(idForm=idForm)
+                        fsc.delete()
+
+                        # grants permission of reader to users that have permission of access to the form
+                        p = Permission.objects.filter(idForm=idForm).exclude(
+                            username__username=request.session['username'])
+                        f = Form.objects.get(idForm=idForm)
+
+                        existingNotifications = UserNotification.objects.filter(idForm=idForm)
+                        for j in range(0, len(existingNotifications)):
+                            if "treino" in existingNotifications[j].message:
+                                existingNotifications[j].delete()
+
+                        for i in range(0, len(p)):
+                            user = p[i].username
+                            message = "O questionário \"" + f.formName + "\" deixou de ter questionário de treino, por decisão do utilizador " + \
+                                      request.session['username'] + "."
+                            pushNotification(user.username, idForm, message, 'D')
+
+                        print("SUCCESS: The special form configurations for form " + idForm + " were deleted.")
+                        return HttpResponse(
+                            "SUCCESS: The special form configurations for form " + idForm + " were deleted.")
+
+                    except ObjectDoesNotExist:
+                        print("SUCCESS: The form " + idForm + " has no special configurations.")
+                        return HttpResponse("SUCCESS: The form " + idForm + " has no special configurations.")
+
+                try:  # if it exists, edit
+                    fsc = FormSpecialConfigs.objects.get(idForm=idForm)
+                    fsc.idTrialForm = Form.objects.get(idForm=idTrialForm)
+                    fsc.scaleExplained = scaleExplained
+                    fsc.save()
+
+                    # grants permission of reader to users that have permission of access to the form
+                    p = Permission.objects.filter(idForm=idForm).exclude(username__username=request.session['username'])
+                    f = Form.objects.get(idForm=idForm)
+                    fT = Form.objects.get(idForm=idTrialForm)
+
+                    existingNotifications = UserNotification.objects.filter(idForm=idForm)
+                    for j in range(0, len(existingNotifications)):
+                        if "treino" in existingNotifications[j].message:
+                            existingNotifications[j].delete()
+
+                    for i in range(0, len(p)):
+                        user = p[i].username
+                        pT = Permission.objects.filter(idForm=idTrialForm, username=user)
+                        if len(pT) == 0:  # user does not have permmission for trial access
+                            # grant permission
+                            newP = Permission()
+                            newP.username = user
+                            newP.idForm = Form.objects.get(idForm=idTrialForm)
+                            newP.permissionType = 'R'
+                            newP.save()
+
+                            message = "Foi-lhe concedida permissão de Leitor ao questionário \"" + fT.formName + "\" pelo utilizador " + \
+                                      request.session['username'] + "."
+                            pushNotification(user.username, idForm, message, 'S')
+
+                            message = "O questionário \"" + fT.formName + "\" foi selecionado como questionário de treino de \"" + f.formName + "\" pelo utilizador " + \
+                                      request.session['username'] + "."
+                            pushNotification(user.username, idForm, message, 'I')
+
+                        else:
+                            message = "O questionário \"" + fT.formName + "\" foi selecionado como questionário de treino de \"" + f.formName + "\" pelo utilizador " + \
+                                      request.session['username'] + "."
+                            pushNotification(user.username, idForm, message, 'I')
+
+                    print("SUCCESS: The special configs were edited.")
+                    return HttpResponse("SUCCESS: The special configs were edited.")
+
+                except ObjectDoesNotExist:  # If it does not exists, saves.
+                    sc = FormSpecialConfigs()
+                    sc.idForm = Form.objects.get(idForm=idForm)
+                    sc.idTrialForm = Form.objects.get(idForm=idTrialForm)
+                    sc.scaleExplained = scaleExplained
+                    sc.save()
+
+                    # grants permission of reader to users that have permission of access to the form
+                    p = Permission.objects.filter(idForm=idForm).exclude(username__username=request.session['username'])
+                    f = Form.objects.get(idForm=idForm)
+                    fT = Form.objects.get(idForm=idTrialForm)
+
+                    existingNotifications = UserNotification.objects.filter(idForm=idForm)
+                    for j in range(0, len(existingNotifications)):
+                        if "treino" in existingNotifications[j].message:
+                            existingNotifications[j].delete()
+
+                    for i in range(0, len(p)):
+                        user = p[i].username
+                        pT = Permission.objects.filter(idForm=idTrialForm, username=user)
+                        if len(pT) == 0:  # user does not have permmission for trial access
+                            # grant permission
+                            newP = Permission()
+                            newP.username = user
+                            newP.idForm = Form.objects.get(idForm=idTrialForm)
+                            newP.permissionType = 'R'
+                            newP.save()
+
+                            message = "Foi-lhe concedida permissão de Leitor ao questionário \"" + fT.formName + "\"."
+                            pushNotification(user.username, idForm, message, 'S')
+
+                            message = "O questionário \"" + fT.formName + "\" foi selecionado como questionário de treino de \"" + f.formName + "\"."
+                            pushNotification(user.username, idForm, message, 'I')
+
+                        else:
+                            message = "O questionário \"" + fT.formName + "\" foi selecionado como questionário de treino de \"" + f.formName + "\"."
+                            pushNotification(user.username, idForm, message, 'I')
+
+                    print("SUCCESS: The special configs were saved.")
+                    return HttpResponse("SUCCESS: The special configs were saved.")
+
+            except Exception as e:
+                print("ERROR: " + str(e))
+                return HttpResponseServerError("ERROR: " + str(e))
+
+
+# ######################################################################## #
+# Pushes a notification (auxiliary function).
+# ######################################################################## #
+def pushNotification(username, idForm, message, severityLevel):
+    un = UserNotification()
+    un.username = User.objects.get(username=username)
+    un.idForm = idForm
+    un.message = message
+    un.severityLevel = severityLevel
+    un.save()
+
+    print("NOTIFICATION PUSHED: " + message)
+
+
+# ######################################################################## #
+# Returns a list of users with access to form, excluding the user who
+# requested the list
+# ######################################################################## #
+def getListOfUsersWithForm(request):
+    if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
+        return redirect('login')
+
+    else:
+        idForm = request.GET.get("idForm")
+
+    try:
+        p = Permission.objects.filter(idForm=idForm).exclude(username__username=request.session['username'])
+        usersListWithAccess = []
+
+        for i in range(0, len(p)):
+            if p[i].permissionType == 'R':
+                usersListWithAccess.append([p[i].username.username, 'leitor'])
+            else:
+                usersListWithAccess.append([p[i].username.username, 'administrador'])
+
+        print("SUCCESS: List of users with access to form " + idForm + ": " + str(usersListWithAccess))
+        return HttpResponse(json.dumps(usersListWithAccess), content_type="application/json")
+
+    except Exception as e:
+        print("ERROR: " + str(e))
+        return HttpResponseServerError("ERROR: " + str(e))
+
+
+# ######################################################################## #
+# Retrieves data from form to present graphs and other relevant
+# data in a dashboard
+# ######################################################################## #
+def formDashboardView(request, idForm):
+    if not request.session.has_key('username'):
+        return redirect('login')
+
+    else:
+
+        try:
+            f = Form.objects.get(idForm=idForm)
+
+            p = ParticipantInForm.objects.filter(idForm=idForm)
+            participantIDs = []
+
+            # loads info of each participant into an array of dictionaries
+            for i in range(0, len(p)):
+                pData = json.loads(p[i].dataCollection)
+                participantIDs.append(pData['idParticipante'])
+
+            context = {
+                "idForm": f.idForm,
+                "formName": f.formName,
+                "participantIDs": participantIDs,
+            }
+            return render(request, "main/form_dashboard.html", context)
+
+
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
+
+
+# ######################################################################## #
+# Retrieves all data of a participant
+# ######################################################################## #
+def getInfoOfParticipant(request):
+    if not request.session.has_key('username'):
+        return redirect('login')
+
+    else:
+        idParticipant = request.GET.get("idParticipant")
+        idForm = request.GET.get("idForm")
+
+        try:
+            f = Form.objects.get(idForm=idForm)
+            p = ParticipantInForm.objects.get(idParticipant=idParticipant, idForm=f)
+
+            pData = json.loads(p.dataCollection)
+
+            timestampCollection = pData['timestampRecolha']
+
+            valence = []
+            arousal = []
+            dominance = []
+
+            for i in range(0, len(pData['colheita'])):
+                step = pData['colheita'][i]
+
+                if 'colheitaEscalas' in step:
+                    if 'nomeDoEstimulo' in step:
+                        stimulus = step['nomeDoEstimulo']
+                    if 'nomeDoEstimuloVideo' in step:
+                        stimulus = step['nomeDoEstimuloVideo']
+
+                    if 'valencia' in step['colheitaEscalas']:
+                        valence.append([stimulus, step['colheitaEscalas']['valencia']])
+                    if 'alerta' in step['colheitaEscalas']:
+                        arousal.append([stimulus, step['colheitaEscalas']['alerta']])
+                    if 'dominancia' in step['colheitaEscalas']:
+                        dominance.append([stimulus, step['colheitaEscalas']['dominancia']])
+
+            response = {}
+            response['timestampCollection'] = timestampCollection
+            response['valence'] = valence
+            response['arousal'] = arousal
+            response['dominance'] = dominance
+
+            print("SUCCESS: " + json.dumps(response))
+            return HttpResponse(json.dumps(response), content_type="application/json")
+
+        except Exception as e:
+            print("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))

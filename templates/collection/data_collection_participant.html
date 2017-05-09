@@ -55,6 +55,15 @@
 
                 <div id="div-stimulus-video"></div>
 
+                <div class="center-div">
+                    <br/>
+                    <div class="progress" id="div-progress" hidden>
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                             aria-valuemax="100"> <span id="progress-number">0%</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div id="footer" class="mastfoot">
@@ -80,6 +89,9 @@
 <script src="{% static 'js/data_collection_participant.js' %}"></script>
 
 <script>
+    var trialFormID = "{{trialFormID}}";
+    var scaleExplained = "{{scaleExplained}}";
+
     var participantID = "{{idParticipant}}";
     document.getElementById("formParticipant").innerHTML = participantID;
 
@@ -134,6 +146,7 @@
     var csrfToken = "{{ csrf_token }}";
     var urlToPostCP = "{% url 'data-collection-participant' 'idForm' 'idParticipant'%}";
     // var onSuccess = "{% url 'home' %}";
+    var urlToTrialForm = "{% url 'trial-form' trialFormID %}";
 
     var urlForPermission = "{% url 'check-token'%}";
 

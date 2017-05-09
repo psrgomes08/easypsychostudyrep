@@ -50,8 +50,20 @@
   opacity: 1 !important;
 }
 
+/* Makes an element with this class red, as in mandatory */
 .mandatory {
     color: red;
     font-weight: bold;
     font-size: large;
+}
+
+/* Applies a grey style to the button */
+.btn-grey {
+    background-color: rgba(34, 34, 34, 1); /*where 1 stands for 100% opacity*/
+    color: #FFF;
+}
+
+.btn-grey:hover {
+    background-color: rgba(34, 34, 34, 0.9); /*where 0.5 stands for 50% opacity*/
+    color: #FFF;
 }

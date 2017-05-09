@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Easy Psycho Study - Recolha</title>
+    <title>Easy Psycho Study - Questionário de Treino</title>
 
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/ie10-viewport-bug-workaround.css' %}">
@@ -31,9 +31,7 @@
                     <h1 id="formName" class="cover-heading"></h1>
                     <p id="formDescription" class="lead"></p>
 
-                    <label>ID do Participante</label>
-                    <p align="center"><input style="width: 70%;" type='text' class='form-control' id="id-participante">
-                    </p><br/>
+                    <label>Questionário de Treino</label>
 
                     <p class="lead">
                         <button class="btn btn-lg btn-success" onclick="cleanAndStart()"><span
@@ -41,8 +39,6 @@
                         </button>
                     </p>
                 </div>
-
-                <div id="div-instructions"></div>
 
                 <div id="div-description"></div>
 
@@ -67,8 +63,9 @@
 
             <div id="footer" class="mastfoot">
                 <div class="inner">
-                    <a href="{% url 'home' %}" class="btn btn-md btn-danger" role="button" title="Voltar ao painel">
-                        <span class="glyphicon glyphicon-remove-circle"></span> Cancelar</a>
+                    <button class="btn btn-md btn-danger" onclick="window.open('', '_self', ''); window.close();">
+                        <span class="glyphicon glyphicon-remove-circle"></span> Fechar
+                    </button>
                 </div>
             </div>
 
@@ -86,14 +83,9 @@
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'js/toastr.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/data_collection.js' %}"></script>
+<script src="{% static 'js/preview_form.js' %}"></script>
 
 <script>
-    var trialFormID = "{{trialFormID}}";
-    var scaleExplained = "{{scaleExplained}}";
-
-    var participantsIDList = {{participantsIDList | safe}};
-
     var src = ('{{formConfiguration|safe}}').replace(/[\n]/g, '\\n');
     var formConfiguration = JSON.parse(src);
 
@@ -106,7 +98,6 @@
     var sizeOfForm = 0;
     if (formConfiguration.hasOwnProperty("passos")) {
         sizeOfForm = formConfiguration.passos.length;
-        //console.log("Size of Form: " + sizeOfForm);
     }
     var newForm = [];
     var auxForRandomize = [];
@@ -133,20 +124,10 @@
     var currentIndex = 0;
     var step = newForm[currentIndex];
 
-    var endMessage = '<p><b><h2>Questionário terminado.</h2></b><br/>Agradecemos a sua colaboração.</p><br/>';
-    var endButton = '<button id="end-button" class="btn btn-md btn-success" onclick="endDataCollection()">' +
-            '<span class="glyphicon glyphicon-check"></span> Terminar</button>';
-
-    var valenceImage = "{% static 'images/valencia.png' %}";
-    var dominanceImage = "{% static 'images/dominancia.png' %}";
-    var arousalImage = "{% static 'images/alerta.png' %}";
+    var endMessage = '<p><b><h2>Questionário de Treino terminado.</h2></b></p><br/>';
+    var endButton = '<button class="btn btn-md btn-danger" onclick="closeVisualization()"><span class="glyphicon glyphicon-remove-circle"></span> Fechar</button>';
 
     var idForm = formConfiguration.id;
-
-    var csrfToken = "{{ csrf_token }}";
-    var urlToPost = "{% url 'data-collection' 'idForm' %}";
-    var onSuccess = "{% url 'home' %}";
-    var urlToTrialForm = "{% url 'trial-form' trialFormID %}";
 
     /**
      * Loads the background color selected by the creator of the form.

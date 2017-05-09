@@ -1,0 +1,179 @@
+{% load static %}
+
+<html lang="en">
+<head>
+
+    <!-- Font awesome -->
+    <script type="text/javascript"> (function () {
+        var css = document.createElement('link');
+        css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css';
+        css.rel = 'stylesheet';
+        css.type = 'text/css';
+        document.getElementsByTagName('head')[0].appendChild(css);
+    })(); </script> <!-- end of Font awesome script -->
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Easy Psycho Study - Painel de Questionário</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ie10-viewport-bug-workaround.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/new_form.css' %}"> <!-- Important for navbar -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form_dashboard.css' %}">
+
+</head>
+
+<div class="se-pre-con"> <!-- loading spinner -->
+    <p align="center">
+        <br/>
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+    </p>
+</div> <!-- ./se-pre-con -->
+
+<!-- Fixed navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand navbar-title-white">Questionário "{{formName}}"</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse navbar-right">
+
+            <a href="{% url 'home' %}" class="btn btn-default navbar-btn btn-wide" role="button">
+                <span class="glyphicon glyphicon-chevron-left"></span> Voltar</a>
+
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<body>
+<br/>
+
+<div class="row" id="main" style="display: none; width:95%; margin-left:auto; margin-right:auto;">
+    <div class="col-sm-4"> <!-- participants list -->
+        <p align="center"><label>Lista de Participantes</label></p>
+
+        <div class="btn-group-vertical btn-block apply-scroll-panel">
+            {% for i in participantIDs %}
+            <button type="button" id="{{i}}" class="btn btn-default tab"
+                    onclick="getDataFromParticipant('{{i}}', '{{idForm}}')">
+                {{i}}
+            </button>
+            {% endfor %}
+        </div>
+
+    </div> <!-- ./col-sm-4 -->
+
+    <div class="col-sm-8">
+        <div id="wrapper" style="text-align: center">
+
+            <div id="participantData" style="display: inline-block; display: none;">
+                <h3>Dados Gerais</h3>
+
+                <strong><span class="glyphicon glyphicon-user"></span> ID Participante</strong>
+                <p id="idParticipante"></p>
+                <strong><span class="glyphicon glyphicon-time"></span> Timestamp Recolha</strong>
+                <p id="timestampRecolha"></p>
+
+            </div> <!-- ./participantData -->
+        </div>
+
+        <div id="graphs" style="display: none">
+            <br/>
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="panel-title" style="text-align:center">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Gráfico de valores de
+                                Valência Afetiva</a>
+                        </h3>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <div id="valenceDiv" style="display: none">
+                                <canvas id="valenceChart" width="300" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title" style="text-align:center">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Gráfico de valores de
+                                Ativação Fisiológica</a>
+                        </h3>
+                    </div>
+                    <div id="collapse2" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div id="arousalDiv" style="display: none">
+                                <canvas id="arousalChart" width="300" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="text-align:center">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Gráfico de valores de
+                                Dominância</a>
+                        </h4>
+                    </div>
+                    <div id="collapse3" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div id="dominanceDiv" style="display: none">
+                                <canvas id="dominanceChart" width="300" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- ./accordion -->
+        </div> <!-- ./graphs -->
+
+
+    </div> <!-- ./col-sm-8 -->
+</div>
+
+</body>
+</html>
+
+<!-- JavaScript
+    ================================================== -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/toastr.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/form_dashboard.js' %}"></script>
+<script src="{% static 'js/Chart.min.js' %}"></script>
+
+<script>
+    /**
+     * Wait for window load.
+     */
+    $(window).load(function () {
+        // Animate loader off screen
+        $(".se-pre-con").fadeOut();
+        $("#main").show();
+        getDataFromParticipant("{{participantIDs.0}}", "{{idForm}}");
+    });
+
+    var csrfToken = "{{ csrf_token }}";
+    var urlToGetParticipantData = "{% url 'info-participant' %}";
+
+    // Makes a tab of participant active on click
+    $(document).ready(function () {
+        $(".tab").click(function () {
+            $(".tab").removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+</script>

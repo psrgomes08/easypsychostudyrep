@@ -14,8 +14,9 @@
 /* Makes a button fixed */
 .fixed-btn {
     position: fixed;
-    bottom: 20px;
+    bottom: 30px;
     right: 20px;
+    z-index: 100;
 }
 
 /* For stretching buttons on navbar collapse */
@@ -24,4 +25,21 @@
     .btn.btn-wide {
         width: 100%;
     }
+}
+
+/* Applies a grey style to the button */
+.btn-grey {
+    background-color: rgba(34, 34, 34, 1); /*where 1 stands for 100% opacity*/
+    color: #FFF;
+}
+
+.btn-grey:hover {
+    background-color: rgba(34, 34, 34, 0.9); /*where 0.5 stands for 50% opacity*/
+    color: #FFF;
+}
+
+/* Makes an element scrollable */
+.apply-scroll {
+    max-height: 100px;
+    overflow-y: scroll;
 }

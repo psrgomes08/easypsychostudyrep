@@ -55,9 +55,6 @@
                     data-target="#modal-for-full-screen"><span class="glyphicon glyphicon-fullscreen"></span> Expandir
             </button>
 
-            <a href="{% url 'new-form' %}" class="btn btn-success navbar-btn btn-wide" role="button">
-                <span class="glyphicon glyphicon-edit"></span> Criar Questionário</a>
-
             <button class="btn btn-primary navbar-btn btn-wide" data-toggle="modal"
                     data-target="#modal-for-notifications" type="button">
                 <span class="glyphicon glyphicon-envelope"></span> Notificações <span class="badge"
@@ -148,409 +145,692 @@
 <!-- ./modal-for-logout -->
 
 <br/>
+<div class="panel-group" id="accordion">
+    <div id="panel-user" class="panel panel-default"
+         style="display: none; width:95%; margin-left:auto; margin-right:auto;">
+        <div class="panel-heading" style="background-color: #222; color: #FFF;">
+            <h3 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1"><span
+                        class="glyphicon glyphicon-eye-open"></span> Os Meus Questionários</a>
+            </h3>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse in">
+            <div class="panel-body">
 
-<div id="panel-user" class="panel panel-default" style="display: none; width:95%; margin-left:auto; margin-right:auto;">
-    <div class="panel-heading" style="background-color: #222; color: #FFF;">
-        <h3 class="panel-title">
-            <span class="glyphicon glyphicon-eye-open"></span> Os Meus Questionários
-        </h3>
-    </div>
-    <div class="panel-body">
+                <div class="row">
 
-        <div class="row">
+                    <!-- For open forms belonging to the owner  -->
+                    {% for ownedFormO in ownedFormsOpenList %}
 
-            <!-- For open forms belonging to the owner  -->
-            {% for i in ownedFormsOpenList %}
+                    <div class="col-sm-6 col-md-3">
+                        <div class="thumbnail">
+                            <img src="{{ownedFormO.0.idForm.formThumbnail}}" style="max-height: 128px;">
+                            <div class="caption">
 
-            <div class="col-sm-6 col-md-3">
-                <div class="thumbnail">
-                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
-                    <div class="caption">
+                                <p align="center" style="height: 80px;">
+                                    <strong>{{ownedFormO.0.idForm.formName}}</strong>
+                                </p>
 
-                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
-
-                        <!-- buttons -->
-                        <p>
-                            <a href="{% url 'data-collection' i.idForm %}" class="btn btn-sm btn-success btn-block"
-                               role="button">
-                                <span class="glyphicon glyphicon-play-circle"></span> Efetuar Recolha</a>
-
-                            <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                    class="btn btn-sm btn-primary btn-block"><span
-                                    class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
-                            </button>
-
-                            <a href="{% url 'close-data-collection' i.idForm %}"
-                               class="btn btn-sm btn-danger btn-block"
-                               role="button">
-                                <span class="glyphicon glyphicon-lock"></span> Fechar Recolhas</a>
-                        </p>
-                        <p>
-                        <div class="btn-group btn-group-justified">
-
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
-                                        data-target="#modal-for-access-granting"
-                                        data-form-id="{{i.idForm}}"
-                                        data-form-name="{{i.idForm.formName}}"><span
-                                        class="glyphicon glyphicon-user"></span>
-                                    Convidar
-                                </button>
-                            </div>
-
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
-                                        data-target="#modal-for-link-share"
-                                        data-form-id="{{i.idForm}}"><span
-                                        class="glyphicon glyphicon-share"></span> Recolha Remota
-                                </button>
-                            </div>
-
-                        </div>
-                        </p>
-
-                        <p>
-                        <div class="btn-group btn-group-justified">
-
-                            <div class="btn-group">
-                                <a href="{% url 'clone-form' i.idForm %}" class="btn btn-sm btn-default"
-                                   type="button">
-                                    <span class="glyphicon glyphicon-duplicate"></span> Clonar</a>
-                            </div>
-
-                            <div class="btn-group">
-                                <button onclick="editForm('{{i.idForm}}')" type="button" class="btn btn-sm btn-default">
-                                    <span class="glyphicon glyphicon-edit"></span>
-                                    Editar
-                                </button>
-                            </div>
-
-                        </div>
-                        </p>
-                        <!-- end of buttons -->
-
-                    </div> <!-- ./caption -->
-
-                    <!-- Modal  for sharing link -->
-                    <div class="modal fade" id="modal-for-link-share" role="dialog">
-                        <div class="modal-dialog">
-
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">
-                                        Recolha Remota</p>
-                                </div>
-                                <div class="modal-body">
-                                    <p align="center">Pode efetuar uma recolha remota através da geração de um link
-                                        especial.</p>
-
-                                    <div class="input-group">
-
-                                        <span class="input-group-addon" id="basic-addon1">ID do Participante</span>
-                                        <input type="text" id="participant-in-link" class="form-control"
-                                               aria-describedby="basic-addon1">
-                                    </div>
+                                <div align="center" class="well well-sm">
+                                    <strong>Número de Recolhas:</strong> {{ownedFormO.1}}
                                     <br/>
-                                    <p align="center">
-                                        <button id="generate-link" class="btn btn-primary"><span
-                                                class="glyphicon glyphicon-link"></span> Gerar
+                                    <strong>Estado: </strong> Recolhas Abertas
+                                    <br/><br/>
+                                    {% if ownedFormO.1 > 0 %}
+                                    <a href="{% url 'form-dashboard' ownedFormO.0.idForm %}" role="button"
+                                       class="btn btn-sm btn-default btn-block"><span
+                                            class="glyphicon glyphicon-search"></span>
+                                        Explorar Resultados</a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
+                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    </button>
+                                    {% endif %}
+                                </div> <!-- ./well well-sm -->
+
+                                <!-- buttons -->
+                                <a href="{% url 'data-collection' ownedFormO.0.idForm %}"
+                                   class="btn btn-sm btn-success btn-block"
+                                   role="button">
+                                    <span class="glyphicon glyphicon-play-circle"></span> Efetuar Recolha</a>
+
+                                <button type="button" class="btn btn-sm btn-primary btn-block" data-toggle="modal"
+                                        data-target="#modal-for-data-collected-management"
+                                        data-form-id="{{ownedFormO.0.idForm}}"
+                                        data-form-name="{{ownedFormO.0.idForm.formName}}"><span
+                                        class="glyphicon glyphicon-cog"></span>
+                                    Configurar Recolhas
+                                </button>
+
+                                <button onclick="downloadDataCollection('{{ownedFormO.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
+                                </button>
+
+                                <a href="{% url 'close-data-collection' ownedFormO.0.idForm %}"
+                                   class="btn btn-sm btn-danger btn-block"
+                                   role="button">
+                                    <span class="glyphicon glyphicon-lock"></span> Fechar Recolhas</a>
+
+                                <p>
+                                <div class="btn-group btn-group-justified">
+
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
+                                                data-target="#modal-for-access-granting"
+                                                data-form-id="{{ownedFormO.0.idForm}}"
+                                                data-form-name="{{ownedFormO.0.idForm.formName}}"><span
+                                                class="glyphicon glyphicon-user"></span>
+                                            Convidar
                                         </button>
-                                    </p>
-
-                                    <p align="center" id="form-url"></p>
-                                    <!--<p align="center" id="form-token"></p>-->
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- Modal  for granting access to user -->
-                    <div class="modal fade" id="modal-for-access-granting" role="dialog">
-                        <div class="modal-dialog">
-
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <p style="font-size: large; font-weight: bold;" id="invite-title"
-                                       align="center"></p>
-                                </div>
-                                <div class="modal-body">
-
-                                    <div class="form-group">
-                                        <label for="grant-user">Utilizador a convidar:</label>
-                                        <select class="form-control" id="grant-user">
-                                            {% for option in usersList %}
-                                            <option>{{option.username}}</option>
-                                            {% endfor %}
-                                        </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="grant-permission">Permissão a atribuir:</label>
-                                        <select class="form-control" id="grant-permission">
-                                            <option value="O">Administrador</option>
-                                            <option value="R">Leitor</option>
-                                        </select>
+
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
+                                                data-target="#modal-for-link-share"
+                                                data-form-id="{{ownedFormO.0.idForm}}"><span
+                                                class="glyphicon glyphicon-share"></span> Recolha Remota
+                                        </button>
                                     </div>
-                                    <p align="center">
-                                        <button type="button" class="btn btn-primary" value="click" id="grant-access">
-                                            <span class="glyphicon glyphicon-send"></span> Convidar
-                                        </button>
-                                        <button type="button" class="btn btn-danger" data-dismiss="modal"><span
-                                                class="glyphicon glyphicon-remove"></span> Cancelar
-                                        </button>
-                                    </p>
+
                                 </div>
-                            </div>
+                                </p>
 
-                        </div>
-                    </div>
+                                <p>
+                                <div class="btn-group btn-group-justified">
 
-                </div> <!-- ./thumbnail -->
+                                    <div class="btn-group">
+                                        <a href="{% url 'clone-form' ownedFormO.0.idForm %}"
+                                           class="btn btn-sm btn-default"
+                                           type="button">
+                                            <span class="glyphicon glyphicon-duplicate"></span> Clonar</a>
+                                    </div>
 
-            </div> <!-- ./col-sm-6 col-md-3 -->
+                                    <div class="btn-group">
+                                        <button onclick="editForm('{{ownedFormO.0.idForm}}')" type="button"
+                                                class="btn btn-sm btn-default">
+                                            <span class="glyphicon glyphicon-edit"></span>
+                                            Editar
+                                        </button>
+                                    </div>
 
-            {% endfor %}
+                                </div>
+                                </p>
+                                <!-- end of buttons -->
 
-        </div> <!-- ./row -->
+                            </div> <!-- ./caption -->
 
-        <div class="row">
-            <!-- For closed forms belonging to the owner  -->
-            {% for i in ownedFormsClosedList %}
+                            <!-- Modal  for sharing link -->
+                            <div class="modal fade" id="modal-for-link-share" role="dialog">
+                                <div class="modal-dialog">
 
-            <div class="col-sm-6 col-md-3">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <p style="font-size: large; font-weight: bold;" align="center"
+                                               class="modal-title">
+                                                Recolha Remota</p>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p align="center">Pode efetuar uma recolha remota através da geração de um
+                                                link
+                                                especial.</p>
 
-                <div class="thumbnail">
+                                            <div class="input-group">
 
-                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
+                                                <span class="input-group-addon"
+                                                      id="basic-addon1">ID do Participante</span>
+                                                <input type="text" id="participant-in-link" class="form-control"
+                                                       aria-describedby="basic-addon1">
+                                            </div>
+                                            <br/>
+                                            <p align="center">
+                                                <button id="generate-link" class="btn btn-primary"><span
+                                                        class="glyphicon glyphicon-link"></span> Gerar
+                                                </button>
+                                            </p>
 
-                    <div class="caption">
+                                            <p align="center" id="form-url"></p>
+                                            <!--<p align="center" id="form-token"></p>-->
+                                        </div>
+                                    </div>
 
-                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
+                                </div>
+                            </div> <!-- ./modal-for-link-share -->
 
-                        <!-- buttons -->
-                        <a href="{% url 'open-data-collection' i.idForm %}" class="btn btn-sm btn-default btn-block"
-                           role="button">
-                            <span class="glyphicon glyphicon-check"></span> Abrir Recolhas</a>
 
-                        <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span
-                                class="glyphicon glyphicon-list-alt"></span>
-                            Descarregar Recolhas
-                        </button>
+                        </div> <!-- ./thumbnail -->
 
-                        <a href="{% url 'clone-form' i.idForm %}" class="btn btn-sm btn-default btn-block"
-                           role="button">
-                            <span class="glyphicon glyphicon-duplicate"></span> Clonar Questionário</a>
+                    </div> <!-- ./col-sm-6 col-md-3 -->
 
-                        <a href="{% url 'archive-form' i.idForm %}" class="btn btn-sm btn-info btn-block" role="button">
-                            <span class="glyphicon glyphicon-folder-close"></span> Arquivar</a>
+                    {% endfor %}
 
-                        <!-- end of buttons -->
+                </div> <!-- ./row -->
 
-                    </div> <!-- ./caption -->
+                <div class="row">
+                    <!-- For closed forms belonging to the owner  -->
+                    {% for ownedFormC in ownedFormsClosedList %}
 
-                </div> <!-- ./thumbnail -->
+                    <div class="col-sm-6 col-md-3">
 
-            </div> <!-- ./col-sm-6 col-md-3 -->
+                        <div class="thumbnail">
 
-            {% endfor %}
-        </div> <!-- ./row -->
+                            <img src="{{ownedFormC.0.idForm.formThumbnail}}" style="max-height: 128px;">
 
-    </div> <!-- ./panel-body User Forms -->
+                            <div class="caption">
 
-    <div class="panel-footer">
-        <span class="glyphicon glyphicon-folder-close"></span> <b>Os Meus Questionários (Arquivados)</b>
+                                <p align="center" style="height: 80px;">
+                                    <strong>{{ownedFormC.0.idForm.formName}}</strong>
+                                </p>
 
-        <br/><br/>
-        <div class="row">
-            {% for i in ownedArchivedForms %}
+                                <!-- buttons -->
+                                <div align="center" class="well well-sm">
+                                    <strong>Número de Recolhas:</strong> {{ownedFormC.1}}
+                                    <br/>
+                                    <strong>Estado: </strong> Recolhas Fechadas
+                                    <br/><br/>
+                                    {% if ownedFormC.1 > 0 %}
+                                    <a href="{% url 'form-dashboard' ownedFormC.0.idForm %}" role="button"
+                                       class="btn btn-sm btn-default btn-block"><span
+                                            class="glyphicon glyphicon-search"></span>
+                                        Explorar Resultados</a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
+                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    </button>
+                                    {% endif %}
+                                </div>
 
-            <div class="col-sm-6 col-md-3">
+                                <a href="{% url 'open-data-collection' ownedFormC.0.idForm %}"
+                                   class="btn btn-sm btn-success btn-block"
+                                   role="button">
+                                    <span class="glyphicon glyphicon-check"></span> Abrir Recolhas</a>
 
-                <div class="thumbnail">
+                                <button type="button" class="btn btn-sm btn-primary btn-block" data-toggle="modal"
+                                        data-target="#modal-for-data-collected-management"
+                                        data-form-id="{{ownedFormC.0.idForm}}"
+                                        data-form-name="{{ownedFormC.0.idForm.formName}}"><span
+                                        class="glyphicon glyphicon-cog"></span>
+                                    Configurar Recolhas
+                                </button>
 
-                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
+                                <button onclick="downloadDataCollection('{{ownedFormC.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="glyphicon glyphicon-list-alt"></span>
+                                    Descarregar Recolhas
+                                </button>
 
-                    <div class="caption">
+                                <a href="{% url 'download-json' ownedFormC.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block" role="button">
+                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Configurações</a>
 
-                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
+                                <a href="{% url 'archive-form' ownedFormC.0.idForm %}"
+                                   class="btn btn-sm btn-warning btn-block"
+                                   role="button">
+                                    <span class="glyphicon glyphicon-folder-close"></span> Arquivar</a>
 
-                        <!-- buttons -->
-                        <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span
-                                class="glyphicon glyphicon-list-alt"></span>
-                            Descarregar Recolhas
-                        </button>
+                                <p>
+                                <div class="btn-group btn-group-justified">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-default btn-block"
+                                                data-toggle="modal"
+                                                data-target="#modal-for-access-granting"
+                                                data-form-id="{{ownedFormC.0.idForm}}"
+                                                data-form-name="{{ownedFormC.0.idForm.formName}}"><span
+                                                class="glyphicon glyphicon-user"></span>
+                                            Convidar
+                                        </button>
+                                    </div>
 
-                        <a href="{% url 'clone-form' i.idForm %}" class="btn btn-sm btn-default btn-block"
-                           role="button">
-                            <span class="glyphicon glyphicon-duplicate"></span> Clonar Questionário</a>
+                                    <div class="btn-group">
+                                        <a href="{% url 'clone-form' ownedFormC.0.idForm %}"
+                                           class="btn btn-sm btn-default btn-block"
+                                           role="button">
+                                            <span class="glyphicon glyphicon-duplicate"></span> Clonar</a>
+                                    </div>
+                                </div> <!-- ./btn-group btn-group-justified -->
+                                </p>
 
-                        <button type="button" class="btn btn-sm btn-danger btn-block" data-toggle="modal"
-                                data-target="#modal-for-delete" data-form-name="{{i.idForm.formName}}"
-                                data-form-url="{% url 'delete-form' i.idForm %}">
-                            <span class="glyphicon glyphicon-trash"></span> Apagar
-                        </button>
-                        <!-- end of buttons -->
+                                <!-- end of buttons -->
 
-                    </div> <!-- ./caption -->
+                            </div> <!-- ./caption -->
 
-                </div> <!-- ./thumbnail -->
+                        </div> <!-- ./thumbnail -->
 
-                <!-- Modal  for deleting form -->
-                <div class="modal fade" id="modal-for-delete" role="dialog">
+                    </div> <!-- ./col-sm-6 col-md-3 -->
+
+                    {% endfor %}
+                </div> <!-- ./row -->
+
+                <!-- Modal  for granting access to user -->
+                <div class="modal fade" id="modal-for-access-granting" role="dialog">
                     <div class="modal-dialog">
 
                         <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">
-                                    Apagar Questionário</p>
+                                <p style="font-size: large; font-weight: bold;" id="invite-title"
+                                   align="center"></p>
                             </div>
                             <div class="modal-body">
-                                <p align="center" id="form-message"></p>
+
+                                <div>
+                                    <h4>Utilizadores com Acesso</h4>
+                                    <ul class="list-group apply-scroll" id="users-with-access"></ul>
+                                </div>
+
+                                <br/>
+
+                                <h4>Convidar Utilizador ou Alterar Permissões</h4>
+                                <div class="form-group">
+                                    <label for="grant-user">Utilizador a convidar:</label>
+                                    <select class="form-control" id="grant-user">
+                                        {% for option in usersList %}
+                                        <option>{{option.username}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="grant-permission">Permissão a atribuir:</label>
+                                    <select class="form-control" id="grant-permission">
+                                        <option value="O">Administrador</option>
+                                        <option value="R">Leitor</option>
+                                    </select>
+                                </div>
                                 <p align="center">
-                                    <button type="button" class="btn btn-success" value="click" id="delete-form">
-                                        <span class="glyphicon glyphicon-ok"></span> Sim
+                                    <button type="button" class="btn btn-primary" value="click" id="grant-access">
+                                        <span class="glyphicon glyphicon-send"></span> Convidar
                                     </button>
                                     <button type="button" class="btn btn-danger" data-dismiss="modal"><span
-                                            class="glyphicon glyphicon-remove"></span> Não
+                                            class="glyphicon glyphicon-remove"></span> Cancelar
                                     </button>
                                 </p>
                             </div>
                         </div>
 
                     </div>
-                </div>
+                </div> <!-- ./modal-for-access-granting -->
 
-            </div> <!-- ./col-sm-6 col-md-3 -->
+                <!-- Modal  for managing data collected in the form -->
+                <div class="modal fade" id="modal-for-data-collected-management" role="dialog">
+                    <div class="modal-dialog">
 
-            {% endfor %}
-        </div> <!-- ./row -->
-    </div> <!-- ./panel-footer -->
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <p style="font-size: large; font-weight: bold;" id="management-title"
+                                   align="center"></p>
+                            </div>
+                            <div class="modal-body">
 
-</div> <!-- End of panel for user forms -->
+                                <div class="form-group">
+                                    <label><span class="glyphicon glyphicon-paperclip"></span> Selecionar questionário
+                                        de
+                                        treino
+                                        para os participantes</label>
+                                    <select class="form-control" id="trial-form">
+                                        <option value=""></option>
+                                        {% for option in formsList %}
+                                        <option value="{{option.idForm}}">{{option.formName}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
-<br/>
+                                <div class="form-group">
+                                    <label><span class="glyphicon glyphicon-paperclip"></span> Apresentar aos
+                                        participantes uma explicação das escalas Self-Assessment Manikin
+                                        antes do questionário?</label>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="yes" id="display-scale">Sim</label>
+                                    </div>
+                                </div>
 
-<div id="panel-shared" class="panel panel-default"
-     style=" display: none; width:95%; margin-left:auto; margin-right:auto;">
-    <div class="panel-heading" style="background-color: #4E4E4E; color: #FFF;">
-        <h3 class="panel-title">
-            <span class="glyphicon glyphicon-eye-close"></span> Questionários Partilhados Comigo
-        </h3>
+                                <p align="center">
+                                    <button type="button" class="btn btn-primary" value="click" id="save-form-options">
+                                        <span class="glyphicon glyphicon-floppy-saved"></span> Gravar
+                                    </button>
+                                </p>
+
+                                <div id="alert-messages-for-special-configs"></div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div> <!-- ./modal-for-data-collected-management -->
+
+            </div> <!-- ./panel-body User Forms -->
+
+
+            <div class="panel-footer">
+                <span class="glyphicon glyphicon-folder-close"></span> <b>Os Meus Questionários (Arquivados)</b>
+
+                <br/><br/>
+                <div class="row">
+                    {% for ownedArchived in ownedArchivedForms %}
+
+                    <div class="col-sm-6 col-md-3">
+
+                        <div class="thumbnail">
+
+                            <img src="{{ownedArchived.0.idForm.formThumbnail}}" style="max-height: 128px;">
+
+                            <div class="caption">
+
+                                <p align="center" style="height: 80px;">
+                                    <strong>{{ownedArchived.0.idForm.formName}}</strong>
+                                </p>
+
+                                <div align="center" class="well well-sm">
+                                    <strong>Número de Recolhas:</strong> {{ownedArchived.1}}
+                                    <br/>
+                                    <strong>Estado: </strong> Arquivado
+                                    <br/><br/>
+                                    {% if ownedArchived.1 > 0 %}
+                                    <a href="{% url 'form-dashboard' ownedFormC.0.idForm %}" role="button"
+                                       class="btn btn-sm btn-default btn-block"><span
+                                            class="glyphicon glyphicon-search"></span>
+                                        Explorar Resultados</a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
+                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    </button>
+                                    {% endif %}
+                                </div>
+
+                                <!-- buttons -->
+                                <button onclick="downloadDataCollection('{{ownedArchived.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="glyphicon glyphicon-list-alt"></span>
+                                    Descarregar Recolhas
+                                </button>
+
+                                <a href="{% url 'download-json' ownedArchived.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block" role="button">
+                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Configurações</a>
+
+                                <a href="{% url 'clone-form' ownedArchived.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block"
+                                   role="button">
+                                    <span class="glyphicon glyphicon-duplicate"></span> Clonar Questionário</a>
+
+                                <button type="button" class="btn btn-sm btn-danger btn-block" data-toggle="modal"
+                                        data-target="#modal-for-delete"
+                                        data-form-name="{{ownedArchived.0.idForm.formName}}"
+                                        data-form-url="{% url 'delete-form' ownedArchived.0.idForm %}">
+                                    <span class="glyphicon glyphicon-trash"></span> Apagar
+                                </button>
+                                <!-- end of buttons -->
+
+                            </div> <!-- ./caption -->
+
+                        </div> <!-- ./thumbnail -->
+
+                        <!-- Modal  for deleting form -->
+                        <div class="modal fade" id="modal-for-delete" role="dialog">
+                            <div class="modal-dialog">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <p style="font-size: large; font-weight: bold;" align="center"
+                                           class="modal-title">
+                                            Apagar Questionário</p>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p align="center" id="form-message"></p>
+                                        <p align="center">
+                                            <button type="button" class="btn btn-success" value="click"
+                                                    id="delete-form">
+                                                <span class="glyphicon glyphicon-ok"></span> Sim
+                                            </button>
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><span
+                                                    class="glyphicon glyphicon-remove"></span> Não
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div> <!-- ./col-sm-6 col-md-3 -->
+
+                    {% endfor %}
+                </div> <!-- ./row -->
+            </div> <!-- ./panel-footer -->
+        </div> <!-- ./collapse1 -->
+    </div> <!-- End of panel for user forms -->
+
+    <br/>
+
+    <div id="panel-shared" class="panel panel-default"
+         style=" display: none; width:95%; margin-left:auto; margin-right:auto;">
+        <div class="panel-heading" style="background-color: #4E4E4E; color: #FFF;">
+            <h3 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2"><span
+                        class="glyphicon glyphicon-eye-close"></span> Questionários Partilhados Comigo</a>
+            </h3>
+        </div>
+        <div id="collapse2" class="panel-collapse collapse">
+            <div class="panel-body">
+
+                <div class="row">
+
+                    <!-- For open forms belonging to the owner  -->
+                    {% for sharedFormO in sharedFormsOpenList %}
+
+                    <div class="col-sm-6 col-md-3">
+
+                        <div class="thumbnail">
+                            <img src="{{sharedFormO.0.idForm.formThumbnail}}" style="max-height: 128px;">
+
+                            <div class="caption">
+
+                                <p align="center" style="height: 80px;">
+                                    <strong>{{sharedFormO.0.idForm.formName}}</strong>
+                                </p>
+
+                                <div align="center" class="well well-sm">
+                                    <strong>Número de Recolhas:</strong> {{sharedFormO.1}}
+                                    <br/>
+                                    <strong>Estado: </strong> Recolhas Abertas
+                                    <br/><br/>
+                                    {% if sharedFormO.1 > 0 %}
+                                    <a href="{% url 'form-dashboard' ownedFormC.0.idForm %}" role="button"
+                                       class="btn btn-sm btn-default btn-block"><span
+                                            class="glyphicon glyphicon-search"></span>
+                                        Explorar Resultados</a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
+                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    </button>
+                                    {% endif %}
+                                </div>
+
+                                <!-- buttons -->
+                                <a href="{% url 'data-collection' sharedFormO.0.idForm %}"
+                                   class="btn btn-sm btn-success btn-block"
+                                   role="button">
+                                    <span class="glyphicon glyphicon-edit"></span> Efetuar Recolha</a>
+
+                                <button onclick="downloadDataCollection('{{sharedFormO.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="glyphicon glyphicon-list-alt"></span>
+                                    Descarregar Recolhas
+                                </button>
+                                <!-- end of buttons -->
+
+                            </div> <!-- ./caption -->
+
+                        </div> <!-- ./thumbnail -->
+
+                    </div> <!-- col-sm-6 col-md-3 -->
+
+                    {% endfor %}
+
+                    <!-- For closed forms belonging to the owner  -->
+                    {% for sharedFormC in sharedFormsClosedList %}
+
+                    <div class="col-sm-6 col-md-3">
+
+                        <div class="thumbnail">
+                            <img src="{{sharedFormC.0.idForm.formThumbnail}}" style="max-height: 128px;">
+
+                            <div class="caption">
+
+                                <p align="center" style="height: 80px;">
+                                    <strong>{{sharedFormC.0.idForm.formName}}</strong>
+                                </p>
+
+                                <div align="center" class="well well-sm">
+                                    <strong>Número de Recolhas:</strong> {{sharedFormC.1}}
+                                    <br/>
+                                    <strong>Estado: </strong> Recolhas Fechadas
+                                    <br/><br/>
+                                    {% if sharedFormC.1 > 0 %}
+                                    <a href="{% url 'form-dashboard' ownedFormC.0.idForm %}" role="button"
+                                       class="btn btn-sm btn-default btn-block"><span
+                                            class="glyphicon glyphicon-search"></span>
+                                        Explorar Resultados</a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
+                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    </button>
+                                    {% endif %}
+                                </div>
+
+                                <!-- buttons -->
+                                <button onclick="downloadDataCollection('{{sharedFormC.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="glyphicon glyphicon-list-alt"></span>
+                                    Descarregar Recolhas
+                                </button>
+
+                                <a href="{% url 'download-json' sharedFormC.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block" role="button">
+                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Configurações</a>
+                                <!-- end of buttons -->
+
+                            </div> <!-- ./caption -->
+                        </div> <!-- ./thumbnail -->
+
+                    </div> <!-- ./col-sm-6 col-md-3 -->
+
+                    {% endfor %}
+                </div> <!-- ./row -->
+
+
+            </div> <!-- ./panel-body -->
+
+            <div class="panel-footer">
+                <span class="glyphicon glyphicon-folder-close"></span> <b>Questionários Partilhados Comigo
+                (Arquivados)</b>
+
+                <br/><br/>
+                <div class="row">
+                    {% for sharedArchive in sharedArchivedForms %}
+
+                    <div class="col-sm-6 col-md-3">
+
+                        <div class="thumbnail">
+                            <img src="{{sharedArchive.0.idForm.formThumbnail}}" style="max-height: 128px;">
+
+                            <div class="caption">
+
+                                <p align="center" style="height: 80px;">
+                                    <strong>{{sharedArchive.0.idForm.formName}}</strong>
+                                </p>
+
+                                <div align="center" class="well well-sm">
+                                    <strong>Número de Recolhas:</strong> {{sharedArchive.1}}
+                                    <br/>
+                                    <strong>Estado: </strong> Arquivado
+                                    <br/><br/>
+                                    {% if sharedArchive.1 > 0 %}
+                                    <a href="{% url 'form-dashboard' ownedFormC.0.idForm %}" role="button"
+                                       class="btn btn-sm btn-default btn-block"><span
+                                            class="glyphicon glyphicon-search"></span>
+                                        Explorar Resultados</a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
+                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    </button>
+                                    {% endif %}
+                                </div>
+
+                                <!-- buttons -->
+                                <button onclick="downloadDataCollection('{{sharedArchive.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
+                                </button>
+
+                                <a href="{% url 'download-json' sharedArchive.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block" role="button">
+                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Configurações</a>
+                                <!-- end of buttons -->
+
+                            </div> <!-- ./caption -->
+                        </div> <!-- ./thumbnail -->
+
+                    </div> <!-- ./col-sm-6 col-md-3 -->
+
+                    {% endfor %}
+                </div> <!-- ./row -->
+            </div> <!-- ./panel-footer -->
+        </div> <!-- ./collapse2 -->
     </div>
-    <div class="panel-body">
-
-        <div class="row">
-
-            <!-- For open forms belonging to the owner  -->
-            {% for i in sharedFormsOpenList %}
-
-            <div class="col-sm-6 col-md-3">
-
-                <div class="thumbnail">
-                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
-
-                    <div class="caption">
-
-                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
-
-                        <!-- buttons -->
-                        <a href="{% url 'data-collection' i.idForm %}" class="btn btn-sm btn-success btn-block"
-                           role="button">
-                            <span class="glyphicon glyphicon-edit"></span> Efetuar Recolha</a>
-
-                        <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span
-                                class="glyphicon glyphicon-list-alt"></span>
-                            Descarregar Recolhas
-                        </button>
-                        <!-- end of buttons -->
-
-                    </div> <!-- ./caption -->
-
-                </div> <!-- ./thumbnail -->
-
-            </div> <!-- col-sm-6 col-md-3 -->
-
-            {% endfor %}
-
-            <!-- For closed forms belonging to the owner  -->
-            {% for i in sharedFormsClosedList %}
-
-            <div class="col-sm-6 col-md-3">
-
-                <div class="thumbnail">
-                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
-
-                    <div class="caption">
-
-                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
-
-                        <!-- buttons -->
-                        <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span
-                                class="glyphicon glyphicon-list-alt"></span>
-                            Descarregar Recolhas
-                        </button>
-                        <!-- end of buttons -->
-
-                    </div> <!-- ./caption -->
-                </div> <!-- ./thumbnail -->
-
-            </div> <!-- ./col-sm-6 col-md-3 -->
-
-            {% endfor %}
-        </div> <!-- ./row -->
-
-
-    </div> <!-- ./panel-body -->
-
-    <div class="panel-footer">
-        <span class="glyphicon glyphicon-folder-close"></span> <b>Questionários Partilhados Comigo (Arquivados)</b>
-
-        <br/><br/>
-        <div class="row">
-            {% for i in sharedArchivedForms %}
-
-            <div class="col-sm-6 col-md-3">
-
-                <div class="thumbnail">
-                    <img src="{{i.idForm.formThumbnail}}" style="max-height: 128px;">
-
-                    <div class="caption">
-
-                        <p align="center" style="height: 80px;"><strong>{{i.idForm.formName}}</strong></p>
-
-                        <!-- buttons -->
-                        <button onclick="downloadDataCollection('{{i.idForm}}')" type="button"
-                                class="btn btn-sm btn-primary btn-block"><span
-                                class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
-                        </button>
-                        <!-- end of buttons -->
-
-                    </div> <!-- ./caption -->
-                </div> <!-- ./thumbnail -->
-
-            </div> <!-- ./col-sm-6 col-md-3 -->
-
-            {% endfor %}
-        </div> <!-- ./row -->
-    </div> <!-- ./panel-footer -->
-
 </div>
 
-<!--
-<a href="{% url 'new-form' %}" class="btn fixed-btn" role="button" data-toggle="tooltip" data-placement="left"
-   title="Criar novo questionário" style="background-color: #222; color: #FFF;">
-    <span class="glyphicon glyphicon-edit"></span> Criar Questionário</a>
-    -->
+<div class="fixed-btn">
+
+    <a href="{% url 'new-form' %}" class="btn btn-block btn-grey" role="button">
+        <span class="glyphicon glyphicon-edit"></span> Criar Questionário</a>
+
+    <a href="" class="btn btn-block btn-grey" role="button" data-toggle="modal" data-target="#importForm">
+        <span class="glyphicon glyphicon-import"></span> Importar Questionário</a>
+
+</div> <!-- ./btn-group-vertical fixed-btn -->
+
+<!-- Modal -->
+<div id="importForm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">Importar
+                    Questionário</p>
+            </div>
+            <div class="modal-body">
+                <div id="form-config" class="input-group">
+
+                    <label class="input-group-btn">
+                  <span class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span> Pesquisar
+                      <input style="display: none;" type="file" accept=".psyconfig" id="input-form-config"
+                             onchange="getFileName()"></span>
+                        <button class="btn btn-primary" type="button" onclick="getFileContent()"><span
+                                class="glyphicon glyphicon-import"></span> Carregar
+                        </button>
+                    </label>
+                    <input id="form-config-selected" type="text" class="form-control" readonly>
+                </div> <!-- ./form-config -->
+
+                <br/>
+                <div id="alert-messages-form-config-upload">
+
+                </div> <!-- ./alert-messages-form-config-upload -->
+
+            </div> <!-- ./modal-body -->
+        </div> <!-- ./modal-content -->
+
+    </div>
+</div>
 
 </body>
 </html>
@@ -602,6 +882,9 @@
     var urlForNNotifications = "{% url 'get-n-notifications' %}";
     var urlForDeleteNotifications = "{% url 'delete-notifications' %}";
     var dingSound = "{% static 'sounds/ding_sound.mp3' %}";
+    var urlToUploadJSON = "{% url 'upload-json' %}";
+    var urlToPostSpecialConfigs = "{% url 'save-special-configs' %}";
+    var urlToGetListUsersForm = "{% url 'get-list-users-form' %}";
 
     /**
      * Checks if a form can be edited.

@@ -1,6 +1,7 @@
 var participantDataCollection = {};
 var idParticipante;
 var date;
+var stepOrderForProgress = 0;
 
 toastr.options = {
     "closeButton": true,
@@ -21,10 +22,24 @@ toastr.options = {
 };
 
 /**
+ * Updates the progress bar.
+ * @param currentStep number of th current step
+ */
+function updateProgress(currentStep) {
+    var percentage = ((currentStep * 100) / sizeOfForm);
+    var result = Math.floor(percentage);
+    $('.progress-bar').css('width', result + '%').attr('aria-valuenow', result);
+    document.getElementById("progress-number").innerHTML = result + "%";
+    //console.log("Passo " + currentStep + ": " + result);
+}
+
+/**
  * Displays stimulus inside of it's div.
  * @param step Step of the stimulus
  */
 function displayStimulus(step) {
+    $("#div-progress").hide();
+
     var src = formConfiguration.passos[step - 1].fonteEstimulo;
 
     document.querySelector('#div-stimulus').innerHTML = '<p align="center"><img src="' + src + '" class="img-responsive"></p>'; // responsive image
@@ -35,6 +50,8 @@ function displayStimulus(step) {
  * @param step Step of the stimulus
  */
 function displayStimulusVideo(step) {
+    $("#div-progress").hide();
+
     var buttonNext = '<button id="video-stimulus-btn" class="btn btn-md btn-success" onclick="checkInfoInField(2)">' +
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>';
 
@@ -80,10 +97,6 @@ function checkInfoInField(id) {
                     toastr.warning(errors[i], "");
                 }
             } else {
-                console.log("Valencia: " + $('input[name=optradio]:checked', '#valenceRadios').val());
-                console.log("Alerta: " + $('input[name=optradio]:checked', '#arousalRadios').val());
-                console.log("Dominancia: " + $('input[name=optradio]:checked', '#dominanceRadios').val());
-
                 nextToDo("sam-scale-btn");
             }
 
@@ -121,6 +134,8 @@ function checkInfoInField(id) {
  * @param step Step of the stimulus
  */
 function displaySAMScale(step) {
+    $("#div-progress").show();
+
     var buttonNext = '<button id="sam-scale-btn" class="btn btn-md btn-success" onclick="checkInfoInField(0)">' +
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>';
 
@@ -215,6 +230,8 @@ function displaySAMScale(step) {
  * @param step Step of the stimulus
  */
 function displayQuestions(step) {
+    $("#div-progress").show();
+
     var buttonNext = '<button id="questions-btn" class="btn btn-md btn-success" onclick="checkInfoInField(1)">' +
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>';
 
@@ -234,6 +251,8 @@ function displayQuestions(step) {
  * @param step Step of the stimulus
  */
 function displayDescription(step) {
+    $("#div-progress").show();
+
     var buttonNext = '<button id="description-btn" class="btn btn-md btn-success" onclick="checkInfoInField(3)">' +
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>';
 
@@ -266,16 +285,8 @@ function shuffleArray(array) {
  */
 function displayScaleExplaining() {
     var scalesPresent = [];
-    var hasScales = false;
 
-    for (var i = 0; i < sizeOfForm; i++) {
-        if (formConfiguration.passos[i].hasOwnProperty("escalasSAM") && formConfiguration.passos[i].escalasSAM.length > 0) {
-            hasScales = true;
-            break;
-        }
-    }
-
-    if (hasScales) {
+    if (scaleExplained == 'Y') {
         // Checks what scales are going to be presented in the form
         for (var i = 0; i < sizeOfForm; i++) {
             if (formConfiguration.passos[i].hasOwnProperty("escalasSAM")) {
@@ -327,14 +338,46 @@ function displayScaleExplaining() {
 
         $("#div-instructions").append(
             "<br/><p><b>Por favor mantenha-se concentrado durante todo o questionário.</b>" +
-            "<br/><br/><button type='button' class='btn btn-primary' onclick='nextDecider()'> <span class='glyphicon glyphicon-ok'></span> Compreendi</button>" +
+            "<br/><br/><button type='button' class='btn btn-primary' onclick='hasTrialForm()'> <span class='glyphicon glyphicon-ok'></span> Compreendi</button>" +
             "</p>" +
             "<p></p>");
     } // <!-- ./if hasScales -->
     else {
-        nextDecider();
+        //nextDecider();
+        hasTrialForm();
     }
 
+}
+
+/**
+ * Checks if the user has selected a trial form for this form.
+ */
+function hasTrialForm() {
+    if (trialFormID != "") {
+        $("#div-instructions").empty();
+        $("#div-instructions").html('<p align="center">Antes de realizar este questionário ser-lhe-á apresentado um questionário' +
+            ' de treino para que possa ficar familiarizado com o tipo de questões que irão surgir.<br/>' +
+            '<b>Quando se sentir preparado abra o questionário de treino.</b></p>' +
+            '<button type="button" onclick="requestTrialForm()" class="btn btn-primary"> <span class="glyphicon glyphicon-education"></span> Abrir Questionário Treino</button>');
+
+    } else {
+        nextDecider();
+    }
+}
+
+/**
+ * Opens a trial form for the participant.
+ */
+function requestTrialForm() {
+
+    var trialWindow = window.open(urlToTrialForm);
+
+    // Detects when the trial window is closed
+    trialWindow.onunload = function() {
+        $("#div-instructions").empty();
+        $("#div-instructions").html('' +
+            '<button type="button" onclick="nextDecider()" class="btn btn-lg btn-primary"> <span class="glyphicon glyphicon-play-circle"></span> Iniciar Questionário</button>')
+    }
 }
 
 /**
@@ -384,9 +427,11 @@ function cleanAndStart() {
         $("#div-general-info").empty();
         $("#footer").remove();
 
-        //passoColheita.nPasso = step; // adds step to the JSON
-        passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
+        passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso;
         passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+        stepOrderForProgress++;
+        updateProgress(stepOrderForProgress);
 
         if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
             passoColheita.fixo = "sim";
@@ -439,12 +484,16 @@ function nextToDo(id) {
                 currentIndex++;
                 if (currentIndex == newForm.length) { // If there are no more steps
                     document.querySelector('#div-general-info').innerHTML = endMessage + endButton;
+                    $("#div-progress").hide();
                 } else {
                     step = newForm[currentIndex];
 
                     //passoColheita.nPasso = step;
                     passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
 
                     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                         passoColheita.fixo = "sim";
@@ -483,13 +532,16 @@ function nextToDo(id) {
             currentIndex++;
             if (currentIndex == newForm.length) { // if there are no more steps
                 document.querySelector('#div-general-info').innerHTML = endMessage + endButton; // presents end message
-
+                $("#div-progress").hide();
             } else {
                 step = newForm[currentIndex];
 
                 //passoColheita.nPasso = step;
                 passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                 passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                stepOrderForProgress++;
+                updateProgress(stepOrderForProgress);
 
                 if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                     passoColheita.fixo = "sim";
@@ -506,12 +558,16 @@ function nextToDo(id) {
             currentIndex++;
             if (currentIndex == newForm.length) { // if there are no more steps
                 document.querySelector('#div-general-info').innerHTML = endMessage + endButton; // presents end message
+                $("#div-progress").hide();
             } else {
                 step = newForm[currentIndex];
 
                 //passoColheita.nPasso = step;
                 passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                 passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                stepOrderForProgress++;
+                updateProgress(stepOrderForProgress);
 
                 if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                     passoColheita.fixo = "sim";
@@ -549,12 +605,16 @@ function nextToDo(id) {
                 currentIndex++;
                 if (currentIndex == newForm.length) { // If there are no more steps
                     document.querySelector('#div-general-info').innerHTML = endMessage + endButton;
+                    $("#div-progress").hide();
                 } else {
                     step = newForm[currentIndex];
 
                     //passoColheita.nPasso = step;
                     passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
 
                     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                         passoColheita.fixo = "sim";
@@ -577,6 +637,7 @@ function nextToDo(id) {
 function nextDecider() {
 
     $("#div-instructions").empty();
+    $("#div-progress").show();
 
     if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[step - 1].fonteEstimulo.length > 0)) {
         var time = formConfiguration.passos[step - 1].tempoEstimulo;
@@ -608,12 +669,15 @@ function nextDecider() {
                 currentIndex++;
                 if (currentIndex == newForm.length) { // if there are no more steps
                     document.querySelector('#div-general-info').innerHTML = endMessage + endButton; // presents end message
-
+                    $("#div-progress").hide();
                 } else {
                     step = newForm[currentIndex];
                     //passoColheita.nPasso = step;
-                    passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
+                    passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso;
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
 
                     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                         passoColheita.fixo = "sim";

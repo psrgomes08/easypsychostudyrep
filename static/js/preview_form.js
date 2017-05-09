@@ -1,6 +1,7 @@
 var participantDataCollection = {};
 var idParticipante;
 var date;
+var stepOrderForProgress = 0;
 
 toastr.options = {
     "closeButton": true,
@@ -21,10 +22,24 @@ toastr.options = {
 };
 
 /**
+ * Updates the progress bar.
+ * @param currentStep number of th current step
+ */
+function updateProgress(currentStep) {
+    var percentage = ((currentStep * 100) / sizeOfForm);
+    var result = Math.floor(percentage);
+    $('.progress-bar').css('width', result + '%').attr('aria-valuenow', result);
+    document.getElementById("progress-number").innerHTML = result + "%";
+    //console.log("Passo " + currentStep + ": " + result);
+}
+
+/**
  * Displays stimulus inside of it's div.
  * @param step Step of the stimulus
  */
 function displayStimulus(step) {
+    $("#div-progress").hide();
+
     var src = formConfiguration.passos[step - 1].fonteEstimulo;
 
     document.querySelector('#div-stimulus').innerHTML = '<p align="center"><img src="' + src + '" class="img-responsive"></p><button class="btn btn-md btn-danger" title="Fechar pré-visualização" onclick="closeVisualization()"><span class="glyphicon glyphicon-remove-circle"></span> Fechar</button>'; // responsive image
@@ -70,6 +85,10 @@ function checkInfoInField(id) {
         case 2: // for video stimulus
             nextToDo("video-stimulus-btn");
             break;
+
+        case 3:
+            nextToDo("description-btn");
+            break;
     }
 }
 
@@ -78,13 +97,11 @@ function checkInfoInField(id) {
  * @param step Step of the stimulus
  */
 function displaySAMScale(step) {
+    $("#div-progress").show();
+
     var buttonNext = '<button id="sam-scale-btn" class="btn btn-md btn-success" onclick="checkInfoInField(0)">' +
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>' +
         ' <button class="btn btn-md btn-danger" title="Fechar pré-visualização" onclick="closeVisualization()"><span class="glyphicon glyphicon-remove-circle"></span> Fechar</button>';
-
-    //var valence = '<img class="img-responsive"  src=' + valenceImage + ' ><br/>';
-    //var arousal = '<img class="img-responsive" src=' + arousalImage + '><br/>';
-    //var dominance = '<img class="img-responsive" src=' + dominanceImage + '><br/>';
 
     var titleValence = '<p><b>Valência Afetiva</b></p>';
     var titleArousal = '<p><b>Ativação Fisiológica</b></p>';
@@ -158,44 +175,6 @@ function displaySAMScale(step) {
             '<label class="drinkcard-cc dominance9" for="dominance9"></label>' +
             '</div></form>';
 
-        /*
-         var radioValence = '<form id="valenceRadios">' +
-         '<input type="radio" name="optradio" value="1">' +
-         '<input type="radio" name="optradio" value="2">' +
-         '<input type="radio" name="optradio" value="3">' +
-         '<input type="radio" name="optradio" value="4">' +
-         '<input type="radio" name="optradio" value="5">' +
-         '<input type="radio" name="optradio" value="6">' +
-         '<input type="radio" name="optradio" value="7">' +
-         '<input type="radio" name="optradio" value="8">' +
-         '<input type="radio" name="optradio" value="9">' +
-         '</form>';
-
-         var radioArousal = '<form id="arousalRadios">' +
-         '<input type="radio" name="optradio" value="1">' +
-         '<input type="radio" name="optradio" value="2">' +
-         '<input type="radio" name="optradio" value="3">' +
-         '<input type="radio" name="optradio" value="4">' +
-         '<input type="radio" name="optradio" value="5">' +
-         '<input type="radio" name="optradio" value="6">' +
-         '<input type="radio" name="optradio" value="7">' +
-         '<input type="radio" name="optradio" value="8">' +
-         '<input type="radio" name="optradio" value="9">' +
-         '</form>';
-
-         var radioDominance = '<form id="dominanceRadios">' +
-         '<input type="radio" name="optradio" value="1">' +
-         '<input type="radio" name="optradio" value="2">' +
-         '<input type="radio" name="optradio" value="3">' +
-         '<input type="radio" name="optradio" value="4">' +
-         '<input type="radio" name="optradio" value="5">' +
-         '<input type="radio" name="optradio" value="6">' +
-         '<input type="radio" name="optradio" value="7">' +
-         '<input type="radio" name="optradio" value="8">' +
-         '<input type="radio" name="optradio" value="9">' +
-         '</form>';
-         */
-
         if (scale == "Valência") {
             document.querySelector('#div-SAMScales').innerHTML += titleValence + radioValence;
         } else if (scale == "Alerta") {
@@ -235,7 +214,7 @@ function displayQuestions(step) {
  * @param step Step of the stimulus
  */
 function displayDescription(step) {
-    var buttonNext = '<button id="description-btn" class="btn btn-md btn-success" onclick="nextToDo()">' +
+    var buttonNext = '<button id="description-btn" class="btn btn-md btn-success" onclick="checkInfoInField(3)">' +
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>' +
         ' <button class="btn btn-md btn-danger" title="Fechar pré-visualização" onclick="closeVisualization()"><span class="glyphicon glyphicon-remove-circle"></span> Fechar</button>';
 
@@ -264,83 +243,6 @@ function shuffleArray(array) {
 }
 
 /**
- * Displays an explaining example of the scales used in the form.
- */
-function displayScaleExplaining() {
-    var scalesPresent = [];
-    var hasScales = false;
-
-    for (var i = 0; i < sizeOfForm; i++) {
-        if (formConfiguration.passos[i].hasOwnProperty("escalasSAM") && formConfiguration.passos[i].escalasSAM.length > 0) {
-            hasScales = true;
-            break;
-        }
-    }
-
-    if (hasScales) {
-        // Checks what scales are going to be presented in the form
-        for (var i = 0; i < sizeOfForm; i++) {
-            if (formConfiguration.passos[i].hasOwnProperty("escalasSAM")) {
-
-                for (var j = 0; j < formConfiguration.passos[i].escalasSAM.length; j++) {
-                    if (formConfiguration.passos[i].escalasSAM[j] == "Valência") {
-                        if (scalesPresent.indexOf("Valência") <= -1) {
-                            scalesPresent.push("Valência");
-                        }
-
-                    }
-                    else if (formConfiguration.passos[i].escalasSAM[j] == "Alerta") {
-                        if (scalesPresent.indexOf("Alerta") <= -1) {
-                            scalesPresent.push("Alerta");
-                        }
-                    }
-                    else {
-                        if (scalesPresent.indexOf("Dominância") <= -1) {
-                            scalesPresent.push("Dominância");
-                        }
-                    }
-                }
-            }
-        }
-
-        $("#div-instructions").append(
-            "<h3>Neste questionário irá visualizar alguns estímulos.<br/>" +
-            "Após cada um deles ser-lhe-ão apresentadas escalas que irão avaliar como se sentiu ao visualizá-los.</h3>"
-        );
-
-        for (var i = 0; i < scalesPresent.length; i++) {
-            if (scalesPresent[i] == "Valência") {
-                $("#div-instructions").append(
-                    "<br/><p><b style='color: #428BCA'>Valência Afetiva</b><br/><b>Triste &#8212; Feliz</b></p>" +
-                    "<p align='center'><img class='img-responsive'  src=" + valenceImage + " ></p>");
-            }
-            else if (scalesPresent[i] == "Alerta") {
-                $("#div-instructions").append(
-                    "<br/><p><b style='color: #428BCA'>Ativação Fisiológica</b><br/><b>Calmo &#8212; Muito Impactado</b></p>" +
-                    "<p>Pode sentir-se tão impactado por um estímulo positivo quanto por um estímulo negativo.</p>" +
-                    "<p align='center'><img class='img-responsive'  src=" + arousalImage + " ></p>");
-            }
-            else {
-                $("#div-instructions").append(
-                    "<br/><p><b style='color: #428BCA'>Dominância</b><br/><b>Dominante &#8212; Dominado</b></p>" +
-                    "<p align='center'><img class='img-responsive'  src=" + dominanceImage + " ></p>");
-            }
-        }
-
-        $("#div-instructions").append(
-            "<br/><p><b>Por favor mantenha-se concentrado durante todo o questionário.</b>" +
-            "<br/><br/><button type='button' class='btn btn-primary' onclick='nextDecider()'> <span class='glyphicon glyphicon-ok'></span> Compreendi</button>" +
-            " <button class='btn btn-md btn-danger' onclick='closeVisualization()'><span class='glyphicon glyphicon-remove-circle'></span> Fechar</button>" +
-            "</p>" +
-            "<p></p>");
-    } // <!-- ./if hasScales -->
-    else {
-        nextDecider();
-    }
-
-}
-
-/**
  * Cleans the screen and starts the questionnaire.
  */
 function cleanAndStart() {
@@ -356,7 +258,7 @@ function cleanAndStart() {
         + date.getSeconds() + ":"
         + date.getMilliseconds(); // timestamp of the beginning of the data collecting
 
-    idParticipante = document.getElementById("id-participante").value;
+    idParticipante = "p000";
     participantDataCollection.idParticipante = idParticipante;
     participantDataCollection.colheita = [];
     passoColheita = {};
@@ -373,15 +275,15 @@ function cleanAndStart() {
         passoColheita.fixo = "não";
     }
 
-    displayScaleExplaining(); // starts to see if there is a stimulus in the first step
+    nextDecider(); // starts to see if there is a stimulus in the first step
 
 }
 
 /**
  * Called by the elements to find out what to do next.
  */
-function nextToDo() {
-    var id = event.target.id; // to see which button triggered the function
+function nextToDo(id) {
+    //var id = event.target.id; // to see which button triggered the function
 
     switch (id) {
         case "sam-scale-btn": // the trigger came from SAM, check if has question
@@ -418,11 +320,16 @@ function nextToDo() {
                 currentIndex++;
                 if (currentIndex == newForm.length) { // If there are no more steps
                     document.querySelector('#div-general-info').innerHTML = endMessage + endButton;
+                    $("#div-progress").hide();
                 } else {
                     step = newForm[currentIndex];
 
-                    passoColheita.nPasso = step;
+                    //passoColheita.nPasso = step;
+                    passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
 
                     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                         passoColheita.fixo = "sim";
@@ -461,12 +368,16 @@ function nextToDo() {
             currentIndex++;
             if (currentIndex == newForm.length) { // if there are no more steps
                 document.querySelector('#div-general-info').innerHTML = endMessage + endButton; // presents end message
-
+                $("#div-progress").hide();
             } else {
                 step = newForm[currentIndex];
 
-                passoColheita.nPasso = step;
+                //passoColheita.nPasso = step;
+                passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                 passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                stepOrderForProgress++;
+                updateProgress(stepOrderForProgress);
 
                 if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                     passoColheita.fixo = "sim";
@@ -483,8 +394,23 @@ function nextToDo() {
             currentIndex++;
             if (currentIndex == newForm.length) { // if there are no more steps
                 document.querySelector('#div-general-info').innerHTML = endMessage + endButton; // presents end message
+                $("#div-progress").hide();
             } else {
                 step = newForm[currentIndex];
+
+                //passoColheita.nPasso = step;
+                passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
+                passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                stepOrderForProgress++;
+                updateProgress(stepOrderForProgress);
+
+                if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
+                    passoColheita.fixo = "sim";
+                } else {
+                    passoColheita.fixo = "não";
+                }
+
                 nextDecider();
             }
             break;
@@ -493,7 +419,7 @@ function nextToDo() {
             passoColheita.nomeDoEstimuloVideo = formConfiguration.passos[step - 1].nomeDoEstimuloVideo;
 
             date = new Date();
-            passoColheita.timeStampEstimuloVideo = date.getDate() + "/"
+            passoColheita.timestampEstimuloVideo = date.getDate() + "/"
                 + (date.getMonth() + 1) + "/"
                 + date.getFullYear() + " "
                 + date.getHours() + ":"
@@ -515,12 +441,16 @@ function nextToDo() {
                 currentIndex++;
                 if (currentIndex == newForm.length) { // If there are no more steps
                     document.querySelector('#div-general-info').innerHTML = endMessage + endButton;
+                    $("#div-progress").hide();
                 } else {
                     step = newForm[currentIndex];
 
                     //passoColheita.nPasso = step;
                     passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
 
                     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                         passoColheita.fixo = "sim";
@@ -543,6 +473,7 @@ function nextToDo() {
 function nextDecider() {
 
     $("#div-instructions").empty();
+    $("#div-progress").show();
 
     if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[step - 1].fonteEstimulo.length > 0)) {
         var time = formConfiguration.passos[step - 1].tempoEstimulo;
@@ -574,11 +505,15 @@ function nextDecider() {
                 currentIndex++;
                 if (currentIndex == newForm.length) { // if there are no more steps
                     document.querySelector('#div-general-info').innerHTML = endMessage + endButton; // presents end message
+                    $("#div-progress").hide();
 
                 } else {
                     step = newForm[currentIndex];
                     passoColheita.nPasso = step;
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
 
                     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
                         passoColheita.fixo = "sim";

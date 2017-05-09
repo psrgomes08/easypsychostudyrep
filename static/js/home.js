@@ -19,24 +19,130 @@ toastr.options = {
 var url;
 var formIDURLGeneration = "";
 var formURL = "";
+var formIDForSpecialConfigs = "";
+
+/**
+ * Uploads the uploaded form configuration to the database.
+ * @param uploadedFormConfig the form configuration file to the uploaded
+ */
+function uploadFormConfig(uploadedFormConfig) {
+    document.getElementById("alert-messages-form-config-upload").innerHTML = ''; // cleans the div if there is a previous message
+
+    $('#form-config').hide();
+    $("#alert-messages-form-config-upload").append('<p align="center"><strong>Aguarde...</strong></p>' +
+        '<p align="center">O seu questionário está a ser importado.</p>');
+
+    $.ajax({
+        url: urlToUploadJSON,
+        type: 'POST',
+        data: {
+            uploadedFormConfig: JSON.stringify(uploadedFormConfig),
+            csrfmiddlewaretoken: csrfToken
+        },
+        success: function () {
+            location.href = onSuccess;
+        },
+        error: function () {
+            $("#form-config").show();
+            document.getElementById("alert-messages-form-config-upload").innerHTML = '';
+            document.getElementById("alert-messages-form-config-upload").innerHTML = '<div class="alert alert-danger">' +
+                '<strong>Erro</strong> no carregamento da configuração do questionário.' +
+                '</div>';
+        }
+    });
+}
+
+/**
+ * Gets the content of the imported form configuration.
+ */
+function getFileContent() {
+    document.getElementById("alert-messages-form-config-upload").innerHTML = ''; // cleans the div if there is a previous message
+
+    var file = document.querySelector('#form-config input[type=file]').files[0];
+
+    if (file) {
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+
+        reader.onload = function (evt) {
+            var aux = JSON.parse(evt.target.result);
+
+            if (aux.length < 3) {
+                uploadFormConfig(aux);
+            }
+            else {
+                $("#alert-messages-form-config-upload").append('<p align="center">' +
+                    'Foram detetadas configurações de participantes para além da configuração do questionário.' +
+                    '<br/><strong>Deseja carregá-las também?</strong>' +
+                    '</p>' +
+                    '<p align="center">' +
+                    '<button id="ok-load" type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Sim</button>' +
+                    ' <button id="no-load" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Não</button>' +
+                    '</p>');
+
+                var okLoadBtn = document.getElementById('ok-load');
+                okLoadFunct = function () {
+                    uploadFormConfig(aux);
+                };
+                okLoadBtn.addEventListener('click', okLoadFunct);
+
+                var noLoadBtn = document.getElementById('no-load');
+                noLoadFunct = function () {
+                    uploadFormConfig(aux.slice(0, 2));
+                };
+                noLoadBtn.addEventListener('click', noLoadFunct);
+            }
+
+        };
+        reader.onerror = function (evt) {
+            document.getElementById("alert-messages-form-config-upload").innerHTML = '<div class="alert alert-danger">' +
+                '<strong>Erro</strong> na leitura do ficheiro. Por favor carregue novamente ou escolha outro ficheiro.' +
+                '</div>';
+        }
+    }
+}
+
+/**
+ * Gets the imported form configuration name.
+ */
+function getFileName() {
+    document.getElementById("alert-messages-form-config-upload").innerHTML = ''; // cleans the div if there is a previous message
+
+    var fileTextInput = $('#form-config').find('#form-config-selected');
+    var text = "";
+
+    var fileName = document.querySelector('#form-config input[type=file]').files[0].name;
+    text = fileName;
+
+    fileTextInput.val(text);
+
+    // Checks if the file extension is valid
+    var fileExtension = fileName.substr(fileName.lastIndexOf('.') + 1);
+    if (fileExtension != "psyconfig") {
+        document.getElementById("alert-messages-form-config-upload").innerHTML = '<div class="alert alert-danger alert-dismissable">' +
+            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +
+            '<strong>Erro na leitura do ficheiro.</strong> Por favor carregue um ficheiro com extensão <i>.psyconfig</i>.' +
+            '</div>';
+    }
+}
 
 /**
  * Gets the number of notifications of the user.
  */
 function numberOfNotifications() {
-    console.log("notifications before ajax: " + nNotifications);
+    //console.log("notifications before ajax: " + nNotifications);
     $.ajax({
         url: urlForNNotifications,
         type: 'GET',
 
         success: function (data) {
-            if(nNotifications != data && data != 0) {
+            if (nNotifications != data && data != 0) {
                 var audio = new Audio(dingSound);
                 audio.play();
             }
             $(document).find('#notifications-badge').text(data);
             nNotifications = data;
-            console.log("notifications after ajax: " + nNotifications);
+            //console.log("notifications after ajax: " + nNotifications);
         },
         error: function (data) {
             console.log(data.responseText);
@@ -78,6 +184,12 @@ $('#modal-for-notifications').on('show.bs.modal', function (e) {
                         $(e.currentTarget).find('#user-notifications').append('' +
                             '<div class="alert alert-warning" role="alert">' +
                             '<p align="center"><strong><span class="glyphicon glyphicon-exclamation-sign"></span> Alerta: </strong>' + data[i][0] + '</p>' +
+                            '</div>');
+                    }
+                    else if (data[i][1] == 'S') {
+                        $(e.currentTarget).find('#user-notifications').append('' +
+                            '<div class="alert alert-success" role="alert">' +
+                            '<p align="center"><strong><span class="glyphicon glyphicon-ok-sign"></span> Sucesso: </strong>' + data[i][0] + '</p>' +
                             '</div>');
                     }
                     else { // 'D'
@@ -130,6 +242,78 @@ function deleteNotifications() {
 }
 
 /**
+ * Saves the special configurations of a form, used in data collection.
+ */
+$('#save-form-options').click(function () {
+    var idForm = formIDForSpecialConfigs;
+    var f = document.getElementById("trial-form");
+    var idTrialForm = f.options[f.selectedIndex].value;
+
+    var scaleExplained = 'N';
+    if (document.getElementById('display-scale').checked) {
+        scaleExplained = 'Y';
+    }
+
+    $.ajax({
+        url: urlToPostSpecialConfigs,
+        type: 'POST',
+        data: {
+            idForm: idForm,
+            idTrialForm: idTrialForm,
+            scaleExplained: scaleExplained,
+            csrfmiddlewaretoken: csrfToken
+        },
+        success: function (data) {
+            $("#alert-messages-for-special-configs").html('<div class="alert alert-success">' +
+                '<p align="center"><strong><span class="glyphicon glyphicon-ok-sign"></span> Sucesso!</strong> As configurações foram guardadas.</p>' +
+                '</div>');
+            console.log(data);
+        },
+        error: function (data) {
+            $("#alert-messages-for-special-configs").html('<div class="alert alert-danger">' +
+                '<p align="center"><strong><span class="glyphicon glyphicon-remove-sign"></span> Erro!</strong> As configurações não foram guardadas.</p>' +
+                '</div>');
+            console.log(data.responseText);
+        }
+    });
+
+});
+
+/**
+ * Opens the modal for special form config.
+ */
+$('#modal-for-data-collected-management').on('show.bs.modal', function (e) {
+    var formName = $(e.relatedTarget).data('form-name');
+    $(e.currentTarget).find('#management-title').text('Configurar Recolhas de "' + formName + '"');
+
+    formIDForSpecialConfigs = $(e.relatedTarget).data('form-id');
+
+    $.ajax({
+        url: urlToPostSpecialConfigs,
+        type: 'GET',
+        data: {
+            idForm: formIDForSpecialConfigs,
+            csrfmiddlewaretoken: csrfToken
+        },
+        success: function (data) {
+            // position 0: idTrialForm
+            // position 1: scaleExplained
+
+            if (data[1] == 'Y') {
+                document.getElementById('display-scale').checked = true;
+            } else {
+                document.getElementById('display-scale').checked = false;
+            }
+
+            document.getElementById('trial-form').value = data[0];
+        },
+        error: function (data) {
+            console.log(data.responseText);
+        }
+    });
+});
+
+/**
  * Invites an user to access a form.
  */
 $('#grant-access').click(function () {
@@ -148,13 +332,17 @@ $('#grant-access').click(function () {
             permissionType: permissionType,
             csrfmiddlewaretoken: csrfToken
         },
-        success: function () {
+        success: function (data) {
             $('#modal-for-access-granting').modal('hide');
-            toastr.success('O utilizador "' + username + '" foi convidado!');
+
+            var response = data;
+            toastr.success(response);
         },
-        error: function () {
+        error: function (data) {
             $('#modal-for-access-granting').modal('hide');
-            toastr.warning('O utilizador "' + username + '" já foi convidado.');
+
+            var response = data.responseText;
+            toastr.error(response);
         }
     });
 });
@@ -240,11 +428,11 @@ function copyToClipboard() {
         var successful = document.execCommand('copy');
         var msg = successful ? 'successful' : 'unsuccessful';
         //console.log('Copying text command was ' + msg);
-        $('#form-url').append('<div class="alert alert-success alert-dismissible" role="alert">' +
+        $('#form-url').html('<div class="alert alert-success alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
             '<strong>O link foi copiado!</strong></div>');
     } catch (err) {
-        $('#form-url').append('<div class="alert alert-danger alert-dismissible" role="alert">' +
+        $('#form-url').html('<div class="alert alert-danger alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
             '<strong>Não foi possível copiar o link.</strong></div>');
         //console.log('Oops, unable to copy');
@@ -260,6 +448,28 @@ $('#modal-for-access-granting').on('show.bs.modal', function (e) {
     var formName = $(e.relatedTarget).data('form-name');
 
     $(e.currentTarget).find('#invite-title').text('Convidar utilizador para acesso a "' + formName + '"');
+    $(e.currentTarget).find('#users-with-access').html("");
+
+    $.ajax({
+        url: urlToGetListUsersForm,
+        type: 'GET',
+        data: {
+            idForm: formID,
+            csrfmiddlewaretoken: csrfToken
+        },
+        success: function (data) {
+            console.log(data[0][0]);
+            console.log(data[0][1]);
+            for(var i = 0; i < data.length; i++) {
+                $(e.currentTarget).find('#users-with-access').append('<li class="list-group-item">' + data[i][0] + ', <b>' + data[i][1] + '</b></li>');
+            }
+        },
+        error: function (data) {
+            $(e.currentTarget).find('#users-with-access').html("");
+            console.log(data.responseText);
+        }
+    });
+
 });
 
 /**

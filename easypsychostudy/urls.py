@@ -20,7 +20,7 @@ from easystudy import views
 from easystudy.views import *
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^4e9mtpG8DvblBOwcWwNI/', admin.site.urls),
     url(r'^painel$', HomeView.as_view(), name='home'),
     url(r'^$', UserLoginView.as_view(), name='login'),
     url(r'^registar$', UserRegisterView.as_view(), name='register'),
@@ -49,4 +49,10 @@ urlpatterns = [
     url(r'^apagarNotificacoes', views.deleteNotifications, name='delete-notifications'),
     url(r'^notificacoes', views.getNotifications, name='get-notifications'),
     url(r'^nnotificacoes', views.getNNotifications, name='get-n-notifications'),
+    url(r'^carregarconfiguracoes', views.uploadJSON, name='upload-json'),
+    url(r'^questionariotreino/([a-zA-Z0-9S]+)$', views.getTrialForm, name='trial-form'),
+    url(r'^guardarconfiguracoes', SpecialConfigsView.as_view(), name='save-special-configs'),
+    url(r'^listadeconvidados', views.getListOfUsersWithForm, name='get-list-users-form'),
+    url(r'^painelquestionario/([a-zA-Z0-9S]+)$', views.formDashboardView, name='form-dashboard'),
+    url(r'^infoParticipante', views.getInfoOfParticipant, name='info-participant'),
 ]

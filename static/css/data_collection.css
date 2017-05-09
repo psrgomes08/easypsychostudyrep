@@ -1,9 +1,11 @@
-.cc-selector input{
-    margin:0;padding:0;
-    -webkit-appearance:none;
-       -moz-appearance:none;
-            appearance:none;
+.cc-selector input {
+    margin: 0;
+    padding: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
+
 /*
 .valence1{background-image:url(http://101.imagebam.com/download/_N0R8Ed7lZYK1Q33821O2w/54310/543095756/valence1.png);}
 .valence2{background-image:url(http://101.imagebam.com/download/Y4a1eqcAX6cvPV8ylkBoBw/54310/543095759/valence2.png);}
@@ -15,15 +17,41 @@
 .valence8{background-image:url(http://101.imagebam.com/download/K9V38r5cSAUKdQpiZ6sW1w/54310/543097366/valence8.png);}
 .valence9{background-image:url(http://101.imagebam.com/download/g4cvupkUB-reRqOiAgX51A/54310/543097369/valence9.png);}
 */
-.valence1{background-image:url(../images/valence/valence1.png);}
-.valence2{background-image:url(../images/valence/valence2.png);}
-.valence3{background-image:url(../images/valence/valence3.png);}
-.valence4{background-image:url(../images/valence/valence4.png);}
-.valence5{background-image:url(../images/valence/valence5.png);}
-.valence6{background-image:url(../images/valence/valence6.png);}
-.valence7{background-image:url(../images/valence/valence7.png);}
-.valence8{background-image:url(../images/valence/valence8.png);}
-.valence9{background-image:url(../images/valence/valence9.png);}
+.valence1 {
+    background-image: url(../images/valence/valence1.png);
+}
+
+.valence2 {
+    background-image: url(../images/valence/valence2.png);
+}
+
+.valence3 {
+    background-image: url(../images/valence/valence3.png);
+}
+
+.valence4 {
+    background-image: url(../images/valence/valence4.png);
+}
+
+.valence5 {
+    background-image: url(../images/valence/valence5.png);
+}
+
+.valence6 {
+    background-image: url(../images/valence/valence6.png);
+}
+
+.valence7 {
+    background-image: url(../images/valence/valence7.png);
+}
+
+.valence8 {
+    background-image: url(../images/valence/valence8.png);
+}
+
+.valence9 {
+    background-image: url(../images/valence/valence9.png);
+}
 
 /*
 .arousal1{background-image:url(http://101.imagebam.com/download/LyBF6fizRqT2Yn9SXT-G3A/54310/543098304/arousal1.png);}
@@ -36,15 +64,41 @@
 .arousal8{background-image:url(http://101.imagebam.com/download/cNP9ai8DjI_S_bWPsuppTA/54310/543098319/arousal8.png);}
 .arousal9{background-image:url(http://101.imagebam.com/download/ZoN6tC6abXr-Nppe5FaVCA/54310/543098321/arousal9.png);}
 */
-.arousal1{background-image:url(../images/arousal/arousal1.png);}
-.arousal2{background-image:url(../images/arousal/arousal2.png);}
-.arousal3{background-image:url(../images/arousal/arousal3.png);}
-.arousal4{background-image:url(../images/arousal/arousal4.png);}
-.arousal5{background-image:url(../images/arousal/arousal5.png);}
-.arousal6{background-image:url(../images/arousal/arousal6.png);}
-.arousal7{background-image:url(../images/arousal/arousal7.png);}
-.arousal8{background-image:url(../images/arousal/arousal8.png);}
-.arousal9{background-image:url(../images/arousal/arousal9.png);}
+.arousal1 {
+    background-image: url(../images/arousal/arousal1.png);
+}
+
+.arousal2 {
+    background-image: url(../images/arousal/arousal2.png);
+}
+
+.arousal3 {
+    background-image: url(../images/arousal/arousal3.png);
+}
+
+.arousal4 {
+    background-image: url(../images/arousal/arousal4.png);
+}
+
+.arousal5 {
+    background-image: url(../images/arousal/arousal5.png);
+}
+
+.arousal6 {
+    background-image: url(../images/arousal/arousal6.png);
+}
+
+.arousal7 {
+    background-image: url(../images/arousal/arousal7.png);
+}
+
+.arousal8 {
+    background-image: url(../images/arousal/arousal8.png);
+}
+
+.arousal9 {
+    background-image: url(../images/arousal/arousal9.png);
+}
 
 /*
 .dominance1{background-image:url(http://101.imagebam.com/download/8uzFnYYZdvuEqfnjoRqsTQ/54311/543100770/dominance1.png);}
@@ -57,38 +111,69 @@
 .dominance8{background-image:url(http://101.imagebam.com/download/nca-h4byGd3omKyAgDoe7g/54311/543100790/dominance8.png);}
 .dominance9{background-image:url(http://101.imagebam.com/download/p-NPiv2fCsaw_5d6TYvRdg/54311/543100794/dominance9.png);}
 */
-.dominance1{background-image:url(../images/dominance/dominance1.png);}
-.dominance2{background-image:url(../images/dominance/dominance2.png);}
-.dominance3{background-image:url(../images/dominance/dominance3.png);}
-.dominance4{background-image:url(../images/dominance/dominance4.png);}
-.dominance5{background-image:url(../images/dominance/dominance5.png);}
-.dominance6{background-image:url(../images/dominance/dominance6.png);}
-.dominance7{background-image:url(../images/dominance/dominance7.png);}
-.dominance8{background-image:url(../images/dominance/dominance8.png);}
-.dominance9{background-image:url(../images/dominance/dominance9.png);}
+.dominance1 {
+    background-image: url(../images/dominance/dominance1.png);
+}
 
+.dominance2 {
+    background-image: url(../images/dominance/dominance2.png);
+}
 
-.cc-selector input:active +.drinkcard-cc{opacity: .9;}
-.cc-selector input:checked +.drinkcard-cc{
+.dominance3 {
+    background-image: url(../images/dominance/dominance3.png);
+}
+
+.dominance4 {
+    background-image: url(../images/dominance/dominance4.png);
+}
+
+.dominance5 {
+    background-image: url(../images/dominance/dominance5.png);
+}
+
+.dominance6 {
+    background-image: url(../images/dominance/dominance6.png);
+}
+
+.dominance7 {
+    background-image: url(../images/dominance/dominance7.png);
+}
+
+.dominance8 {
+    background-image: url(../images/dominance/dominance8.png);
+}
+
+.dominance9 {
+    background-image: url(../images/dominance/dominance9.png);
+}
+
+.cc-selector input:active + .drinkcard-cc {
+    opacity: .9;
+}
+
+.cc-selector input:checked + .drinkcard-cc {
     -webkit-filter: none;
-       -moz-filter: none;
-            filter: none;
+    -moz-filter: none;
+    filter: none;
 }
-.drinkcard-cc{
-    cursor:pointer;
-    background-size:contain;
-    background-repeat:no-repeat;
-    display:inline-block;
-    width:124px;height:133px;
+
+.drinkcard-cc {
+    cursor: pointer;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 124px;
+    height: 133px;
     -webkit-transition: all 100ms ease-in;
-       -moz-transition: all 100ms ease-in;
-            transition: all 100ms ease-in;
+    -moz-transition: all 100ms ease-in;
+    transition: all 100ms ease-in;
     -webkit-filter: brightness(1.8) grayscale(1) opacity(.7);
-       -moz-filter: brightness(1.8) grayscale(1) opacity(.7);
-            filter: brightness(1.8) grayscale(1) opacity(.7);
+    -moz-filter: brightness(1.8) grayscale(1) opacity(.7);
+    filter: brightness(1.8) grayscale(1) opacity(.7);
 }
-.drinkcard-cc:hover{
+
+.drinkcard-cc:hover {
     -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
-       -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
-            filter: brightness(1.2) grayscale(.5) opacity(.9);
+    -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
+    filter: brightness(1.2) grayscale(.5) opacity(.9);
 }

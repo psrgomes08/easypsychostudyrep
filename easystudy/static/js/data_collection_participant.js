@@ -25,6 +25,9 @@ function cleanAndStartCP() {
     passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
 
+    stepOrderForProgress++;
+    updateProgress(stepOrderForProgress);
+
     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
         passoColheita.fixo = "sim";
     } else {
