@@ -38,6 +38,16 @@
     color: #FFF;
 }
 
+.btn-grey:active {
+    background-color: rgba(34, 34, 34, 0.9);
+    color: #FFF;
+}
+
+.btn-grey:visited {
+    background-color: rgba(34, 34, 34, 0.9);
+    color: #FFF;
+}
+
 /* Makes an element scrollable */
 .apply-scroll {
     max-height: 100px;
@@ -54,4 +64,11 @@
 
 .panel-heading a.collapsed:after {
     content: "\e080";
+}
+
+/* Hides button text when collapsing screen */
+@media screen and (max-width: 345px) {
+    .button-text {
+        display: none;
+    }
 }

@@ -24,7 +24,7 @@ class DataCollectionForParticipantView(View):
             for i in range(0, len(participants_in_form)):
                 if idParticipant == participants_in_form[i].idParticipant:
                     print(
-                        "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
+                        "ERROR DataCollectionForParticipantView: There is already a participant with the ID " + idParticipant + " in the data collection.")
                     return HttpResponseServerError(
                         "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
 
@@ -41,7 +41,7 @@ class DataCollectionForParticipantView(View):
 
             # check if it data collection is open or if the form is not archived
             if selected_form.statusType == 'C' or selected_form.isArchived == 'Y':
-                print("ERROR: Either the data collection is not open or the form " + idForm + " is archived.")
+                print("ERROR DataCollectionForParticipantView: Either the data collection is not open or the form " + idForm + " is archived.")
                 return HttpResponseServerError("ERROR: Either the data collection is not open or the form " + idForm + " is archived.")
 
             else:
@@ -57,7 +57,7 @@ class DataCollectionForParticipantView(View):
                 return render(request, "collection/data_collection_participant.html", context)
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR DataCollectionForParticipantView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request, idForm, idParticipant):
@@ -67,7 +67,7 @@ class DataCollectionForParticipantView(View):
         token = request.POST["token"]
 
         if ParticipantInForm.objects.filter(idParticipant=idParticipant, idForm=idForm):
-            print("ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
+            print("ERROR DataCollectionForParticipantView: There is already a participant with the ID " + idParticipant + " in the data collection.")
             return HttpResponseServerError(
                 "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
 
@@ -97,7 +97,7 @@ class DataCollectionForParticipantView(View):
                         print("SUCCESS: Notification COLLECTION pushed to user " + permission[i].username.username)
 
                 except Exception as e:
-                    print("ERROR: " + str(e))
+                    print("ERROR DataCollectionForParticipantView: " + str(e))
                     return HttpResponseServerError("ERROR: " + str(e))
                 # End of push notifications
 
@@ -105,7 +105,7 @@ class DataCollectionForParticipantView(View):
                 return HttpResponse("SUCCESS: Form entry successfully saved.")
 
             except Exception as e:
-                print("ERROR: " + str(e))
+                print("ERROR DataCollectionForParticipantView: " + str(e))
                 return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -157,7 +157,7 @@ class DataCollectionView(View):
                     return render(request, "collection/data_collection.html", context)
 
             except Exception as e:
-                print("ERROR: " + str(e))
+                print("ERROR DataCollectionView: " + str(e))
                 return HttpResponseServerError("ERROR: " + str(e))
 
     # posts the participants data
@@ -168,19 +168,19 @@ class DataCollectionView(View):
 
         try:
             if ParticipantInForm.objects.filter(idParticipant=idParticipant, idForm=idForm):
-                response = HttpResponseServerError("The collected data could not be submited.")
+                response = HttpResponseServerError("ERROR DataCollectionView: The collected data could not be submited.")
             else:
                 p = ParticipantInForm()
                 p.idForm = Form.objects.get(idForm=idForm)
                 p.idParticipant = idParticipant
                 p.dataCollection = dataCollection
                 p.save()
-                response = HttpResponse("Form successfully sent.")
+                response = HttpResponse("SUCCESS: Form successfully sent.")
 
             return response
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR DataCollectionView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -194,10 +194,10 @@ def checkTokenForParticipant(request):
 
     try:
         ParticipantToken.objects.get(idForm=idForm, idFutureParticipant=idParticipant, token=tokenInserted)
-        return HttpResponse("SUCCESS")
+        return HttpResponse("SUCCESS: The token is valid.")
 
     except Exception as e:
-        print("ERROR: " + str(e))
+        print("ERROR checkTokenForParticipant: " + str(e))
         return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -206,10 +206,8 @@ def checkTokenForParticipant(request):
 # ######################################################################## #
 def getTrialForm(request, idFormTrial):
 
-    print(idFormTrial)
-
     if(idFormTrial == "NA"):
-        return HttpResponseServerError("ERROR: The trial form you tried to open is not configured.")
+        return HttpResponseServerError("ERROR getTrialForm: The trial form you tried to open is not configured.")
 
     else:
         try:
@@ -223,5 +221,5 @@ def getTrialForm(request, idFormTrial):
             return render(request, "collection/trial_data_collection.html", context)
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR getTrialForm: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))

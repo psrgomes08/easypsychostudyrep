@@ -32,14 +32,15 @@ def downloadDataCollectionRequest(request):
             p = ParticipantInForm.objects.filter(idForm=idForm)
 
             if len(p) == 0:
-                print("ERROR: No data collected in form " + idForm + ".")
+                print("ERROR downloadDataCollectionRequest: No data collected in form " + idForm + ".")
                 return HttpResponseServerError("ERROR: No data collected in form " + idForm + ".")
 
             else:
+                print("SUCCESS: The form " + idForm + " has data to be collected.")
                 return HttpResponse("SUCCESS: The form " + idForm + " has data to be collected.")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR downloadDataCollectionRequest: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -70,8 +71,7 @@ def grantAccess(request):
                 if p[0].permissionType == 'O':  # permission Owner can not be downgraded
                     if permissionType == 'O' or permissionType == 'R':
                         print(
-                            "ERROR: The user " + username + " already has Owner permission for the form " + idForm + ". This permission can not be altered.")
-                        # return HttpResponseServerError("ERROR_1: The user " + username + " already has Owner permission for the form " + idForm + ". This permission can not be altered.")
+                            "ERROR grantAccess: The user " + username + " already has Owner permission for the form " + idForm + ". This permission can not be altered.")
                         return HttpResponseServerError(
                             "O utilizador " + username + " já possui permissões de Administrador para o questionário \"" + f.formName + "\" que não podem ser alteradas.")
 
@@ -86,14 +86,13 @@ def grantAccess(request):
                                   request.session['username'] + "."
                         pushNotification(username, idForm, message, 'S')
 
-                        # return HttpResponse("SUCCESS_1: The user " + username + " now has Owner permission for the form " + idForm + ".")
+                        print("SUCCESS: The user " + username + " now has Owner permission for the form " + idForm + ".")
                         return HttpResponse(
                             "O utilizador " + username + " tem agora permissões de Administrador para o questionário \"" + f.formName + "\".")
 
                     else:  # permissionType == 'R'
                         print(
-                            "ERROR: The user " + username + " already has Reader permission for the form " + idForm + ".")
-                        # return HttpResponseServerError("ERROR_2: The user " + username + " already has Reader permission for the form " + idForm + ".")
+                            "ERROR grantAccess: The user " + username + " already has Reader permission for the form " + idForm + ".")
                         return HttpResponseServerError(
                             "O utilizador " + username + " já possui permissões de Leitor para o questionário \"" + f.formName + "\".")
 
@@ -178,8 +177,7 @@ def grantAccess(request):
                             # End of Trial Permission handling
 
         except Exception as e:
-            print("ERROR: " + str(e))
-            # return HttpResponseServerError("ERROR: " + str(e))
+            print("ERROR grantAccess: " + str(e))
             return HttpResponseServerError(
                 "Ocorreu um erro. Por favor tente novamente ou contacte o administrador do sistema.")
 
@@ -222,15 +220,15 @@ def archiveForm(request, idForm):
                             pushNotification(permission[i].username.username, idForm, message, 'D')
 
                 except Exception as e:
-                    print("ERROR: " + str(e))
+                    print("ERROR archiveForm: " + str(e))
                     return HttpResponseServerError("ERROR: " + str(e))
                     # End of push notifications
 
             return redirect('home')
 
         except Exception as e:
-            print(e)
-            return HttpResponseServerError(e)
+            print("ERROR archiveForm: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
 
 # ######################################################################## #
@@ -268,14 +266,14 @@ def closeDataCollection(request, idForm):
                             pushNotification(permission[i].username.username, idForm, message, 'W')
 
                 except Exception as e:
-                    print("ERROR: " + str(e))
+                    print("ERROR closeDataCollection: " + str(e))
                     return HttpResponseServerError("ERROR: " + str(e))
                     # End of push notifications
 
             return redirect('home')
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR closeDataCollection: " + str(e))
             raise HttpResponse("ERROR: " + str(e))
 
 
@@ -314,14 +312,14 @@ def openDataCollection(request, idForm):
                             pushNotification(permission[i].username.username, idForm, message, 'W')
 
                 except Exception as e:
-                    print("ERROR: " + str(e))
+                    print("ERROR openDataCollection: " + str(e))
                     return HttpResponseServerError("ERROR: " + str(e))
                     # End of push notifications
 
             return redirect('home')
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR openDataCollection: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -333,7 +331,7 @@ def logout(request):
         del request.session['username']  # deletes the stored session
 
     except Exception as e:
-        print("ERROR: " + str(e))
+        print("ERROR openDataCollection: " + str(e))
         return HttpResponseServerError("ERROR: " + str(e))
 
     return redirect('login')  # redirects to the login page
@@ -356,6 +354,8 @@ def downloadJSON(request, idForm):
 
             formName = selectedForm.formName
             formName = formName.replace(" ", "_")
+            formName = urllib.parse.quote(formName) # parses ascii characters
+
             filename = formName + '_config' + '.psyconfig'
 
             configArray.append(formThumb)
@@ -371,10 +371,12 @@ def downloadJSON(request, idForm):
             response = HttpResponse(configJson, content_type='application/force-download')
             response['Content-Type'] = 'application/force-download'
             response['Content-Disposition'] = "attachment; filename=" + filename
+
+            print("SUCCESS: JSON for form " + idForm + " successfully downloaded.")
             return response
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR downloadJSON: " + str(e))
             raise Http404("ERROR: " + str(e))
 
 
@@ -398,7 +400,7 @@ def uploadJSON(request):
         # Position 2 - n: participantConfig
 
         if len(aux) == 0:
-            return HttpResponseServerError("ERROR: The file length is 0.")
+            return HttpResponseServerError("ERROR uploadJSON: The file length is 0.")
 
         formThumbnail = aux[0]
 
@@ -443,6 +445,7 @@ def uploadJSON(request):
                         p.save()
 
                 except Exception as e:
+                    print("ERROR uploadJSON: " + str(e))
                     return HttpResponseServerError("ERROR: " + str(e))
 
             # participantConfig
@@ -460,8 +463,10 @@ def uploadJSON(request):
                     p.save()
 
                 except Exception as e:
+                    print("ERROR uploadJSON: " + str(e))
                     return HttpResponseServerError("ERROR: " + str(e))
 
+        print("SUCCESS: Form uploaded successfully.")
         return HttpResponse("SUCCESS: Form uploaded successfully.")
 
 
@@ -503,7 +508,7 @@ def deleteStudyForm(request, idForm):
                         pushNotification(permission[i].username.username, idForm, message, 'D')
 
             except Exception as e:
-                print("ERROR: " + str(e))
+                print("ERROR deleteStudyForm: " + str(e))
                 return HttpResponseServerError("ERROR: " + str(e))
                 # End of push notifications
 
@@ -512,7 +517,7 @@ def deleteStudyForm(request, idForm):
             return redirect('home')
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR deleteStudyForm: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -542,8 +547,7 @@ def downloadParticipantsDataCollectedData(request, idForm):
             # desired filename
             formName = f.formName
             formName = formName.replace(",", " ").replace(".", " ").replace(" ", "_")
-
-            formName = urllib.parse.quote(formName)
+            formName = urllib.parse.quote(formName) # parses ascii characters
 
             filename = formName + '_dados_recolhidos' + '.xlsx'
 
@@ -700,13 +704,12 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetValence.write_string(v_row, v_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetValence.set_column(v_col, v_col, 20)
-                                print("Valência - " + step['nomeDoEstimulo'] + ": " + str(v_row) + "," + str(v_col))
+                                #print("Valência - " + step['nomeDoEstimulo'] + ": " + str(v_row) + "," + str(v_col))
                                 v_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetValence.write_string(v_row, v_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetValence.set_column(v_col, v_col, 20)
-                                print(
-                                    "Valência - " + step['nomeDoEstimuloVideo'] + ": " + str(v_row) + "," + str(v_col))
+                                #print("Valência - " + step['nomeDoEstimuloVideo'] + ": " + str(v_row) + "," + str(v_col))
                                 v_col += 1
 
                         # Worksheet Arousal
@@ -714,12 +717,12 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetArousal.set_column(a_col, a_col, 20)
-                                print("Alerta - " + step['nomeDoEstimulo'] + ": " + str(a_row) + "," + str(a_col))
+                                #print("Alerta - " + step['nomeDoEstimulo'] + ": " + str(a_row) + "," + str(a_col))
                                 a_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetArousal.set_column(a_col, a_col, 20)
-                                print("Alerta - " + step['nomeDoEstimuloVideo'] + ": " + str(a_row) + "," + str(a_col))
+                                #print("Alerta - " + step['nomeDoEstimuloVideo'] + ": " + str(a_row) + "," + str(a_col))
                                 a_col += 1
 
                         # Worksheet Dominance
@@ -727,13 +730,12 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetDominance.set_column(d_col, d_col, 20)
-                                print("Dominância - " + step['nomeDoEstimulo'] + ": " + str(d_row) + "," + str(d_col))
+                                #print("Dominância - " + step['nomeDoEstimulo'] + ": " + str(d_row) + "," + str(d_col))
                                 d_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetDominance.set_column(d_col, d_col, 20)
-                                print("Dominância - " + step['nomeDoEstimuloVideo'] + ": " + str(d_row) + "," + str(
-                                    d_col))
+                                #print("Dominância - " + step['nomeDoEstimuloVideo'] + ": " + str(d_row) + "," + str(d_col))
                                 d_col += 1
 
                 if 'questoes' in step:
@@ -865,10 +867,11 @@ def downloadParticipantsDataCollectedData(request, idForm):
             response = HttpResponse(output.read(), content_type="application/vnd.ms-excel")
             response['Content-Disposition'] = "attachment; filename=" + filename
 
+            print("SUCCESS: Data collection for form " + idForm + " successfully downloaded.")
             return response
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR downloadParticipantsDataCollectedData: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -980,6 +983,7 @@ def checkParticipantID(request):
                 pt.idFutureParticipant = idFutureParticipant  # the ID is not yet submited in the ParticipantInForm table
                 pt.token = definedPass
                 pt.save()
+                print("SUCCESS: The token for participant " + idFutureParticipant + " was created.")
                 return HttpResponse("SUCCESS: The token for participant " + idFutureParticipant + " was created.")
 
             except ObjectDoesNotExist:
@@ -1008,7 +1012,7 @@ def deleteNotifications(request):
             return HttpResponse("SUCCESS: The notifications for user " + user + " were deleted.")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR deleteNotifications: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -1031,7 +1035,7 @@ def getNotifications(request):
             return HttpResponse(json.dumps(userNotifications), content_type="application/json")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR getNotifications: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -1050,7 +1054,7 @@ def getNNotifications(request):
             return HttpResponse(json.dumps(len(existingNotifications)), content_type="application/json")
 
         except Exception as e:
-            return HttpResponseServerError("ERROR: " + str(e))
+            return HttpResponseServerError("ERROR getNNotifications: " + str(e))
 
 
 # ######################################################################## #
@@ -1076,8 +1080,8 @@ class SpecialConfigsView(View):
             return HttpResponse(json.dumps(response), content_type="application/json")
 
         except Exception as e:
-            print(e)
-            return HttpResponseServerError(e)
+            print("ERROR SpecialConfigsView: " + str(e))
+            return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request):
         if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -1205,7 +1209,7 @@ class SpecialConfigsView(View):
                     return HttpResponse("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
 
             except Exception as e:
-                print("ERROR: " + str(e))
+                print("ERROR SpecialConfigsView: " + str(e))
                 return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -1248,7 +1252,7 @@ def getListOfUsersWithForm(request):
         return HttpResponse(json.dumps(usersListWithAccess), content_type="application/json")
 
     except Exception as e:
-        print("ERROR: " + str(e))
+        print("ERROR getListOfUsersWithForm: " + str(e))
         return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -1282,7 +1286,7 @@ def formDashboardView(request, idForm):
 
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR formDashboardView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -1335,5 +1339,5 @@ def getInfoOfParticipant(request):
             return HttpResponse(json.dumps(response), content_type="application/json")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR getInfoOfParticipant: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))

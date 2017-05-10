@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from easystudy.forms import UserLoginForm, UserRegistrationForm
 from django.views import View
-from django.contrib.auth.forms import UserCreationForm
 
 try:
     from BytesIO import BytesIO
@@ -36,8 +35,6 @@ class UserLoginView(View):
 
             user = authenticate(username=username, password=password)
             login(request, user)
-
-            # print(request.user.is_authenticated())
 
             # redirect
             if request.user.is_authenticated():

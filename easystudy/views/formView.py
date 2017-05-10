@@ -32,7 +32,7 @@ class PreviewFormView(View):
                 return render(request, "form/preview_form.html", context)
 
             except Exception as e:
-                print("ERROR: " + str(e))
+                print("ERROR PreviewFormView: " + str(e))
                 return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request):
@@ -44,7 +44,7 @@ class PreviewFormView(View):
             return HttpResponse("SUCCESS: The key form_config_preview was stored in session.")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR PreviewFormView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -61,13 +61,15 @@ def editFormRequest(request):
         try:
             p = ParticipantInForm.objects.filter(idForm=idForm)
             if len(p) > 0:
-                return HttpResponseServerError("A form with collected data from participants cannot be edited.")
+                print("ERROR editFormRequest: A form with collected data from participants cannot be edited.")
+                return HttpResponseServerError("ERROR: A form with collected data from participants cannot be edited.")
 
             else:
-                return HttpResponse("Success.")
+                print("SUCCESS: This form can be edited.")
+                return HttpResponse("SUCCESS: This form can be edited.")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR PreviewFormView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -95,7 +97,7 @@ class EditFormView(View):
 
 
             except Exception as e:
-                print("ERROR: " + str(e))
+                print("ERROR EditFormView: " + str(e))
                 return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request, idForm):
@@ -108,7 +110,8 @@ class EditFormView(View):
             p = ParticipantInForm.objects.filter(idForm=idForm)
 
             if len(p) > 0:
-                return HttpResponseServerError("A form with collected data from participants cannot be edited.")
+                print("ERROR EditFormView: A form with collected data from participants cannot be edited.")
+                return HttpResponseServerError("ERROR: A form with collected data from participants cannot be edited.")
 
             else:
                 f = Form.objects.get(idForm=idForm)
@@ -116,11 +119,12 @@ class EditFormView(View):
                 f.formConfig = formConfig
                 f.formThumbnail = formThumbnail
                 f.save()
-                return HttpResponse("Form successfully edited.")
+                print("SUCCESS: Form successfully edited.")
+                return HttpResponse("SUCCESS: Form successfully edited.")
 
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR EditFormView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -128,7 +132,6 @@ class EditFormView(View):
 # For submission of psycho form in database.
 # ######################################################################## #
 class NewFormView(View):
-    # displays the page
     def get(self, request):
         if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
             return redirect('login')
@@ -136,7 +139,6 @@ class NewFormView(View):
         else:
             return render(request, "form/new_form.html", {})
 
-    # inserts a new form in the database
     def post(self, request):
         idForm = request.POST["idForm"]
         formName = request.POST["formName"]
@@ -150,7 +152,8 @@ class NewFormView(View):
 
             # Checks if there is already a study with that ID
             if Form.objects.filter(idForm=idForm):
-                response = HttpResponseServerError("The form could not be submited.")
+                print("ERROR NewFormView: The form could not be submited.")
+                return HttpResponseServerError("ERROR: The form could not be submited.")
 
             else:
                 f.save()
@@ -167,12 +170,11 @@ class NewFormView(View):
                 if request.session.has_key('form_config_preview'):
                     del request.session['form_config_preview']
 
-                response = HttpResponse("Form successfully sent.")
-
-            return response
+                print("SUCCESS: Form successfully submited.")
+                return HttpResponse("SUCCESS: Form successfully submited.")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR NewFormView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
 
@@ -199,7 +201,7 @@ class CloneFormView(View):
 
 
             except Exception as e:
-                print("ERROR: " + str(e))
+                print("ERROR CloneFormView: " + str(e))
                 return HttpResponseServerError("ERROR: " + str(e))
 
     def post(self, request, idForm):
@@ -208,14 +210,13 @@ class CloneFormView(View):
         formConfig = request.POST["formConfig"]
         formThumbnail = request.POST["formThumbnail"]
 
-        # formConfig = json.loads(formConfig)
-
         try:
             f = Form(idForm=idForm, formName=formName, formConfig=formConfig, formThumbnail=formThumbnail)
 
             # Checks if there is already a study with that ID
             if Form.objects.filter(idForm=idForm):
-                response = HttpResponseServerError("The form could not be submited.")
+                print("ERROR CloneFormView: The form could not be cloned.")
+                return HttpResponseServerError("ERROR: The form could not be cloned.")
 
             else:
                 f.save()
@@ -227,10 +228,9 @@ class CloneFormView(View):
                 p.idForm = idF
                 p.permissionType = 'O'  # the creator has owner permission
                 p.save()
-                response = HttpResponse("Form successfully sent.")
-
-            return response
+                print("SUCCESS: Form successfully cloned.")
+                return HttpResponse("SUCCESS: Form successfully cloned.")
 
         except Exception as e:
-            print("ERROR: " + str(e))
+            print("ERROR CloneFormView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))

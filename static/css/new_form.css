@@ -67,3 +67,13 @@
     background-color: rgba(34, 34, 34, 0.9); /*where 0.5 stands for 50% opacity*/
     color: #FFF;
 }
+
+.btn-grey:active {
+    background-color: rgba(34, 34, 34, 0.9);
+    color: #FFF;
+}
+
+.btn-grey:visited {
+    background-color: rgba(34, 34, 34, 0.9);
+    color: #FFF;
+}

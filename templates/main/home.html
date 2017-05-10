@@ -207,6 +207,10 @@
                                         class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
                                 </button>
 
+                                <a href="{% url 'download-json' ownedFormO.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block" role="button">
+                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
+
                                 <a href="{% url 'close-data-collection' ownedFormO.0.idForm %}"
                                    class="btn btn-sm btn-danger btn-block"
                                    role="button">
@@ -229,7 +233,7 @@
                                         <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
                                                 data-target="#modal-for-link-share"
                                                 data-form-id="{{ownedFormO.0.idForm}}"><span
-                                                class="glyphicon glyphicon-share"></span> Recolha Remota
+                                                class="glyphicon glyphicon-share"></span> Recolha <span class="button-text">Remota</span>
                                         </button>
                                     </div>
 
@@ -363,7 +367,7 @@
 
                                 <a href="{% url 'download-json' ownedFormC.0.idForm %}"
                                    class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Configurações</a>
+                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
 
                                 <a href="{% url 'archive-form' ownedFormC.0.idForm %}"
                                    class="btn btn-sm btn-warning btn-block"
@@ -550,7 +554,7 @@
 
                                 <a href="{% url 'download-json' ownedArchived.0.idForm %}"
                                    class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Configurações</a>
+                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
 
                                 <a href="{% url 'clone-form' ownedArchived.0.idForm %}"
                                    class="btn btn-sm btn-default btn-block"
