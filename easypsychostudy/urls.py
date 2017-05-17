@@ -54,5 +54,4 @@ urlpatterns = [
     url(r'^guardarconfiguracoes', SpecialConfigsView.as_view(), name='save-special-configs'),
     url(r'^listadeconvidados', views.getListOfUsersWithForm, name='get-list-users-form'),
     url(r'^painelquestionario/([a-zA-Z0-9S]+)$', views.formDashboardView, name='form-dashboard'),
-    url(r'^infoParticipante', views.getInfoOfParticipant, name='info-participant'),
 ]
