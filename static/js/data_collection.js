@@ -107,9 +107,6 @@ function checkInfoInField(id) {
                 if (document.getElementById("Q" + i).value == "") {
                     errors.push("Por favor responda à questão n.º " + (i + 1));
                 }
-                if (document.getElementById("Q" + i).value.contains('\"') || document.getElementById("Q" + i).value.contains('\'') || document.getElementById("Q" + i).value.contains(new RegExp("\\\\", 'g'))) {
-                    errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na questão n.º " + (i+1) + ".");
-                }
             }
 
             if (errors.length != 0) {
