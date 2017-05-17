@@ -11,6 +11,9 @@ import xlsxwriter
 import string
 import random
 import urllib.parse
+import math
+import statistics
+import functools
 
 try:
     from BytesIO import BytesIO
@@ -86,7 +89,8 @@ def grantAccess(request):
                                   request.session['username'] + "."
                         pushNotification(username, idForm, message, 'S')
 
-                        print("SUCCESS: The user " + username + " now has Owner permission for the form " + idForm + ".")
+                        print(
+                            "SUCCESS: The user " + username + " now has Owner permission for the form " + idForm + ".")
                         return HttpResponse(
                             "O utilizador " + username + " tem agora permissões de Administrador para o questionário \"" + f.formName + "\".")
 
@@ -354,7 +358,7 @@ def downloadJSON(request, idForm):
 
             formName = selectedForm.formName
             formName = formName.replace(" ", "_")
-            formName = urllib.parse.quote(formName) # parses ascii characters
+            formName = urllib.parse.quote(formName)  # parses ascii characters
 
             filename = formName + '_config' + '.psyconfig'
 
@@ -547,7 +551,7 @@ def downloadParticipantsDataCollectedData(request, idForm):
             # desired filename
             formName = f.formName
             formName = formName.replace(",", " ").replace(".", " ").replace(" ", "_")
-            formName = urllib.parse.quote(formName) # parses ascii characters
+            formName = urllib.parse.quote(formName)  # parses ascii characters
 
             filename = formName + '_dados_recolhidos' + '.xlsx'
 
@@ -704,12 +708,12 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetValence.write_string(v_row, v_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetValence.set_column(v_col, v_col, 20)
-                                #print("Valência - " + step['nomeDoEstimulo'] + ": " + str(v_row) + "," + str(v_col))
+                                # print("Valência - " + step['nomeDoEstimulo'] + ": " + str(v_row) + "," + str(v_col))
                                 v_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetValence.write_string(v_row, v_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetValence.set_column(v_col, v_col, 20)
-                                #print("Valência - " + step['nomeDoEstimuloVideo'] + ": " + str(v_row) + "," + str(v_col))
+                                # print("Valência - " + step['nomeDoEstimuloVideo'] + ": " + str(v_row) + "," + str(v_col))
                                 v_col += 1
 
                         # Worksheet Arousal
@@ -717,12 +721,12 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetArousal.set_column(a_col, a_col, 20)
-                                #print("Alerta - " + step['nomeDoEstimulo'] + ": " + str(a_row) + "," + str(a_col))
+                                # print("Alerta - " + step['nomeDoEstimulo'] + ": " + str(a_row) + "," + str(a_col))
                                 a_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetArousal.set_column(a_col, a_col, 20)
-                                #print("Alerta - " + step['nomeDoEstimuloVideo'] + ": " + str(a_row) + "," + str(a_col))
+                                # print("Alerta - " + step['nomeDoEstimuloVideo'] + ": " + str(a_row) + "," + str(a_col))
                                 a_col += 1
 
                         # Worksheet Dominance
@@ -730,12 +734,12 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetDominance.set_column(d_col, d_col, 20)
-                                #print("Dominância - " + step['nomeDoEstimulo'] + ": " + str(d_row) + "," + str(d_col))
+                                # print("Dominância - " + step['nomeDoEstimulo'] + ": " + str(d_row) + "," + str(d_col))
                                 d_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetDominance.set_column(d_col, d_col, 20)
-                                #print("Dominância - " + step['nomeDoEstimuloVideo'] + ": " + str(d_row) + "," + str(d_col))
+                                # print("Dominância - " + step['nomeDoEstimuloVideo'] + ": " + str(d_row) + "," + str(d_col))
                                 d_col += 1
 
                 if 'questoes' in step:
@@ -783,7 +787,7 @@ def downloadParticipantsDataCollectedData(request, idForm):
                         if collection[j]['nPasso'] == presentSteps[z]:
                             nOrder = order.index(collection[j]['nPasso']) + 1  # order in which appeared
 
-                            worksheet.write_string(row, col, str(nOrder), oFormat)  # order
+                            worksheet.write_number(row, col, nOrder, oFormat)  # order
                             col += 1
 
                             if 'nomeDoEstimuloVideo' in collection[j]:
@@ -805,34 +809,35 @@ def downloadParticipantsDataCollectedData(request, idForm):
                                 col += 1
 
                                 if 'valencia' in collection[j]['colheitaEscalas']:
-                                    worksheet.write_string(row, col, collection[j]['colheitaEscalas']['valencia'],
+                                    worksheet.write_number(row, col, int(collection[j]['colheitaEscalas']['valencia']),
                                                            pFormat)
                                     col += 1
 
-                                    worksheetValence.write_string(v_row, v_col,
-                                                                  collection[j]['colheitaEscalas']['valencia'],
+                                    worksheetValence.write_number(v_row, v_col,
+                                                                  int(collection[j]['colheitaEscalas']['valencia']),
                                                                   pFormat)
                                     v_col += 1
 
                                 if 'alerta' in collection[j]['colheitaEscalas']:
-                                    worksheet.write_string(row, col, collection[j]['colheitaEscalas']['alerta'],
+                                    worksheet.write_number(row, col, int(collection[j]['colheitaEscalas']['alerta']),
                                                            pFormat)
                                     col += 1
 
                                     # a_row = 1
                                     # a_col = 1
-                                    worksheetArousal.write_string(a_row, a_col,
-                                                                  collection[j]['colheitaEscalas']['alerta'],
+                                    worksheetArousal.write_number(a_row, a_col,
+                                                                  int(collection[j]['colheitaEscalas']['alerta']),
                                                                   pFormat)
                                     a_col += 1
 
                                 if 'dominancia' in collection[j]['colheitaEscalas']:
-                                    worksheet.write_string(row, col, collection[j]['colheitaEscalas']['dominancia'],
+                                    worksheet.write_number(row, col,
+                                                           int(collection[j]['colheitaEscalas']['dominancia']),
                                                            pFormat)
                                     col += 1
 
-                                    worksheetDominance.write_string(d_row, d_col,
-                                                                    collection[j]['colheitaEscalas']['dominancia'],
+                                    worksheetDominance.write_number(d_row, d_col,
+                                                                    int(collection[j]['colheitaEscalas']['dominancia']),
                                                                     pFormat)
                                     d_col += 1
 
@@ -1069,7 +1074,7 @@ class SpecialConfigsView(View):
 
             response = []
 
-            if(fsc.idTrialForm != None):
+            if (fsc.idTrialForm != None):
                 response.append(fsc.idTrialForm.idForm)
             else:
                 response.append("NA")
@@ -1116,7 +1121,8 @@ class SpecialConfigsView(View):
                                       request.session['username'] + "."
                             pushNotification(user.username, idForm, message, 'D')
 
-                        print("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
+                        print(
+                            "SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
                         return HttpResponse(
                             "SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
 
@@ -1164,8 +1170,10 @@ class SpecialConfigsView(View):
                                       request.session['username'] + "."
                             pushNotification(user.username, idForm, message, 'I')
 
-                    print("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
-                    return HttpResponse("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
+                    print(
+                        "SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
+                    return HttpResponse(
+                        "SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
 
                 except ObjectDoesNotExist:  # If it does not exists, saves.
                     sc = FormSpecialConfigs()
@@ -1205,8 +1213,10 @@ class SpecialConfigsView(View):
                             message = "O questionário \"" + fT.formName + "\" foi selecionado como questionário de treino de \"" + f.formName + "\"."
                             pushNotification(user.username, idForm, message, 'I')
 
-                    print("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
-                    return HttpResponse("SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
+                    print(
+                        "SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
+                    return HttpResponse(
+                        "SUCCESS: The special form configurations for form " + idForm + " were saved with idTrialForm = " + idTrialForm + " and scaleExplained = " + scaleExplained)
 
             except Exception as e:
                 print("ERROR SpecialConfigsView: " + str(e))
@@ -1277,10 +1287,236 @@ def formDashboardView(request, idForm):
                 pData = json.loads(p[i].dataCollection)
                 participantIDs.append(pData['idParticipante'])
 
+            # gets a list of the stimulus with scales
+            fData = json.loads(f.formConfig)
+            # [stimulus, average, max, min, mediana, desvio]
+            stimulusListValence = []
+            stimulusListArousal = []
+            stimulusListDominance = []
+
+            stimulusListValuesValence = []
+            stimulusListValuesArousal = []
+            stimulusListValuesDominance = []
+
+            listOfStimulus = []
+
+            for i in range(0, len(fData['passos'])):
+                step = fData['passos'][i]
+
+                if 'escalasSAM' in step and len(step['escalasSAM']) > 0:
+                    if 'Valência' in step['escalasSAM']:
+                        if 'nomeDoEstimuloVideo' in step:
+                            stimulusListValence.append([step['nomeDoEstimuloVideo'], 0, 0, 0, 0, 0, 0, 0])
+                            stimulusListValuesValence.append([step['nomeDoEstimuloVideo'], []])
+
+                            if (step['nomeDoEstimuloVideo'] not in listOfStimulus):
+                                listOfStimulus.append(step['nomeDoEstimuloVideo'])
+
+                        if 'nomeDoEstimulo' in step:
+                            stimulusListValence.append([step['nomeDoEstimulo'], 0, 0, 0, 0, 0, 0, 0])
+                            stimulusListValuesValence.append([step['nomeDoEstimulo'], []])
+
+                            if (step['nomeDoEstimulo'] not in listOfStimulus):
+                                listOfStimulus.append(step['nomeDoEstimulo'])
+
+                    if 'Alerta' in step['escalasSAM']:
+                        if 'nomeDoEstimuloVideo' in step:
+                            stimulusListArousal.append([step['nomeDoEstimuloVideo'], 0, 0, 0, 0, 0, 0, 0])
+                            stimulusListValuesArousal.append([step['nomeDoEstimuloVideo'], []])
+
+                            if (step['nomeDoEstimuloVideo'] not in listOfStimulus):
+                                listOfStimulus.append(step['nomeDoEstimuloVideo'])
+
+                        if 'nomeDoEstimulo' in step:
+                            stimulusListArousal.append([step['nomeDoEstimulo'], 0, 0, 0, 0, 0, 0, 0])
+                            stimulusListValuesArousal.append([step['nomeDoEstimulo'], []])
+
+                            if (step['nomeDoEstimulo'] not in listOfStimulus):
+                                listOfStimulus.append(step['nomeDoEstimulo'])
+
+                    if 'Dominância' in step['escalasSAM']:
+                        if 'nomeDoEstimuloVideo' in step:
+                            stimulusListDominance.append([step['nomeDoEstimuloVideo'], 0, 0, 0, 0, 0, 0, 0])
+                            stimulusListValuesDominance.append([step['nomeDoEstimuloVideo'], []])
+
+                            if (step['nomeDoEstimuloVideo'] not in listOfStimulus):
+                                listOfStimulus.append(step['nomeDoEstimuloVideo'])
+
+                        if 'nomeDoEstimulo' in step:
+                            stimulusListDominance.append([step['nomeDoEstimulo'], 0, 0, 0, 0, 0, 0, 0])
+                            stimulusListValuesDominance.append([step['nomeDoEstimulo'], []])
+
+                            if (step['nomeDoEstimulo'] not in listOfStimulus):
+                                listOfStimulus.append(step['nomeDoEstimulo'])
+
+            # end of gets a list of the stimulus with scales
+
+            # gets the values of the scales for each stimulus
+            for i in range(0, len(participantIDs)):
+                r = json.loads(getScalesFromParticipant(participantIDs[i], idForm))
+
+                if 'valence' in r:
+                    for j in range(0, len(stimulusListValence)):
+                        stimulusName = stimulusListValence[j][0]
+                        for k in range(0, len(r['valence'])):
+                            if r['valence'][k][0] == stimulusName:
+                                stimulusListValuesValence[j][1].append(int(r['valence'][k][1]))
+
+                if 'arousal' in r:
+                    for j in range(0, len(stimulusListArousal)):
+                        stimulusName = stimulusListArousal[j][0]
+                        for k in range(0, len(r['arousal'])):
+                            if r['arousal'][k][0] == stimulusName:
+                                stimulusListValuesArousal[j][1].append(int(r['arousal'][k][1]))
+
+                if 'dominance' in r:
+                    for j in range(0, len(stimulusListDominance)):
+                        stimulusName = stimulusListDominance[j][0]
+                        for k in range(0, len(r['dominance'])):
+                            if r['dominance'][k][0] == stimulusName:
+                                stimulusListValuesDominance[j][1].append(int(r['dominance'][k][1]))
+
+            # end of gets the values of the scales for each stimulus
+
+            # calculates average, maximum, minimum, median and standard deviation for each stimulus
+            for i in range(0, len(stimulusListValuesValence)):
+                values = stimulusListValuesValence[i][1]
+
+                stimulusListValence[i][0] = stimulusListValuesValence[i][0]  # stimules name
+                stimulusListValence[i][1] = round((float(sum(values)) / len(values)), 3)  # average
+                stimulusListValence[i][2] = max(values)  # maximum
+                stimulusListValence[i][3] = min(values)  # minimum
+                stimulusListValence[i][4] = statistics.median(values)  # median
+
+                dev = []
+                for x in values:
+                    dev.append(x - stimulusListValence[i][1])
+
+                sqr = []
+                for x in dev:
+                    sqr.append(x * x)
+
+                stimulusListValence[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
+
+                sortedValues = sorted(values)
+                stimulusListValence[i][6] = percentile(sortedValues, 0.25) # 1st quartile
+                stimulusListValence[i][7] = percentile(sortedValues, 0.75) # 3rd quartile
+
+            for i in range(0, len(stimulusListValuesArousal)):
+                values = stimulusListValuesArousal[i][1]
+
+                stimulusListArousal[i][0] = stimulusListValuesArousal[i][0]  # stimules name
+                stimulusListArousal[i][1] = round((float(sum(values)) / len(values)), 3)  # average
+                stimulusListArousal[i][2] = max(values)  # maximum
+                stimulusListArousal[i][3] = min(values)  # minimum
+                stimulusListArousal[i][4] = statistics.median(values)  # median
+
+                dev = []
+                for x in values:
+                    dev.append(x - stimulusListArousal[i][1])
+
+                sqr = []
+                for x in dev:
+                    sqr.append(x * x)
+
+                stimulusListArousal[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
+
+                sortedValues = sorted(values)
+                stimulusListArousal[i][6] = percentile(sortedValues, 0.25)  # 1st quartile
+                stimulusListArousal[i][7] = percentile(sortedValues, 0.75)  # 3rd quartile
+
+            for i in range(0, len(stimulusListValuesDominance)):
+                values = stimulusListValuesDominance[i][1]
+
+                stimulusListDominance[i][0] = stimulusListValuesDominance[i][0]  # stimules name
+                stimulusListDominance[i][1] = round((float(sum(values)) / len(values)), 3)  # average
+                stimulusListDominance[i][2] = max(values)  # maximum
+                stimulusListDominance[i][3] = min(values)  # minimum
+                stimulusListDominance[i][4] = statistics.median(values)  # median
+
+                dev = []
+                for x in values:
+                    dev.append(x - stimulusListArousal[i][1])
+
+                sqr = []
+                for x in dev:
+                    sqr.append(x * x)
+
+                stimulusListDominance[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
+
+                sortedValues = sorted(values)
+                stimulusListDominance[i][6] = percentile(sortedValues, 0.25)  # 1st quartile
+                stimulusListDominance[i][7] = percentile(sortedValues, 0.75)  # 3rd quartile
+
+
+            stimulusListValenceHistogram = []
+            for i in range(0, len(stimulusListValuesValence)):
+                occurences = []
+                occurences.append(stimulusListValuesValence[i][1].count(1))
+                occurences.append(stimulusListValuesValence[i][1].count(2))
+                occurences.append(stimulusListValuesValence[i][1].count(3))
+                occurences.append(stimulusListValuesValence[i][1].count(4))
+                occurences.append(stimulusListValuesValence[i][1].count(5))
+                occurences.append(stimulusListValuesValence[i][1].count(6))
+                occurences.append(stimulusListValuesValence[i][1].count(7))
+                occurences.append(stimulusListValuesValence[i][1].count(8))
+                occurences.append(stimulusListValuesValence[i][1].count(9))
+
+                stimulusListValenceHistogram.append([stimulusListValuesValence[i][0], occurences])
+
+            stimulusListArousalHistogram = []
+            for i in range(0, len(stimulusListValuesArousal)):
+                occurences = []
+                occurences.append(stimulusListValuesArousal[i][1].count(1))
+                occurences.append(stimulusListValuesArousal[i][1].count(2))
+                occurences.append(stimulusListValuesArousal[i][1].count(3))
+                occurences.append(stimulusListValuesArousal[i][1].count(4))
+                occurences.append(stimulusListValuesArousal[i][1].count(5))
+                occurences.append(stimulusListValuesArousal[i][1].count(6))
+                occurences.append(stimulusListValuesArousal[i][1].count(7))
+                occurences.append(stimulusListValuesArousal[i][1].count(8))
+                occurences.append(stimulusListValuesArousal[i][1].count(9))
+
+                stimulusListArousalHistogram.append([stimulusListValuesArousal[i][0], occurences])
+
+            stimulusListDominanceHistogram = []
+            for i in range(0, len(stimulusListValuesDominance)):
+                occurences = []
+                occurences.append(stimulusListValuesDominance[i][1].count(1))
+                occurences.append(stimulusListValuesDominance[i][1].count(2))
+                occurences.append(stimulusListValuesDominance[i][1].count(3))
+                occurences.append(stimulusListValuesDominance[i][1].count(4))
+                occurences.append(stimulusListValuesDominance[i][1].count(5))
+                occurences.append(stimulusListValuesDominance[i][1].count(6))
+                occurences.append(stimulusListValuesDominance[i][1].count(7))
+                occurences.append(stimulusListValuesDominance[i][1].count(8))
+                occurences.append(stimulusListValuesDominance[i][1].count(9))
+
+                stimulusListDominanceHistogram.append([stimulusListValuesDominance[i][0], occurences])
+
+
+            #print("Valence: " + str(stimulusListValence))
+            #print("Arousal: " + str(stimulusListArousal))
+            #print("Dominance: " + str(stimulusListDominance))
+
+            #print("Valence: " + str(stimulusListValuesValence))
+            #print("Arousal: " + str(stimulusListValuesArousal))
+            #print("Dominance: " + str(stimulusListValuesDominance))
+
+            #print("Valence Histogram: " + str(stimulusListValenceHistogram))
+            #print("Arousal Histogram: " + str(stimulusListArousalHistogram))
+            #print("Dominance Histogram: " + str(stimulusListDominanceHistogram))
+
             context = {
                 "idForm": f.idForm,
                 "formName": f.formName,
-                "participantIDs": participantIDs,
+                "listOfStimulusNames": listOfStimulus,
+                "stimulusListValence": stimulusListValence,
+                "stimulusListArousal": stimulusListArousal,
+                "stimulusListDominance": stimulusListDominance,
+                "stimulusListValenceHistogram": stimulusListValenceHistogram,
+                "stimulusListArousalHistogram": stimulusListArousalHistogram,
+                "stimulusListDominanceHistogram": stimulusListDominanceHistogram,
             }
             return render(request, "main/form_dashboard.html", context)
 
@@ -1291,53 +1527,69 @@ def formDashboardView(request, idForm):
 
 
 # ######################################################################## #
-# Retrieves all data of a participant
+# Retrieves average value of sam scales.
+# (aux function of formDashboardView)
 # ######################################################################## #
-def getInfoOfParticipant(request):
-    if not request.session.has_key('username'):
-        return redirect('login')
+def getScalesFromParticipant(idParticipant, idForm):
+    try:
+        f = Form.objects.get(idForm=idForm)
+        p = ParticipantInForm.objects.get(idParticipant=idParticipant, idForm=f)
 
-    else:
-        idParticipant = request.GET.get("idParticipant")
-        idForm = request.GET.get("idForm")
+        pData = json.loads(p.dataCollection)
 
-        try:
-            f = Form.objects.get(idForm=idForm)
-            p = ParticipantInForm.objects.get(idParticipant=idParticipant, idForm=f)
+        valence = []
+        arousal = []
+        dominance = []
 
-            pData = json.loads(p.dataCollection)
+        for i in range(0, len(pData['colheita'])):
+            step = pData['colheita'][i]
 
-            timestampCollection = pData['timestampRecolha']
+            if 'colheitaEscalas' in step:
+                if 'nomeDoEstimulo' in step:
+                    stimulus = step['nomeDoEstimulo']
+                if 'nomeDoEstimuloVideo' in step:
+                    stimulus = step['nomeDoEstimuloVideo']
 
-            valence = []
-            arousal = []
-            dominance = []
+                if 'valencia' in step['colheitaEscalas']:
+                    valence.append([stimulus, step['colheitaEscalas']['valencia']])
+                if 'alerta' in step['colheitaEscalas']:
+                    arousal.append([stimulus, step['colheitaEscalas']['alerta']])
+                if 'dominancia' in step['colheitaEscalas']:
+                    dominance.append([stimulus, step['colheitaEscalas']['dominancia']])
 
-            for i in range(0, len(pData['colheita'])):
-                step = pData['colheita'][i]
+        response = {}
+        response['valence'] = valence
+        response['arousal'] = arousal
+        response['dominance'] = dominance
 
-                if 'colheitaEscalas' in step:
-                    if 'nomeDoEstimulo' in step:
-                        stimulus = step['nomeDoEstimulo']
-                    if 'nomeDoEstimuloVideo' in step:
-                        stimulus = step['nomeDoEstimuloVideo']
+        # print("SUCCESS: " + json.dumps(response))
+        return json.dumps(response)
 
-                    if 'valencia' in step['colheitaEscalas']:
-                        valence.append([stimulus, step['colheitaEscalas']['valencia']])
-                    if 'alerta' in step['colheitaEscalas']:
-                        arousal.append([stimulus, step['colheitaEscalas']['alerta']])
-                    if 'dominancia' in step['colheitaEscalas']:
-                        dominance.append([stimulus, step['colheitaEscalas']['dominancia']])
+    except Exception as e:
+        print("ERROR getScalesFromParticipant: " + str(e))
+        return json.dumps({})
 
-            response = {}
-            response['timestampCollection'] = timestampCollection
-            response['valence'] = valence
-            response['arousal'] = arousal
-            response['dominance'] = dominance
 
-            print("SUCCESS: " + json.dumps(response))
-            return HttpResponse(json.dumps(response), content_type="application/json")
+# ######################################################################## #
+# Find the percentile of a list of values.
+# N - is a list of values. Note N MUST BE already sorted.
+# percent - a float value from 0.0 to 1.0.
+# key - optional key function to compute value from each element of N.
+# (aux function of formDashboardView)
+# ######################################################################## #
+def percentile(N, percent, key=lambda x: x):
 
-        except Exception as e:
-            print("ERROR getInfoOfParticipant: " + str(e))
-            return HttpResponseServerError("ERROR: " + str(e))
+    if not N:
+        return None
+
+    k = (len(N) - 1) * percent
+    f = math.floor(k)
+    c = math.ceil(k)
+
+    if f == c:
+        return key(N[int(k)])
+
+    d0 = key(N[int(f)]) * (c - k)
+    d1 = key(N[int(c)]) * (k - f)
+
+    return d0 + d1

@@ -22,3 +22,8 @@
 .panel-heading a.collapsed:after {
     content: "\e080";
 }
+
+/* Applies spacing between buttons in list of stimulus */
+.button-wrapper .btn {
+    margin-bottom:5px;
+}

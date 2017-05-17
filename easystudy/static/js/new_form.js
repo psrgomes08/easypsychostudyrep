@@ -275,17 +275,17 @@ $(document).ready(function () {
             "<div class='panel-heading' style='background-color: #222;'>" +
             "<div class='container-fluid panel-container'>" +
             "<div class='input-group' id='fixed-break'>" +
-            "<span class='input-group-addon'><label class='checkbox-inline'><input type='checkbox' aria-label='...' value='sim'>Fixo</label></span>" +
-            "<input placeholder='Tarefa " + breakNumber + "' type='text' id='break-" + breakNumber + "-name' class='form-control' aria-label='...'>" +
+            "<span class='input-group-addon'><label class='checkbox-inline'><input type='checkbox' value='sim'>Fixo</label></span>" +
+            "<input placeholder='Tarefa " + breakNumber + "' type='text' id='break-" + breakNumber + "-name' class='form-control'>" +
             "<div class='input-group-btn'>" +
             "<button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='glyphicon glyphicon-plus-sign'></span> <span class='button-text'>Elementos</span> <span class='caret'></span></button>" +
             "<ul class='dropdown-menu'>" +
-            "<li><button class='btn btn-block btn-transparent' type='button' onclick='addQuestion(" + breakNumber + ")'><span class='glyphicon glyphicon-pencil'></span> Questão</button></li>" +
-            "<li><button class='btn btn-block btn-transparent' type='button' onclick='addSAMScale(" + breakNumber + ")'><span class='glyphicon glyphicon-record'></span> Escalas</button></li>" +
-            "<li><button class='btn btn-block btn-transparent' type='button' onclick='addStimulusMultiple(" + breakNumber + ")'><span class='glyphicon glyphicon-picture'></span> Imagens</button></li>" +
-            "<li><button class='btn btn-block btn-transparent' type='button' onclick='addStimulusVideo(" + breakNumber + ")'><span class='glyphicon glyphicon-film'></span> Vídeos</button></li>" +
+            "<li><button id='break-" + breakNumber + "-question-btn' class='btn btn-block btn-transparent' type='button' onclick='addQuestion(" + breakNumber + ")'><span class='glyphicon glyphicon-pencil'></span> Questão</button></li>" +
+            "<li><button id='break-" + breakNumber + "-scale-btn' class='btn btn-block btn-transparent' type='button' onclick='addSAMScale(" + breakNumber + ")'><span class='glyphicon glyphicon-record'></span> Escalas</button></li>" +
+            "<li><button id='break-" + breakNumber + "-image-btn' class='btn btn-block btn-transparent' type='button' onclick='addStimulusMultiple(" + breakNumber + ")'><span class='glyphicon glyphicon-picture'></span> Imagens</button></li>" +
+            "<li><button id='break-" + breakNumber + "-video-btn' class='btn btn-block btn-transparent' type='button' onclick='addStimulusVideo(" + breakNumber + ")'><span class='glyphicon glyphicon-film'></span> Vídeos</button></li>" +
             "<li class='divider'></li>" +
-            "<li><button class='btn btn-block btn-transparent' type='button' onclick='addDescriptionField(" + breakNumber + ")'><span class='glyphicon glyphicon-font'></span> Instruções</button></li>" +
+            "<li><button id='break-" + breakNumber + "-description-btn' class='btn btn-block btn-transparent' type='button' onclick='addDescriptionField(" + breakNumber + ")'><span class='glyphicon glyphicon-font'></span> Instruções</button></li>" +
             "<li><button class='btn btn-block btn-transparent' type='button' onclick='deleteBreak(" + breakNumber + ")'><span class='glyphicon glyphicon-remove'></span> Apagar</button></li>" +
             "</ul>" +
             "</div>" + // <!-- ./input-group-btn -->
@@ -353,12 +353,13 @@ function verifyStringFields() {
             }
 
             // Verify name of step
-            if ($('#' + breakDiv).find('#' + breakDiv + '-name').length == 1) {
-                var nPasso = $('#' + breakDiv).find('#' + breakDiv + '-name').val();
+            var nPasso = $('#' + breakDiv + '-name').val();
 
-                if (nPasso.search('\"') > -1 || nPasso.search('\'') > -1 || nPasso.search(new RegExp("\\\\", 'g')) > -1) {
-                    errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no nome da Tarefa.");
-                }
+            if (nPasso.search('\"') > -1 || nPasso.search('\'') > -1 || nPasso.search(new RegExp("\\\\", 'g')) > -1) {
+                errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no nome da Tarefa.");
+            }
+            if(nPasso.search('Dados demográficos') > -1 && i > 1) {
+                errors.push("Não pode dar o nome \"Dados demográficos\" à <b>Tarefa " + i + "</b>.");
             }
 
             // Verify description of step
@@ -366,7 +367,7 @@ function verifyStringFields() {
                 var dPasso = $('#' + breakDiv).find('#fixed-description').val();
 
                 if (dPasso.search('\"') > -1 || dPasso.search('\'') > -1 || dPasso.search(new RegExp("\\\\", 'g')) > -1) {
-                    errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no campo <b>Instruções</b>");
+                    errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no campo <b>Instruções</b>.");
                 }
                 if (dPasso == "") {
                     errors.push("Preencha o campo <b>Instruções</b> na <b>Tarefa " + i + "</b>.");

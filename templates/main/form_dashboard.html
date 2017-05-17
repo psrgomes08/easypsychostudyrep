@@ -60,89 +60,94 @@
 <body>
 <br/>
 
-<div class="row" id="main" style="display: none; width:95%; margin-left:auto; margin-right:auto;">
-    <div class="col-sm-4"> <!-- participants list -->
-        <p align="center"><label>Lista de Participantes</label></p>
+<div class="container">
+    <div class="row">
 
-        <div class="btn-group-vertical btn-block apply-scroll-panel">
-            {% for i in participantIDs %}
-            <button type="button" id="{{i}}" class="btn btn-default tab"
-                    onclick="getDataFromParticipant('{{i}}', '{{idForm}}')">
-                {{i}}
-            </button>
-            {% endfor %}
-        </div>
+        <div class="col-sm-2">
 
-    </div> <!-- ./col-sm-4 -->
+            <p align="center"><b>Lista de Opções</b></p>
+            <div class="btn-group-vertical btn-block">
+                <button type="button" class="btn btn-default" onclick="showBoxPlots()">Diagramas de Caixa</button>
+                <button type="button" class="btn btn-default" onclick="showStimulusList()">Histogramas</button>
+                <button type="button" class="btn btn-default" onclick="showAverages()">Gráficos de Média</button>
+            </div>
+            <br/><br/>
 
-    <div class="col-sm-8">
-        <div id="wrapper" style="text-align: center">
+        </div> <!-- ./col-sm-2 -->
 
-            <div id="participantData" style="display: inline-block; display: none;">
-                <h3>Dados Gerais</h3>
+        <div class="col-sm-10">
 
-                <strong><span class="glyphicon glyphicon-user"></span> ID Participante</strong>
-                <p id="idParticipante"></p>
-                <strong><span class="glyphicon glyphicon-time"></span> Timestamp Recolha</strong>
-                <p id="timestampRecolha"></p>
+            <div id="box-plot-graphics" style="display: none"> <!-- Box Plot Graphics -->
 
-            </div> <!-- ./participantData -->
-        </div>
+                <p align="center" style="font-size: 25px">Diagramas de Caixa</p><br/>
 
-        <div id="graphs" style="display: none">
-            <br/>
-            <div class="panel-group" id="accordion">
-                <div class="panel panel-danger">
-                    <div class="panel-heading">
-                        <h3 class="panel-title" style="text-align:center">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Gráfico de valores de
-                                Valência Afetiva</a>
-                        </h3>
-                    </div>
-                    <div id="collapse1" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                            <div id="valenceDiv" style="display: none">
-                                <canvas id="valenceChart" width="300" height="300"></canvas>
-                            </div>
-                        </div>
-                    </div>
+                <div class="well" id="valence-b-p" style="display: none">
+                    <p align="center" style="font-size: 20px">Valência Afetiva</p>
+                    <div id="valence-box-plot"></div>
+                    <p align="center">Lower quartile = 25% | Upper quartile = 75%</p>
+                    <br/>
                 </div>
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title" style="text-align:center">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Gráfico de valores de
-                                Ativação Fisiológica</a>
-                        </h3>
-                    </div>
-                    <div id="collapse2" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="arousalDiv" style="display: none">
-                                <canvas id="arousalChart" width="300" height="300"></canvas>
-                            </div>
-                        </div>
-                    </div>
+
+                <div class="well" id="arousal-b-p" style="display: none">
+                    <p align="center" style="font-size: 20px">Ativação Fisiológica</p>
+                    <div id="arousal-box-plot"></div>
+                    <p align="center">Lower quartile = 25% | Upper quartile = 75%</p>
+                    <br/>
                 </div>
-                <div class="panel panel-warning">
-                    <div class="panel-heading">
-                        <h4 class="panel-title" style="text-align:center">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Gráfico de valores de
-                                Dominância</a>
-                        </h4>
-                    </div>
-                    <div id="collapse3" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div id="dominanceDiv" style="display: none">
-                                <canvas id="dominanceChart" width="300" height="300"></canvas>
-                            </div>
-                        </div>
-                    </div>
+
+                <div class="well" id="dominance-b-p" style="display: none">
+                    <p align="center" style="font-size: 20px">Dominância</p>
+                    <div id="dominance-box-plot"></div>
+                    <p align="center">Lower quartile = 25% | Upper quartile = 75%</p>
+                    <br/>
                 </div>
-            </div> <!-- ./accordion -->
-        </div> <!-- ./graphs -->
 
 
-    </div> <!-- ./col-sm-8 -->
-</div>
+            </div> <!-- End of Box Plot Graphics -->
+
+            <div id="average-graphics" style="display: none"> <!-- Average Graphics -->
+
+                <p align="center" style="font-size: 25px">Gráficos de Média</p><br/>
+
+                <div class="well" id="valenceDiv" style="display: none">
+                    <p align="center" style="font-size: 20px">Valência Afetiva</p>
+                    <canvas id="valenceAvgChart"></canvas>
+                </div>
+
+                <div class="well" id="arousalDiv" style="display: none">
+                    <p align="center" style="font-size: 20px">Ativação Fisiológica</p>
+                    <canvas id="arousalAvgChart"></canvas>
+                </div>
+
+                <div class="well" id="dominanceDiv" style="display: none">
+                    <p align="center" style="font-size: 20px">Dominância</p>
+                    <canvas id="dominanceAvgChart"></canvas>
+                </div>
+
+            </div> <!-- End of Average Graphics -->
+
+
+            <div id="stimulus-list" style="display: none">
+                <p align="center" style="font-size: 25px">Histogramas</p><br/>
+
+                <p><b>Lista de Estímulos:</b></p>
+                <div class='button-wrapper'>
+                    {% for i in listOfStimulusNames %}
+                    <button type="button" class="btn" onclick="showHistogram('{{i}}')">{{i}}</button>
+                    {% endfor %}
+                </div>
+                <br/>
+
+            </div> <!-- ./stimulus-list -->
+
+            <div id="histogram-graphics" style="display: none"> <!-- Histogram Graphics -->
+
+            </div>
+
+        </div> <!-- ./col-sm-10 -->
+
+    </div> <!-- ./row -->
+</div> <!-- ./container -->
 
 </body>
 </html>
@@ -154,26 +159,563 @@
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/form_dashboard.js' %}"></script>
 <script src="{% static 'js/Chart.min.js' %}"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
 
 <script>
+    // General configurations for Highcharts
+    Highcharts.theme = {
+        chart: {
+            backgroundColor: null
+        }
+    };
+    Highcharts.setOptions(Highcharts.theme);
+
     /**
      * Wait for window load.
      */
     $(window).load(function () {
         // Animate loader off screen
         $(".se-pre-con").fadeOut();
-        $("#main").show();
-        getDataFromParticipant("{{participantIDs.0}}", "{{idForm}}");
     });
 
-    var csrfToken = "{{ csrf_token }}";
-    var urlToGetParticipantData = "{% url 'info-participant' %}";
+    /**
+     * Control what divs are shown when box plots are open.
+     */
+    function showBoxPlots() {
+        $("#box-plot-graphics").show();
+        $("#average-graphics").hide();
+        $("#stimulus-list").hide();
+        $("#histogram-graphics").hide();
+    }
 
-    // Makes a tab of participant active on click
-    $(document).ready(function () {
-        $(".tab").click(function () {
-            $(".tab").removeClass("active");
-            $(this).addClass("active");
+    /**
+     * Control what divs are shown when average graphics are open.
+     */
+    function showAverages() {
+        $("#average-graphics").show();
+        $("#box-plot-graphics").hide();
+        $("#stimulus-list").hide();
+        $("#histogram-graphics").hide();
+    }
+
+    /**
+     * Control what divs are shown when the stimulus list is required.
+     */
+    function showStimulusList() {
+        $("#stimulus-list").show();
+        $("#average-graphics").hide();
+        $("#box-plot-graphics").hide();
+    }
+
+    var listOfStimulusNames = {{listOfStimulusNames | safe}};
+    var stimulusListValence = {{stimulusListValence | safe}};
+    var stimulusListArousal = {{stimulusListArousal | safe}};
+    var stimulusListDominance = {{stimulusListDominance | safe}};
+    var stimulusListValenceHistogram = {{stimulusListValenceHistogram | safe}};
+    var stimulusListArousalHistogram = {{stimulusListArousalHistogram | safe}};
+    var stimulusListDominanceHistogram = {{stimulusListDominanceHistogram | safe}};
+
+    // Histogram
+    var stimulusNameValence = [];
+    for (var i = 0; i < stimulusListValenceHistogram.length; i++) {
+        stimulusNameValence.push(stimulusListValenceHistogram[i][0])
+    }
+
+    var stimulusNameArousal = [];
+    for (var i = 0; i < stimulusListArousalHistogram.length; i++) {
+        stimulusNameArousal.push(stimulusListArousalHistogram[i][0])
+    }
+
+    var stimulusNameDominance = [];
+    for (var i = 0; i < stimulusListDominanceHistogram.length; i++) {
+        stimulusNameDominance.push(stimulusListDominanceHistogram[i][0])
+    }
+
+    /**
+     * Shows the correct histograms for a selected stimulus.
+     * @param stimulusName Name of the stimulus
+     */
+    function showHistogram(stimulusName) {
+        $("#histogram-graphics").show();
+        $("#average-graphics").hide();
+        $("#box-plot-graphics").hide();
+
+
+        var iValence = stimulusNameValence.indexOf(stimulusName);
+        var iArousal = stimulusNameArousal.indexOf(stimulusName);
+        var iDominance = stimulusNameDominance.indexOf(stimulusName);
+
+        if (iValence > -1) {
+            $('#histogram-v-c').remove();
+            $('#histogram-graphics').append('<div id="histogram-v-c" class="well"><p align="center" style="font-size: 20px">Valência Afetiva</p><canvas id="histogramValenceChart"></canvas></div>');
+
+            var valenceHistogramData = {
+                labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                datasets: [
+                    {
+                        label: "Frequência",
+                        backgroundColor: '#4f372d',
+                        borderColor: '#4f372d',
+                        data: stimulusListValenceHistogram[iValence][1]
+                    }
+                ]
+            };
+
+            var ctxValenceHistogram = document.getElementById("histogramValenceChart").getContext("2d");
+            var histogramValenceChart = new Chart(ctxValenceHistogram, {
+                type: 'bar',
+                data: valenceHistogramData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                            }
+                        }],
+                        xAxes: [{
+                            categoryPercentage: 1.0,
+                            barPercentage: 1.0
+                        }]
+                    }
+                }
+            });
+        }
+
+        if (iArousal > -1) {
+            $('#histogram-a-c').remove();
+            $('#histogram-graphics').append('<div id="histogram-a-c" class="well"><p align="center" style="font-size: 20px">Ativação Fisiológica</p><canvas id="histogramArousalChart"></canvas></div>');
+
+            var arousalHistogramData = {
+                labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                datasets: [
+                    {
+                        label: "Frequência",
+                        backgroundColor: '#cc2a36',
+                        borderColor: '#cc2a36',
+                        data: stimulusListArousalHistogram[iArousal][1]
+                    }
+                ]
+            };
+
+            var ctxArousalHistogram = document.getElementById("histogramArousalChart").getContext("2d");
+            var histogramArousalChart = new Chart(ctxArousalHistogram, {
+                type: 'bar',
+                data: arousalHistogramData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            categoryPercentage: 1.0,
+                            barPercentage: 1.0
+                        }]
+                    }
+                }
+            });
+        }
+
+        if (iDominance > -1) {
+            $('#histogram-d-c').remove();
+            $('#histogram-graphics').append('<div id="histogram-d-c" class="well"><p align="center" style="font-size: 20px">Dominância</p><canvas id="histogramDominanceChart"></canvas></div>');
+
+            var dominanceHistogramData = {
+                labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                datasets: [
+                    {
+                        label: "Frequência",
+                        backgroundColor: '#edc951',
+                        borderColor: '#edc951',
+                        data: stimulusListDominanceHistogram[iDominance][1]
+                    }
+                ]
+            };
+
+            var ctxDominanceHistogram = document.getElementById("histogramDominanceChart").getContext("2d");
+            var histogramDominanceChart = new Chart(ctxDominanceHistogram, {
+                type: 'bar',
+                data: dominanceHistogramData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                            }
+                        }],
+                        xAxes: [{
+                            categoryPercentage: 1.0,
+                            barPercentage: 1.0
+                        }]
+                    }
+                }
+            });
+        }
+
+    }
+    // End of Histogram
+
+    // Box Plot for Valence
+    if (stimulusListValence.length > 0) {
+        $("#valence-b-p").show();
+
+        var categoriesForValenceBoxPlot = [];
+        var dataForValenceBoxPlot = [];
+
+        for (var i = 0; i < stimulusListValence.length; i++) {
+            categoriesForValenceBoxPlot.push(stimulusListValence[i][0]);
+            dataForValenceBoxPlot.push([stimulusListValence[i][3], stimulusListValence[i][6], stimulusListValence[i][4],
+                stimulusListValence[i][7], stimulusListValence[i][2]]);
+        }
+
+        Highcharts.chart('valence-box-plot', {
+            chart: {
+                type: 'boxplot'
+            },
+            title: {
+                text: ''
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                categories: categoriesForValenceBoxPlot
+            },
+            yAxis: {
+                title: {
+                    text: 'Observações'
+                }
+            },
+            series: [{
+                data: dataForValenceBoxPlot,
+                name: 'Valores',
+                color: '#4f372d',
+                tooltip: {
+                    headerFormat: '<em>{point.key}</em><br/>'
+                }
+            }]
+
         });
-    });
+    }
+    // End of Box Plot for Valence
+
+    // Box Plot for Arousal
+    if (stimulusListArousal.length > 0) {
+        $("#arousal-b-p").show();
+
+        var categoriesForArousalBoxPlot = [];
+        var dataForArousalBoxPlot = [];
+
+        for (var i = 0; i < stimulusListArousal.length; i++) {
+            categoriesForArousalBoxPlot.push(stimulusListArousal[i][0]);
+            dataForArousalBoxPlot.push([stimulusListArousal[i][3], stimulusListArousal[i][6], stimulusListArousal[i][4],
+                stimulusListArousal[i][7], stimulusListArousal[i][2]]);
+        }
+
+        Highcharts.chart('arousal-box-plot', {
+            chart: {
+                type: 'boxplot'
+            },
+            title: {
+                text: ''
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                categories: categoriesForArousalBoxPlot
+            },
+            yAxis: {
+                title: {
+                    text: 'Observações'
+                }
+            },
+            series: [{
+                data: dataForArousalBoxPlot,
+                name: 'Valores',
+                color: '#cc2a36',
+                tooltip: {
+                    headerFormat: '<em>{point.key}</em><br/>'
+                }
+            }]
+
+        });
+    }
+    // End of Box Plot for Arousal
+
+    // Box Plot for Dominance
+    if (stimulusListDominance.length > 0) {
+        $("#dominance-b-p").show();
+
+        var categoriesForDominanceBoxPlot = [];
+        var dataForDominanceBoxPlot = [];
+
+        for (var i = 0; i < stimulusListDominance.length; i++) {
+            categoriesForDominanceBoxPlot.push(stimulusListDominance[i][0]);
+            dataForDominanceBoxPlot.push([stimulusListDominance[i][3], stimulusListDominance[i][6], stimulusListDominance[i][4],
+                stimulusListDominance[i][7], stimulusListDominance[i][2]]);
+        }
+
+        Highcharts.chart('dominance-box-plot', {
+            chart: {
+                type: 'boxplot'
+            },
+            title: {
+                text: ''
+            },
+            legend: {
+                enabled: false
+            },
+            xAxis: {
+                categories: categoriesForDominanceBoxPlot
+            },
+            yAxis: {
+                title: {
+                    text: 'Observações'
+                }
+            },
+            series: [{
+                data: dataForDominanceBoxPlot,
+                name: 'Valores',
+                color: '#edc951',
+                tooltip: {
+                    headerFormat: '<em>{point.key}</em><br/>'
+                }
+            }]
+
+        });
+    }
+    // End of Box Plot for Dominance
+
+    // Average graph for Valence
+    if (stimulusListValence.length > 0) {
+        $("#valenceDiv").show();
+
+        var stimulusValence = [];
+        var avgValuesValence = [];
+        var maxValuesValence = [];
+        var minValuesValence = [];
+
+        for (var i = 0; i < stimulusListValence.length; i++) {
+            stimulusValence.push(stimulusListValence[i][0]);
+            avgValuesValence.push(stimulusListValence[i][1]);
+            maxValuesValence.push(stimulusListValence[i][2]);
+            minValuesValence.push(stimulusListValence[i][3])
+        }
+
+        var valenceChartData = {
+            labels: stimulusValence,
+            datasets: [
+                {
+                    fill: false,
+                    backgroundColor: '#4f372d',
+                    borderColor: '#4f372d',
+                    pointBorderColor: '#4f372d',
+                    pointBackgroundColor: '#4f372d',
+                    label: "Média",
+                    data: avgValuesValence,
+                    borderWidth: 1,
+                    pointRadius: 2
+                },
+                {
+                    fill: false,
+                    backgroundColor: '#cc2a36',
+                    borderColor: '#cc2a36',
+                    pointBorderColor: '#cc2a36',
+                    pointBackgroundColor: '#cc2a36',
+                    label: "Limite Máximo",
+                    data: maxValuesValence,
+                    borderWidth: 1,
+                    pointRadius: 2
+                },
+                {
+                    fill: false,
+                    backgroundColor: '#edc951',
+                    borderColor: '#edc951',
+                    pointBorderColor: '#edc951',
+                    pointBackgroundColor: '#edc951',
+                    label: "Limite Mínimo",
+                    data: minValuesValence,
+                    borderWidth: 1,
+                    pointRadius: 2
+                }
+            ]
+        };
+
+        var ctxValence = document.getElementById("valenceAvgChart").getContext("2d");
+        var valenceChart = new Chart(ctxValence, {
+            type: 'line',
+            data: valenceChartData,
+            options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            max: 9
+                        }
+                    }]
+                }
+            }
+        });
+
+    }
+    //End of Average graph for Valence
+
+    // Average graph for Arousal
+    if (stimulusListArousal.length > 0) {
+        $("#arousalDiv").show();
+
+        var stimulusArousal = [];
+        var avgValuesArousal = [];
+        var maxValuesArousal = [];
+        var minValuesArousal = [];
+
+        for (var i = 0; i < stimulusListArousal.length; i++) {
+            stimulusArousal.push(stimulusListArousal[i][0]);
+            avgValuesArousal.push(stimulusListArousal[i][1]);
+            maxValuesArousal.push(stimulusListArousal[i][2]);
+            minValuesArousal.push(stimulusListArousal[i][3]);
+        }
+
+        var arousalChartData = {
+            labels: stimulusArousal,
+            datasets: [
+                {
+                    fill: false,
+                    backgroundColor: '#4f372d',
+                    borderColor: '#4f372d',
+                    pointBorderColor: '#4f372d',
+                    pointBackgroundColor: '#4f372d',
+                    label: "Média",
+                    data: avgValuesArousal,
+                    borderWidth: 1,
+                    pointRadius: 2
+                },
+                {
+                    fill: false,
+                    backgroundColor: '#cc2a36',
+                    borderColor: '#cc2a36',
+                    pointBorderColor: '#cc2a36',
+                    pointBackgroundColor: '#cc2a36',
+                    label: "Limite Máximo",
+                    data: maxValuesArousal,
+                    borderWidth: 1,
+                    pointRadius: 2
+                },
+                {
+                    fill: false,
+                    backgroundColor: '#edc951',
+                    borderColor: '#edc951',
+                    pointBorderColor: '#edc951',
+                    pointBackgroundColor: '#edc951',
+                    label: "Limite Mínimo",
+                    data: minValuesArousal,
+                    borderWidth: 1,
+                    pointRadius: 2
+                }
+            ]
+        };
+
+        var ctxArousal = document.getElementById("arousalAvgChart").getContext("2d");
+        var arousalChart = new Chart(ctxArousal, {
+            type: 'line',
+            data: arousalChartData,
+            options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            max: 9
+                        }
+                    }]
+                }
+            }
+        });
+
+    }
+    // End of Average graph for Arousal
+
+    // Average graph for Dominance
+    if (stimulusListDominance.length > 0) {
+        $("#dominanceDiv").show();
+
+        var stimulusDominance = [];
+        var avgValuesDominance = [];
+        var maxValuesDominance = [];
+        var minValuesDominance = [];
+
+        for (var i = 0; i < stimulusListDominance.length; i++) {
+            stimulusDominance.push(stimulusListDominance[i][0]);
+            avgValuesDominance.push(stimulusListDominance[i][1]);
+            maxValuesDominance.push(stimulusListDominance[i][2]);
+            minValuesDominance.push(stimulusListDominance[i][3]);
+        }
+
+        var dominanceChartData = {
+            labels: stimulusDominance,
+            datasets: [
+                {
+                    fill: false,
+                    backgroundColor: '#4f372d',
+                    borderColor: '#4f372d',
+                    pointBorderColor: '#4f372d',
+                    pointBackgroundColor: '#4f372d',
+                    label: "Média",
+                    data: avgValuesDominance,
+                    borderWidth: 1,
+                    pointRadius: 2
+                },
+                {
+                    fill: false,
+                    backgroundColor: '#cc2a36',
+                    borderColor: '#cc2a36',
+                    pointBorderColor: '#cc2a36',
+                    pointBackgroundColor: '#cc2a36',
+                    label: "Limite Máximo",
+                    data: maxValuesDominance,
+                    borderWidth: 1,
+                    pointRadius: 2
+                },
+                {
+                    fill: false,
+                    backgroundColor: '#edc951',
+                    borderColor: '#edc951',
+                    pointBorderColor: '#edc951',
+                    pointBackgroundColor: '#edc951',
+                    label: "Limite Mínimo",
+                    data: minValuesDominance,
+                    borderWidth: 1,
+                    pointRadius: 2
+                }
+            ]
+        };
+
+        var ctxDominance = document.getElementById("dominanceAvgChart").getContext("2d");
+        var dominanceChart = new Chart(ctxDominance, {
+            type: 'line',
+            data: dominanceChartData,
+            options: {
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            max: 9
+                        }
+                    }]
+                }
+            }
+        });
+
+    }
+    // End of Average graph for Dominance
+
 </script>
