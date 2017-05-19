@@ -3,8 +3,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
 from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpResponseServerError
+from django.http import HttpResponseServerError
+import random
+import string
 
 try:
     from BytesIO import BytesIO
@@ -119,6 +120,11 @@ class EditFormView(View):
                 f.formConfig = formConfig
                 f.formThumbnail = formThumbnail
                 f.save()
+
+                # Delete the session form preview because it was saved.
+                if request.session.has_key('form_config_preview'):
+                    del request.session['form_config_preview']
+
                 print("SUCCESS: Form successfully edited.")
                 return HttpResponse("SUCCESS: Form successfully edited.")
 
@@ -157,6 +163,7 @@ class NewFormView(View):
 
             else:
                 f.save()
+
                 username = request.session['username']
                 p = Permission()
                 user = User.objects.get(username=username)
@@ -165,6 +172,11 @@ class NewFormView(View):
                 p.idForm = idF
                 p.permissionType = 'O'  # the creator has owner permission
                 p.save()
+
+                t = ParticipantToken()
+                t.idForm = Form.objects.get(idForm=idForm)
+                t.token = id_generator(10)
+                t.save()
 
                 # Delete the session form preview because it was saved.
                 if request.session.has_key('form_config_preview'):
@@ -220,6 +232,7 @@ class CloneFormView(View):
 
             else:
                 f.save()
+
                 username = request.session['username']
                 p = Permission()
                 user = User.objects.get(username=username)
@@ -228,9 +241,25 @@ class CloneFormView(View):
                 p.idForm = idF
                 p.permissionType = 'O'  # the creator has owner permission
                 p.save()
+
+                t = ParticipantToken()
+                t.idForm = Form.objects.get(idForm=idForm)
+                t.token = id_generator(10)
+                t.save()
+
+                # Delete the session form preview because it was saved.
+                if request.session.has_key('form_config_preview'):
+                    del request.session['form_config_preview']
+
                 print("SUCCESS: Form successfully cloned.")
                 return HttpResponse("SUCCESS: Form successfully cloned.")
 
         except Exception as e:
             print("ERROR CloneFormView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
+
+# ######################################################################## #
+# Generates a random id (auxiliary function).
+# ######################################################################## #
+def id_generator(size=32, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))

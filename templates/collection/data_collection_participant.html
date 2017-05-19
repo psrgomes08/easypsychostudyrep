@@ -144,7 +144,7 @@
     var idForm = formConfiguration.id;
 
     var csrfToken = "{{ csrf_token }}";
-    var urlToPostCP = "{% url 'data-collection-participant' 'idForm' 'idParticipant'%}";
+    var urlToPostCP = "{% url 'data-collection-participant' 'idForm' %}";
     var urlToTrialForm = "{% url 'trial-form' trialFormID %}";
 
     var urlForPermission = "{% url 'check-token'%}";

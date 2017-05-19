@@ -4,6 +4,8 @@ from django.views import View
 from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, UserNotification, FormSpecialConfigs
 from django.http import HttpResponseServerError
 from django.contrib.auth.models import User
+import random
+import string
 
 try:
     from BytesIO import BytesIO
@@ -12,21 +14,25 @@ except ImportError:
 
 
 # ######################################################################## #
+# Generates a random id (auxiliary function).
+# (Used in DataCollectionForRemoteView).
+# ######################################################################## #
+def id_generator(size=32, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+# ######################################################################## #
 # For data collection with attributed participantID
 # ######################################################################## #
-class DataCollectionForParticipantView(View):
-    def get(self, request, idForm, idParticipant):
+class DataCollectionForRemoteView(View):
+    def get(self, request, idForm):
         try:
             selected_form = Form.objects.get(idForm=idForm)
 
-            participants_in_form = ParticipantInForm.objects.filter(idForm=idForm)
-
-            for i in range(0, len(participants_in_form)):
-                if idParticipant == participants_in_form[i].idParticipant:
-                    print(
-                        "ERROR DataCollectionForParticipantView: There is already a participant with the ID " + idParticipant + " in the data collection.")
-                    return HttpResponseServerError(
-                        "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
+            nParticipants = 1
+            while nParticipants != 0: # checks if the generated ID already exists
+                idParticipant = id_generator(18)
+                p = ParticipantInForm.objects.filter(idForm=idForm, idParticipant=idParticipant)
+                nParticipants = len(p)
 
             scaleExplained = 'N'
             trialFormID = "NA"
@@ -60,11 +66,10 @@ class DataCollectionForParticipantView(View):
             print("ERROR DataCollectionForParticipantView: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
 
-    def post(self, request, idForm, idParticipant):
+    def post(self, request, idForm):
         idParticipant = request.POST["idParticipant"]
         idForm = request.POST["idForm"]
         dataCollection = request.POST["dataCollection"]
-        token = request.POST["token"]
 
         if ParticipantInForm.objects.filter(idParticipant=idParticipant, idForm=idForm):
             print("ERROR DataCollectionForParticipantView: There is already a participant with the ID " + idParticipant + " in the data collection.")
@@ -78,10 +83,6 @@ class DataCollectionForParticipantView(View):
                 p.idParticipant = idParticipant
                 p.dataCollection = dataCollection
                 p.save()
-
-                # The participant submited the form: the token for that participant can be deleted.
-                pt = ParticipantToken.objects.get(idForm=idForm, idFutureParticipant=idParticipant, token=token)
-                pt.delete()
 
                 # Start of push notifications
                 try:
@@ -189,11 +190,12 @@ class DataCollectionView(View):
 # ######################################################################## #
 def checkTokenForParticipant(request):
     idForm = request.POST.get("idForm")
-    idParticipant = request.POST.get("idParticipant")
     tokenInserted = request.POST["token"]
 
     try:
-        ParticipantToken.objects.get(idForm=idForm, idFutureParticipant=idParticipant, token=tokenInserted)
+        f = Form.objects.get(idForm=idForm)
+        ParticipantToken.objects.get(idForm=f, token=tokenInserted)
+        print("SUCCESS: The token is valid.")
         return HttpResponse("SUCCESS: The token is valid.")
 
     except Exception as e:
@@ -207,6 +209,7 @@ def checkTokenForParticipant(request):
 def getTrialForm(request, idFormTrial):
 
     if(idFormTrial == "NA"):
+        print("ERROR getTrialForm: The trial form you tried to open is not configured.")
         return HttpResponseServerError("ERROR getTrialForm: The trial form you tried to open is not configured.")
 
     else:

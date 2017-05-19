@@ -13,7 +13,6 @@ import random
 import urllib.parse
 import math
 import statistics
-import functools
 
 try:
     from BytesIO import BytesIO
@@ -526,7 +525,7 @@ def deleteStudyForm(request, idForm):
 
 
 # ######################################################################## #
-# For download of an excel file containing the participants collected data
+# For download of an excel file containing the participants collected data.
 # ######################################################################## #
 def downloadParticipantsDataCollectedData(request, idForm):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -881,7 +880,7 @@ def downloadParticipantsDataCollectedData(request, idForm):
 
 
 # ######################################################################## #
-# For the main page
+# For the main page.
 # ######################################################################## #
 class HomeView(View):
     def get(self, request):
@@ -940,6 +939,10 @@ class HomeView(View):
             # to display usernames in access granting
             usersList = User.objects.exclude(username=user)
 
+            # get e-mail from user
+            u = User.objects.get(username=user)
+            userEmail = u.email
+
             # for special form configs
             formsList = []
             p = Permission.objects.filter(username__username=user)
@@ -948,6 +951,7 @@ class HomeView(View):
 
             context = {
                 "username": user,
+                "userEmail": userEmail,
                 "ownedFormsClosedList": ownedFormsClosedList,
                 "ownedFormsOpenList": ownedFormsOpenList,
                 "sharedFormsClosedList": sharedFormsClosedList,
@@ -963,44 +967,28 @@ class HomeView(View):
 
 
 # ######################################################################## #
-# Verifies if an ID was already given to a participant
+# Gets the token associated to a form.
 # ######################################################################## #
-def checkParticipantID(request):
+def getFormToken(request):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
         return redirect('login')
 
     else:
-        idForm = request.POST.get("idForm")
-        idFutureParticipant = request.POST.get("participantID")
-        definedPass = request.POST.get("token")
+        idForm = request.GET.get("idForm")
 
         try:
-            p = ParticipantInForm.objects.get(idForm=idForm, idParticipant=idFutureParticipant)
+            f = Form.objects.get(idForm=idForm)
+            p = ParticipantToken.objects.get(idForm=f)
+            print("SUCCESS: " + p.token)
+            return HttpResponse(p.token)
 
-            if p.idParticipant == idFutureParticipant:  # checks if there is already a participant with this ID in the form
-                return HttpResponseServerError("ERROR_1")
-
-        except ObjectDoesNotExist:  # if the ID was not used yet
-
-            try:
-                pt = ParticipantToken()
-                pt.idForm = Form.objects.get(idForm=idForm)
-                pt.idFutureParticipant = idFutureParticipant  # the ID is not yet submited in the ParticipantInForm table
-                pt.token = definedPass
-                pt.save()
-                print("SUCCESS: The token for participant " + idFutureParticipant + " was created.")
-                return HttpResponse("SUCCESS: The token for participant " + idFutureParticipant + " was created.")
-
-            except ObjectDoesNotExist:
-                return HttpResponseServerError("ERROR_2")
-
-            except IntegrityError:
-                pts = ParticipantToken.objects.get(idForm=idForm, idFutureParticipant=idFutureParticipant)
-                return HttpResponseServerError(pts.token)
+        except Exception as e:
+            print("ERROR getFormToken: " + str(e))
+            return HttpResponseServerError("ERROR getFormToken: " + str(e))
 
 
 # ######################################################################## #
-# Deletes all the notifications of a user
+# Deletes all the notifications of a user.
 # ######################################################################## #
 def deleteNotifications(request):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -1022,7 +1010,7 @@ def deleteNotifications(request):
 
 
 # ######################################################################## #
-# Gets all the notifications of a user
+# Gets all the notifications of a user.
 # ######################################################################## #
 def getNotifications(request):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -1045,7 +1033,7 @@ def getNotifications(request):
 
 
 # ######################################################################## #
-# Gets the number of notifications of a user
+# Gets the number of notifications of a user.
 # ######################################################################## #
 def getNNotifications(request):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -1063,7 +1051,7 @@ def getNNotifications(request):
 
 
 # ######################################################################## #
-# Saves or retrieves special configs of a form
+# Saves or retrieves special configs of a form.
 # ######################################################################## #
 class SpecialConfigsView(View):
     def get(self, request):
@@ -1239,7 +1227,7 @@ def pushNotification(username, idForm, message, severityLevel):
 
 # ######################################################################## #
 # Returns a list of users with access to form, excluding the user who
-# requested the list
+# requested the list.
 # ######################################################################## #
 def getListOfUsersWithForm(request):
     if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
@@ -1268,7 +1256,7 @@ def getListOfUsersWithForm(request):
 
 # ######################################################################## #
 # Retrieves data from form to present graphs and other relevant
-# data in a dashboard
+# data in a dashboard.
 # ######################################################################## #
 def formDashboardView(request, idForm):
     if not request.session.has_key('username'):
@@ -1399,8 +1387,8 @@ def formDashboardView(request, idForm):
                 stimulusListValence[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
 
                 sortedValues = sorted(values)
-                stimulusListValence[i][6] = percentile(sortedValues, 0.25) # 1st quartile
-                stimulusListValence[i][7] = percentile(sortedValues, 0.75) # 3rd quartile
+                stimulusListValence[i][6] = percentile(sortedValues, 0.25)  # 1st quartile
+                stimulusListValence[i][7] = percentile(sortedValues, 0.75)  # 3rd quartile
 
             for i in range(0, len(stimulusListValuesArousal)):
                 values = stimulusListValuesArousal[i][1]
@@ -1448,7 +1436,6 @@ def formDashboardView(request, idForm):
                 stimulusListDominance[i][6] = percentile(sortedValues, 0.25)  # 1st quartile
                 stimulusListDominance[i][7] = percentile(sortedValues, 0.75)  # 3rd quartile
 
-
             stimulusListValenceHistogram = []
             for i in range(0, len(stimulusListValuesValence)):
                 occurences = []
@@ -1494,18 +1481,17 @@ def formDashboardView(request, idForm):
 
                 stimulusListDominanceHistogram.append([stimulusListValuesDominance[i][0], occurences])
 
+            # print("Valence: " + str(stimulusListValence))
+            # print("Arousal: " + str(stimulusListArousal))
+            # print("Dominance: " + str(stimulusListDominance))
 
-            #print("Valence: " + str(stimulusListValence))
-            #print("Arousal: " + str(stimulusListArousal))
-            #print("Dominance: " + str(stimulusListDominance))
+            # print("Valence: " + str(stimulusListValuesValence))
+            # print("Arousal: " + str(stimulusListValuesArousal))
+            # print("Dominance: " + str(stimulusListValuesDominance))
 
-            #print("Valence: " + str(stimulusListValuesValence))
-            #print("Arousal: " + str(stimulusListValuesArousal))
-            #print("Dominance: " + str(stimulusListValuesDominance))
-
-            #print("Valence Histogram: " + str(stimulusListValenceHistogram))
-            #print("Arousal Histogram: " + str(stimulusListArousalHistogram))
-            #print("Dominance Histogram: " + str(stimulusListDominanceHistogram))
+            # print("Valence Histogram: " + str(stimulusListValenceHistogram))
+            # print("Arousal Histogram: " + str(stimulusListArousalHistogram))
+            # print("Dominance Histogram: " + str(stimulusListDominanceHistogram))
 
             context = {
                 "idForm": f.idForm,
@@ -1578,7 +1564,6 @@ def getScalesFromParticipant(idParticipant, idForm):
 # (aux function of formDashboardView)
 # ######################################################################## #
 def percentile(N, percent, key=lambda x: x):
-
     if not N:
         return None
 

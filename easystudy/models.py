@@ -90,15 +90,14 @@ class ParticipantInForm(models.Model):
 class ParticipantToken(models.Model):
     idParticipantToken = models.AutoField(primary_key=True)
     idForm = models.ForeignKey(Form, on_delete=models.CASCADE)
-    idFutureParticipant = models.CharField(max_length=100, default="p000")
     token = models.CharField(max_length=50)
 
     class Meta:
         unique_together = (
-            'idForm', 'idFutureParticipant',)  # makes sure there is not more than one token for a participant in a form
+            'idForm', 'token',)  # makes sure there is not more than one token for a participant in a form
 
     def __str__(self):
-        return str(self.idFutureParticipant)
+        return str(self.idParticipantToken)
 
 
 # ######################################################################## #

@@ -3,15 +3,6 @@
 <html lang="en">
 <head>
 
-    <!-- Font awesome -->
-    <script type="text/javascript"> (function () {
-        var css = document.createElement('link');
-        css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css';
-        css.rel = 'stylesheet';
-        css.type = 'text/css';
-        document.getElementsByTagName('head')[0].appendChild(css);
-    })(); </script> <!-- end of Font awesome script -->
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,6 +16,15 @@
     <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/clone_form.css' %}">
+
+    <!-- Font awesome -->
+    <script type="text/javascript"> (function () {
+        var css = document.createElement('link');
+        css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css';
+        css.rel = 'stylesheet';
+        css.type = 'text/css';
+        document.getElementsByTagName('head')[0].appendChild(css);
+    })(); </script> <!-- end of Font awesome script -->
 
 </head>
 
@@ -277,6 +277,20 @@
     <div class="row">
 
         <div class="col-sm-3">
+
+            <div class="alert alert-info alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <span class="glyphicon glyphicon-info-sign"></span> Clique sempre no botão <strong><span
+                    class="glyphicon glyphicon-import"></span> Carregar</strong> quando fizer importação de imagens após
+                a pesquisa, caso contrário estas não aparecerão no seu questionário.
+            </div>
+
+            <div class="alert alert-info alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <span class="glyphicon glyphicon-info-sign"></span> Pode arrastar os painéis das tarefas e ordená-los na
+                ordem que achar mais conveniente.
+            </div>
+
             <div class="alert alert-success alert-dismissable">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span class="glyphicon glyphicon-ok-sign"></span> O seu questionário <strong>deve conter sempre</strong>:
@@ -288,15 +302,9 @@
                 </ul>
             </div>
 
-            <div class="alert alert-info alert-dismissable">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <span class="glyphicon glyphicon-info-sign"></span> Clique sempre no botão <strong><span
-                    class="glyphicon glyphicon-import"></span> Carregar</strong> quando fizer importação de imagens após
-                a pesquisa, caso contrário estas não aparecerão no seu questionário.
-            </div>
         </div> <!-- ./ col-sm-3 -->
 
-        <div class="col-sm-6">
+        <div class="col-sm-9">
             <form id="form-questionnaire">
 
                 <div class="form-group"> <!-- form name -->
@@ -341,15 +349,13 @@
                     <!-- Here stays the content inserted by the user -->
                 </div> <!-- end of user content -->
             </form> <!-- ./form-questionnaire -->
-        </div> <!-- ./col-sm-6 -->
-
-        <div class="col-sm-3"></div>
+        </div> <!-- ./col-sm-9 -->
 
     </div>
 
     <div class="btn-fixed-down">
-        <button class="btn btn-md btn-grey" id="add-break">
-            <span class="glyphicon glyphicon-align-justify"></span> Criar Tarefa
+        <button class="btn btn-sq" id="add-break">
+            <i class="fa fa-plus-square-o fa-2x"></i><br/>Criar<br/>Tarefa
         </button>
     </div> <!-- ./btn-fixed-down -->
 
@@ -395,8 +401,9 @@
 <script src="{% static 'js/new_form.js' %}"></script>
 <script src="{% static 'js/clone_form.js' %}"></script>
 <script src="{% static 'js/edit_form.js' %}"></script>
-<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs"
+<script type="text/javascript" src="{% static 'js/dropins.js' %}" id="dropboxjs"
         data-app-key="5lq56uzonzeai0d"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
 
 <script>
     /**

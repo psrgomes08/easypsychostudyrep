@@ -3,15 +3,6 @@
 <html lang="en">
 <head>
 
-    <!-- Font awesome -->
-    <script type="text/javascript"> (function () {
-        var css = document.createElement('link');
-        css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css';
-        css.rel = 'stylesheet';
-        css.type = 'text/css';
-        document.getElementsByTagName('head')[0].appendChild(css);
-    })(); </script> <!-- end of Font awesome script -->
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,6 +15,8 @@
     <link rel="stylesheet" href="{% static 'css/new_form.css' %}"> <!-- Important for navbar -->
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/form_dashboard.css' %}">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <!-- font awesome -->
 
 </head>
 
@@ -50,6 +43,10 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse navbar-right">
 
+            <a href="{% url 'download-collected-data' idForm %}" class="btn btn-primary navbar-btn btn-wide"
+               role="button">
+                <i class="fa fa-file-excel-o"></i> Descarregar Recolhas</a>
+
             <a href="{% url 'home' %}" class="btn btn-default navbar-btn btn-wide" role="button">
                 <span class="glyphicon glyphicon-chevron-left"></span> Voltar</a>
 
@@ -63,42 +60,50 @@
 <div class="container">
     <div class="row">
 
-        <div class="col-sm-2">
+        <div class="col-sm-3">
 
-            <p align="center"><b>Lista de Opções</b></p>
-            <div class="btn-group-vertical btn-block">
-                <button type="button" class="btn btn-default" onclick="showBoxPlots()">Diagramas de Caixa</button>
-                <button type="button" class="btn btn-default" onclick="showStimulusList()">Histogramas</button>
-                <button type="button" class="btn btn-default" onclick="showAverages()">Gráficos de Média</button>
+            <div class="panel panel-default">
+                <div class="panel-heading" style="text-align: center"><strong><i class="fa fa-bar-chart"></i> Lista de
+                    Gráficos</strong></div>
+                <div class="panel-body">
+                    <button id="btn-box-plot" type="button" class="btn btn-default btn-block" onclick="showBoxPlots()">
+                        Box Plots
+                    </button>
+
+                    <button type="button" class="btn btn-default btn-block" onclick="showStimulusList()">Histogramas
+                    </button>
+
+                    <button type="button" class="btn btn-default btn-block" onclick="showAverages()">Gráficos de Média
+                    </button>
+
+                </div>
             </div>
+
             <br/><br/>
 
         </div> <!-- ./col-sm-2 -->
 
-        <div class="col-sm-10">
+        <div class="col-sm-9">
 
             <div id="box-plot-graphics" style="display: none"> <!-- Box Plot Graphics -->
 
-                <p align="center" style="font-size: 25px">Diagramas de Caixa</p><br/>
+                <p align="center" style="font-size: 25px">Box Plots</p><br/>
 
                 <div class="well" id="valence-b-p" style="display: none">
                     <p align="center" style="font-size: 20px">Valência Afetiva</p>
                     <div id="valence-box-plot"></div>
-                    <p align="center">Lower quartile = 25% | Upper quartile = 75%</p>
                     <br/>
                 </div>
 
                 <div class="well" id="arousal-b-p" style="display: none">
                     <p align="center" style="font-size: 20px">Ativação Fisiológica</p>
                     <div id="arousal-box-plot"></div>
-                    <p align="center">Lower quartile = 25% | Upper quartile = 75%</p>
                     <br/>
                 </div>
 
                 <div class="well" id="dominance-b-p" style="display: none">
                     <p align="center" style="font-size: 20px">Dominância</p>
                     <div id="dominance-box-plot"></div>
-                    <p align="center">Lower quartile = 25% | Upper quartile = 75%</p>
                     <br/>
                 </div>
 
@@ -159,11 +164,13 @@
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/form_dashboard.js' %}"></script>
 <script src="{% static 'js/Chart.min.js' %}"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="{% static 'js/highcharts.js' %}"></script>
+<script src="{% static 'js/highcharts-more.js' %}"></script>
+<script src="{% static 'js/exporting.js' %}"></script>
+<script src="https://smtpjs.com/smtp.js"></script>
 
 <script>
+
     // General configurations for Highcharts
     Highcharts.theme = {
         chart: {
@@ -179,6 +186,9 @@
         // Animate loader off screen
         $(".se-pre-con").fadeOut();
     });
+
+    // Automatically opens the box-plot window
+    document.getElementById("btn-box-plot").click();
 
     /**
      * Control what divs are shown when box plots are open.

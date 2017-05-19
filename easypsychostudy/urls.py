@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^descarregarconfiguracoes/([a-zA-Z0-9S]+)$', views.downloadJSON, name='download-json'),  # NOT BEING USED
     url(r'^apagarquestionario/([a-zA-Z0-9S]+)$', views.deleteStudyForm, name='delete-form'),
     url(r'^recolha/([a-zA-Z0-9S]+)$', DataCollectionView.as_view(), name='data-collection'),
-    url(r'^recolhaparticipante/([a-zA-Z0-9S]+)/([a-zA-Z0-9S]+)$', DataCollectionForParticipantView.as_view(),
+    url(r'^recolharemota/([a-zA-Z0-9S]+)$', DataCollectionForRemoteView.as_view(),
         name='data-collection-participant'),
     url(r'^descarregardadoscolecionados/([a-zA-Z0-9S]+)$', views.downloadParticipantsDataCollectedData,
         name='download-collected-data'),
@@ -44,7 +44,7 @@ urlpatterns = [
     url(r'^editar', views.editFormRequest, name='edit-request'),
     url(r'^previsualizacao', PreviewFormView.as_view(), name='preview-form'),  # after editFormRequest
     url(r'^descarregar', views.downloadDataCollectionRequest, name='data-collection-request'),
-    url(r'^verificaridparticipante', views.checkParticipantID, name='check-participant'),
+    url(r'^obtertokenquestionario', views.getFormToken, name='get-form-token'),
     url(r'^verificartoken', views.checkTokenForParticipant, name='check-token'),
     url(r'^apagarNotificacoes', views.deleteNotifications, name='delete-notifications'),
     url(r'^notificacoes', views.getNotifications, name='get-notifications'),

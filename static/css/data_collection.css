@@ -3,20 +3,8 @@
     padding: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
-    appearance: none;
 }
 
-/*
-.valence1{background-image:url(http://101.imagebam.com/download/_N0R8Ed7lZYK1Q33821O2w/54310/543095756/valence1.png);}
-.valence2{background-image:url(http://101.imagebam.com/download/Y4a1eqcAX6cvPV8ylkBoBw/54310/543095759/valence2.png);}
-.valence3{background-image:url(http://101.imagebam.com/download/I6_vQmw_n_A4QiNggrlYoQ/54310/543097355/valence3.png);}
-.valence4{background-image:url(http://101.imagebam.com/download/mw5N6koycvBxonri_vKECw/54310/543097358/valence4.png);}
-.valence5{background-image:url(http://101.imagebam.com/download/ibyj4AaMW_z5Vw07Llej0Q/54310/543097361/valence5.png);}
-.valence6{background-image:url(http://101.imagebam.com/download/cHvYtfsKPmAMYGX1DT3mOg/54310/543097362/valence6.png);}
-.valence7{background-image:url(http://101.imagebam.com/download/nrm85LXTi0t2uOAv1Oznjg/54310/543097364/valence7.png);}
-.valence8{background-image:url(http://101.imagebam.com/download/K9V38r5cSAUKdQpiZ6sW1w/54310/543097366/valence8.png);}
-.valence9{background-image:url(http://101.imagebam.com/download/g4cvupkUB-reRqOiAgX51A/54310/543097369/valence9.png);}
-*/
 .valence1 {
     background-image: url(../images/valence/valence1.png);
 }
@@ -53,17 +41,6 @@
     background-image: url(../images/valence/valence9.png);
 }
 
-/*
-.arousal1{background-image:url(http://101.imagebam.com/download/LyBF6fizRqT2Yn9SXT-G3A/54310/543098304/arousal1.png);}
-.arousal2{background-image:url(http://101.imagebam.com/download/1rVlZGvshQKRzY6BXgVHQw/54310/543098307/arousal2.png);}
-.arousal3{background-image:url(http://101.imagebam.com/download/YctU-jwLh_lTKGG5wRu4_w/54310/543098309/arousal3.png);}
-.arousal4{background-image:url(http://101.imagebam.com/download/F3ew4idCqLuJ0TwPSQ7WtA/54310/543098311/arousal4.png);}
-.arousal5{background-image:url(http://101.imagebam.com/download/aAlAU3wuRCN6YFwJj2EPKQ/54310/543098314/arousal5.png);}
-.arousal6{background-image:url(http://101.imagebam.com/download/SzY7wqdNiXavNYeXePlxAA/54310/543098316/arousal6.png);}
-.arousal7{background-image:url(http://101.imagebam.com/download/2OGpUXchUTARp5OApToevg/54310/543098317/arousal7.png);}
-.arousal8{background-image:url(http://101.imagebam.com/download/cNP9ai8DjI_S_bWPsuppTA/54310/543098319/arousal8.png);}
-.arousal9{background-image:url(http://101.imagebam.com/download/ZoN6tC6abXr-Nppe5FaVCA/54310/543098321/arousal9.png);}
-*/
 .arousal1 {
     background-image: url(../images/arousal/arousal1.png);
 }
@@ -100,17 +77,6 @@
     background-image: url(../images/arousal/arousal9.png);
 }
 
-/*
-.dominance1{background-image:url(http://101.imagebam.com/download/8uzFnYYZdvuEqfnjoRqsTQ/54311/543100770/dominance1.png);}
-.dominance2{background-image:url(http://101.imagebam.com/download/z-IcYSiWSbuOkltr9wNfjg/54311/543100772/dominance2.png);}
-.dominance3{background-image:url(http://101.imagebam.com/download/4N3ipiT86IguOPpSM1N1Kg/54311/543100775/dominance3.png);}
-.dominance4{background-image:url(http://101.imagebam.com/download/3ECcTBeIUk0clohoCOuI1A/54311/543100779/dominance4.png);}
-.dominance5{background-image:url(http://101.imagebam.com/download/ju87ejTGU-0f8Y_CuPIcPw/54311/543100781/dominance5.png);}
-.dominance6{background-image:url(http://101.imagebam.com/download/Uj9UQSd1-vfGMi-UmYnQng/54311/543100784/dominance6.png);}
-.dominance7{background-image:url(http://101.imagebam.com/download/I0gF8gX-v_krw8MoXPXnVQ/54311/543100788/dominance7.png);}
-.dominance8{background-image:url(http://101.imagebam.com/download/nca-h4byGd3omKyAgDoe7g/54311/543100790/dominance8.png);}
-.dominance9{background-image:url(http://101.imagebam.com/download/p-NPiv2fCsaw_5d6TYvRdg/54311/543100794/dominance9.png);}
-*/
 .dominance1 {
     background-image: url(../images/dominance/dominance1.png);
 }
@@ -153,7 +119,6 @@
 
 .cc-selector input:checked + .drinkcard-cc {
     -webkit-filter: none;
-    -moz-filter: none;
     filter: none;
 }
 
@@ -167,13 +132,47 @@
     -webkit-transition: all 100ms ease-in;
     -moz-transition: all 100ms ease-in;
     transition: all 100ms ease-in;
-    -webkit-filter: brightness(1.8) grayscale(1) opacity(.7);
-    -moz-filter: brightness(1.8) grayscale(1) opacity(.7);
-    filter: brightness(1.8) grayscale(1) opacity(.7);
+    -webkit-filter: brightness(1.0) grayscale(1) opacity(.4);
+    filter: brightness(1.0) grayscale(1) opacity(.4);
 }
 
 .drinkcard-cc:hover {
     -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
-    -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
     filter: brightness(1.2) grayscale(.5) opacity(.9);
+}
+
+@media (min-width: 320px) and (max-width: 500px) {
+    .stop-wrap {
+        white-space: nowrap;
+        overflow-x: scroll;
+        width: 300px;
+        display: inline-block;
+    }
+}
+
+@media (min-width: 501px) and (max-width: 768px) {
+    .stop-wrap {
+        white-space: nowrap;
+        overflow-x: scroll;
+        width: 480px;
+        display: inline-block;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+    .stop-wrap {
+        white-space: nowrap;
+        overflow-x: scroll;
+        width: 750px;
+        display: inline-block;
+    }
+}
+
+@media (min-width: 1101px) {
+    .stop-wrap {
+        white-space: nowrap;
+        overflow-x: scroll;
+        width: 1080px;
+        display: inline-block;
+    }
 }

@@ -43,11 +43,11 @@
 
 /* Removes the transparency from toastrs */
 .toast {
-  opacity: 1 !important;
+    opacity: 1 !important;
 }
 
 #toast-container > div {
-  opacity: 1 !important;
+    opacity: 1 !important;
 }
 
 /* Makes an element with this class red, as in mandatory */
@@ -76,4 +76,16 @@
 .btn-grey:visited {
     background-color: rgba(34, 34, 34, 0.9);
     color: #FFF;
+}
+
+/* Transforms the cursor when hover a moving panel */
+#content-added-by-user .panel-heading {
+    cursor: move;
+}
+
+/* Applies a square style to the buttons */
+.btn-sq {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 10px;
 }

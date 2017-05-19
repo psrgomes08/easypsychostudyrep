@@ -3,15 +3,6 @@
 <html lang="en">
 <head>
 
-    <!-- Font awesome -->
-    <script type="text/javascript"> (function () {
-        var css = document.createElement('link');
-        css.href = '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css';
-        css.rel = 'stylesheet';
-        css.type = 'text/css';
-        document.getElementsByTagName('head')[0].appendChild(css);
-    })(); </script> <!-- end of Font awesome script -->
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,6 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/new_form.css' %}"> <!-- Important for navbar -->
     <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 </head>
 
@@ -374,7 +366,8 @@
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
                                                 data-target="#modal-for-link-share"
-                                                data-form-id="{{ownedFormO.0.idForm}}"><span
+                                                data-form-id="{{ownedFormO.0.idForm}}"
+                                                data-form-name="{{ownedFormO.0.idForm.formName}}"><span
                                                 class="glyphicon glyphicon-share"></span> Recolha <span class="button-text">Remota</span>
                                         </button>
                                     </div>
@@ -419,26 +412,9 @@
                                                 Recolha Remota</p>
                                         </div>
                                         <div class="modal-body">
-                                            <p align="center">Pode efetuar uma recolha remota através da geração de um
-                                                link
-                                                especial.</p>
-
-                                            <div class="input-group">
-
-                                                <span class="input-group-addon"
-                                                      id="basic-addon1">ID do Participante</span>
-                                                <input type="text" id="participant-in-link" class="form-control"
-                                                       aria-describedby="basic-addon1">
-                                            </div>
-                                            <br/>
-                                            <p align="center">
-                                                <button id="generate-link" class="btn btn-primary"><span
-                                                        class="glyphicon glyphicon-link"></span> Gerar
-                                                </button>
-                                            </p>
-
-                                            <p align="center" id="form-url"></p>
-                                            <!--<p align="center" id="form-token"></p>-->
+                                            <div style="text-align: center" id="form-url"></div>
+                                            <div style="text-align: center" id="email-form"></div>
+                                            <div style="text-align: center" id="email-messages"></div>
                                         </div>
                                     </div>
 
@@ -946,7 +922,7 @@
 
 </div> <!-- ./btn-group-vertical fixed-btn -->
 
-<!-- Modal -->
+<!-- Modal for form import -->
 <div id="importForm" class="modal fade" role="dialog">
     <div class="modal-dialog">
 
@@ -991,6 +967,7 @@
 <script src="{% static 'js/toastr.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/home.js' %}"></script>
+<script src="https://smtpjs.com/smtp.js"></script>
 
 <script>
     /**
@@ -1027,7 +1004,7 @@
     var urlToEdit = "{% url 'edit-request' %}";
     var urlToDataRequest = "{% url 'data-collection-request' %}";
     var onSuccessDataRequest = "{% url 'download-xls' 'identifier' %}";
-    var urlToCheckParticipants = "{% url 'check-participant' %}";
+    var urlToGetToken = "{% url 'get-form-token' %}";
     var urlForNotifications = "{% url 'get-notifications' %}";
     var urlForNNotifications = "{% url 'get-n-notifications' %}";
     var urlForDeleteNotifications = "{% url 'delete-notifications' %}";
@@ -1035,6 +1012,8 @@
     var urlToUploadJSON = "{% url 'upload-json' %}";
     var urlToPostSpecialConfigs = "{% url 'save-special-configs' %}";
     var urlToGetListUsersForm = "{% url 'get-list-users-form' %}";
+
+    var userEmail = "{{userEmail}}";
 
     /**
      * Checks if a form can be edited.

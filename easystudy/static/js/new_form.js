@@ -31,6 +31,28 @@ toastr.options = {
     "hideMethod": "fadeOut"
 };
 
+
+/**
+ * Makes the panels of content added by user draggable.
+ */
+jQuery(function ($) {
+    var panelList = $('#content-added-by-user');
+
+    panelList.sortable({
+        // Only make the .panel-heading child elements support dragging.
+        // Omit this to make then entire <li>...</li> draggable.
+        handle: '.panel-heading',
+        update: function () {
+            $('.panel', panelList).each(function (index, elem) {
+                var $listItem = $(elem),
+                    newIndex = $listItem.index();
+
+                // Persist the new indices.
+            });
+        }
+    });
+});
+
 /**
  * Generates a random string to be used in formID.
  * @param length size of the string
@@ -111,6 +133,7 @@ function addStimulusVideo(n) {
             }
 
             // If only one video was uploaded, let's the step be fixed. Else, does not.
+            /*
             if (files.length > 1) {
                 $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
                 $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", true);
@@ -118,6 +141,7 @@ function addStimulusVideo(n) {
                 $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
                 $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", false);
             }
+            */
 
             typeOfStep[n] = "video";
 
@@ -286,7 +310,7 @@ $(document).ready(function () {
             "<li><button id='break-" + breakNumber + "-video-btn' class='btn btn-block btn-transparent' type='button' onclick='addStimulusVideo(" + breakNumber + ")'><span class='glyphicon glyphicon-film'></span> Vídeos</button></li>" +
             "<li class='divider'></li>" +
             "<li><button id='break-" + breakNumber + "-description-btn' class='btn btn-block btn-transparent' type='button' onclick='addDescriptionField(" + breakNumber + ")'><span class='glyphicon glyphicon-font'></span> Instruções</button></li>" +
-            "<li><button class='btn btn-block btn-transparent' type='button' onclick='deleteBreak(" + breakNumber + ")'><span class='glyphicon glyphicon-remove'></span> Apagar</button></li>" +
+            "<li><button id='break-" + breakNumber + "-delete-btn' class='btn btn-block btn-transparent' type='button' onclick='deleteBreak(" + breakNumber + ")'><span class='glyphicon glyphicon-remove'></span> Apagar</button></li>" +
             "</ul>" +
             "</div>" + // <!-- ./input-group-btn -->
             "</div>" + // <!-- ./fixed-break -->
@@ -358,7 +382,7 @@ function verifyStringFields() {
             if (nPasso.search('\"') > -1 || nPasso.search('\'') > -1 || nPasso.search(new RegExp("\\\\", 'g')) > -1) {
                 errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no nome da Tarefa.");
             }
-            if(nPasso.search('Dados demográficos') > -1 && i > 1) {
+            if (nPasso.search('Dados demográficos') > -1 && i > 1) {
                 errors.push("Não pode dar o nome \"Dados demográficos\" à <b>Tarefa " + i + "</b>.");
             }
 
@@ -441,7 +465,11 @@ function sendToJSON() {
 
     var nStep = 0;
 
-    for (i = 1; i <= breakNumber; i++) {
+    var orderedList = getOrderedDivs();
+
+    for (var d = 0; d < orderedList.length; d++) {
+
+        var i = orderedList[d];
         var breakDiv = "break-" + i;
 
         if (document.getElementById(breakDiv) !== null) {
@@ -673,7 +701,7 @@ function sendToJSON() {
         imgThumbnail = defaultThumbnail;
     }
 
-    //console.log(studyConfig);
+    console.log(JSON.stringify(studyConfig));
     return JSON.stringify(studyConfig);
 }
 
@@ -784,6 +812,7 @@ function getBase64Multiple(n) {
     for (var x = 0; x < document.querySelector('#break-' + n + ' input[type=file]').files.length; x++) {
 
         // If only one file was uploaded, let's the step be fixed. Else, does not.
+        /*
         if (document.querySelector('#break-' + n + ' input[type=file]').files.length > 1) {
             $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
             $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", true);
@@ -791,6 +820,7 @@ function getBase64Multiple(n) {
             $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
             $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", false);
         }
+        */
 
         file = document.querySelector('#break-' + n + ' input[type=file]').files[x];
 
@@ -818,40 +848,72 @@ function loadImage(file, n) {
 }
 
 /**
+ * Gets ordered list of Divs as they are in the page.
+ * @returns {Array} list with divs by order
+ */
+function getOrderedDivs() {
+    var divsArray = [];
+
+
+    $('*[id*=break-]:visible').each(function () {
+        divsArray.push($(this));
+    });
+
+    var orderedListOfDivs = [];
+
+    var lastRead = 0;
+    for (var i = 0; i < divsArray.length; i++) {
+        var current = divsArray[i][0].id;
+        var aux = current.split('-');
+        var numberOfDiv = parseInt(aux[1]);
+        if (numberOfDiv != lastRead) {
+            orderedListOfDivs.push(numberOfDiv);
+            lastRead = numberOfDiv;
+        }
+    }
+
+    return orderedListOfDivs;
+}
+
+/**
  * Submits the created form in the database.
  */
 function submitForm() {
     var res = verifyStringFields();
 
     if (res == true) {
-        $('#modal-for-saves').modal({
-            backdrop: 'static',
-            keyboard: false
-        });
-        $('#modal-for-saves').modal('show');
-
+        /*
+         }
+         $('#modal-for-saves').modal({
+         backdrop: 'static',
+         keyboard: false
+         });
+         $('#modal-for-saves').modal('show');
+         */
         var configuration = sendToJSON();
 
-        $.ajax({
-            url: urlToPost,
-            type: 'POST',
-            data: {
-                idForm: formID,
-                formName: formName,
-                formConfig: configuration,
-                formThumbnail: imgThumbnail,
-                csrfmiddlewaretoken: csrfToken
-            },
-            success: function () {
-                window.location.href = onSuccess;   // redirects to home
-            },
-            error: function () {
-                toastr.error('Ocorreu um erro na gravação do questionário.');
-                $('#modal-for-saves').modal('hide');
-            }
-        });
-
+        /*
+         $.ajax({
+         url: urlToPost,
+         type: 'POST',
+         data: {
+         idForm: formID,
+         formName: formName,
+         formConfig: configuration,
+         formThumbnail: imgThumbnail,
+         csrfmiddlewaretoken: csrfToken
+         },
+         success: function () {
+         window.location.href = onSuccess;   // redirects to home
+         },
+         error: function () {
+         toastr.error('Ocorreu um erro na gravação do questionário.');
+         $('#modal-for-saves').modal('hide');
+         }
+         });
+         */
     }
+
 }
 
 /**

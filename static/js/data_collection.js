@@ -139,16 +139,16 @@ function displaySAMScale(step) {
     var buttonNext = '<button id="sam-scale-btn" class="btn btn-md btn-success" onclick="checkInfoInField(0)">' +
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>';
 
-    var titleValence = '<p><b>Valência Afetiva</b></p>';
-    var titleArousal = '<p><b>Ativação Fisiológica</b></p>';
-    var titleDominance = '<p><b>Dominância</b></p>';
+    var titleValence = '<p>Avalie o estímulo que acabou de visualizar quanto à dimensão de<br/><b>Valência Afetiva</b></p>';
+    var titleArousal = '<p>Avalie o estímulo que acabou de visualizar quanto à dimensão de<br/><b>Ativação Fisiológica</b></p>';
+    var titleDominance = '<p>Avalie o estímulo que acabou de visualizar quanto à dimensão de<br/><b>Dominância</b></p>';
 
     var scale;
 
     for (var i = 0; i < formConfiguration.passos[step - 1].escalasSAM.length; i++) {
         scale = formConfiguration.passos[step - 1].escalasSAM[i];
 
-        var radioValence = '<form id="valenceRadios"><div class="cc-selector">' +
+        var radioValence = '<div class="stop-wrap"><form id="valenceRadios"><div class="cc-selector">' +
             '<input id="valence1" type="radio" name="optradio" value="1" />' +
             '<label class="drinkcard-cc valence1" for="valence1"></label>' +
             '<input id="valence2" type="radio" name="optradio" value="2" />' +
@@ -167,9 +167,9 @@ function displaySAMScale(step) {
             '<label class="drinkcard-cc valence8" for="valence8"></label>' +
             '<input id="valence9" type="radio" name="optradio" value="9" />' +
             '<label class="drinkcard-cc valence9" for="valence9"></label>' +
-            '</div></form>';
+            '</div></form></div><br/><br/>';
 
-        var radioArousal = '<form id="arousalRadios"><div class="cc-selector">' +
+        var radioArousal = '<div class="stop-wrap"><form id="arousalRadios"><div class="cc-selector">' +
             '<input id="arousal1" type="radio" name="optradio" value="1" />' +
             '<label class="drinkcard-cc arousal1" for="arousal1"></label>' +
             '<input id="arousal2" type="radio" name="optradio" value="2" />' +
@@ -188,9 +188,9 @@ function displaySAMScale(step) {
             '<label class="drinkcard-cc arousal8" for="arousal8"></label>' +
             '<input id="arousal9" type="radio" name="optradio" value="9" />' +
             '<label class="drinkcard-cc arousal9" for="arousal9"></label>' +
-            '</div></form>';
+            '</div></form></div><br/><br/>';
 
-        var radioDominance = '<form id="dominanceRadios"><div class="cc-selector">' +
+        var radioDominance = '<div class="stop-wrap"><form id="dominanceRadios"><div class="cc-selector">' +
             '<input id="dominance1" type="radio" name="optradio" value="1" />' +
             '<label class="drinkcard-cc dominance1" for="dominance1"></label>' +
             '<input id="dominance2" type="radio" name="optradio" value="2" />' +
@@ -209,7 +209,7 @@ function displaySAMScale(step) {
             '<label class="drinkcard-cc dominance8" for="dominance8"></label>' +
             '<input id="dominance9" type="radio" name="optradio" value="9" />' +
             '<label class="drinkcard-cc dominance9" for="dominance9"></label>' +
-            '</div></form>';
+            '</div></form></div><br/><br/>';
 
         if (scale == "Valência") {
             document.querySelector('#div-SAMScales').innerHTML += titleValence + radioValence;

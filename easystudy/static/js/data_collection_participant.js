@@ -45,7 +45,6 @@ function confirmPermission() {
     var location = window.location.href;
     location = location.split('?');
     token_inserted = location[1];
-    console.log(token_inserted);
 
 
     $.ajax({
@@ -53,7 +52,6 @@ function confirmPermission() {
         type: 'POST',
         data: {
             idForm: idForm,
-            idParticipant: participantID,
             token: token_inserted,
             csrfmiddlewaretoken: csrfToken
         },
@@ -61,7 +59,7 @@ function confirmPermission() {
             cleanAndStartCP();
         },
         error: function () {
-            toastr.error('A senha inserida não é válida. <b>Por favor entre em contacto com o responsável.</b>');
+            toastr.error('O <i>token</i> fornecido com o url não é o correto. <b>Por favor entre em contacto com o responsável.</b>');
         }
     });
 
