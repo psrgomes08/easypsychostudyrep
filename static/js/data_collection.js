@@ -320,9 +320,10 @@ function displayLikertScale(step) {
 
     switch (nLikertPoints) {
         case "5Pontos":
-            var likert5Points = ["Discordo<br/>Totalmente", "Discordo<br/>Parcialmente", "Indiferente", "Concordo<br/>Parcialmente", "Concordo<br/>Totalmente"];
+            //var likert5Points = ["Discordo<br/>Totalmente", "Discordo<br/>Parcialmente", "Indiferente", "Concordo<br/>Parcialmente", "Concordo<br/>Totalmente"];
+            var likert5Points = ["DT", "DP", "I", "CP", "CT"];
 
-            var likert5Table = '<div class="table-responsive"><table class="table table-striped table-condensed css-table">'; // opens the table
+            var likert5Table = '<div><table style="width:100%" class="table table-striped table-condensed css-table">'; // opens the table
 
             // Appends the head of the table
             likert5Table += '<thead>' +
@@ -340,26 +341,27 @@ function displayLikertScale(step) {
 
             for (var l = 0; l < likertQuestionsForTable.length; l++) {
                 likert5Table += '<tr>' +
-                    '<td>' + likertQuestionsForTable[l] + '</td>' +
+                    '<td style="width: 50%">' + likertQuestionsForTable[l] + '</td>' +
                     '<form id="likert-question-' + l + '">' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
                     '</form>' +
                     '</tr>';
             }
 
-            likert5Table += '</tbody></table></div>';
+            likert5Table += '</tbody></table><p><b>DT</b>: Discordo Totalmente | <b>DP</b>: Discordo Parcialmente | <b>I</b>: Indiferente | <b>CP</b>: Concordo Parcialmente | <b>CT</b>: Concordo Totalmente</p></div>';
 
             document.querySelector('#div-likert').innerHTML += likert5Table + buttonNext;
 
             break;
         case "7Pontos":
-            var likert7Points = ["Discordo<br/>Totalmente", "Discordo<br/>Moderadamente", "Discordo<br/>Ligeiramente", "Indiferente", "Concordo<br/>Ligeiramente", "Concordo<br/>Moderadamente", "Concordo<br/>Totalmente"];
+            //var likert7Points = ["Discordo<br/>Totalmente", "Discordo<br/>Moderadamente", "Discordo<br/>Ligeiramente", "Indiferente", "Concordo<br/>Ligeiramente", "Concordo<br/>Moderadamente", "Concordo<br/>Totalmente"];
+            var likert7Points = ["DT", "DM", "DL", "I", "CL", "CM", "CT"];
 
-            var likert7Table = '<div class="table-responsive"><table class="table table-striped table-condensed css-table">'; // opens the table
+            var likert7Table = '<div class="table-responsive"><table style="width:100%" class="table table-striped table-condensed css-table">'; // opens the table
 
             // Appends the head of the table
             likert7Table += '<thead>' +
@@ -379,20 +381,20 @@ function displayLikertScale(step) {
 
             for (var l = 0; l < likertQuestionsForTable.length; l++) {
                 likert7Table += '<tr>' +
-                    '<td>' + likertQuestionsForTable[l] + '</td>' +
+                    '<td style="width: 30%">' + likertQuestionsForTable[l] + '</td>' +
                     '<form id="likert-question-' + l + '">' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="6" /></td>' +
-                    '<td><input type="radio" name="optLikertradio-' + l + '" value="7" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="6" /></td>' +
+                    '<td style="width: 10%"><input type="radio" name="optLikertradio-' + l + '" value="7" /></td>' +
                     '</form>' +
                     '</tr>';
             }
 
-            likert7Table += '</tbody></table></div>';
+            likert7Table += '</tbody></table><p><b>DT</b>: Discordo Totalmente | <b>DM</b>: Discordo Moderadamente | <b>DL</b>: Discordo Ligeiramente | <b>I</b>: Indiferente | <b>CL</b>: Concordo Ligeiramente | <b>CM</b>: Concordo Moderadamente | <b>CT</b>: Concordo Totalmente</p></div>';
 
             document.querySelector('#div-likert').innerHTML += likert7Table + buttonNext;
 
