@@ -379,11 +379,10 @@ $('#modal-for-link-share').on('show.bs.modal', function (e) {
             var finalLink = formURL + "?" + token;
 
             $('#form-url').html('<div class="alert alert-info alert-dismissible" role="alert">' +
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                 '<label>Link para recolha remota:</label><br/>' +
                 '<p><textarea id="js-copytextarea" class="form-control">' + finalLink + '</textarea></p>' +
                 '<p><button id="js-textareacopybtn" onclick="copyToClipboard()" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-copy"></span> Copiar</button>' +
-                ' <button onclick="sendEmailForRemote()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-envelope"></span> Enviar por E-mail</button></p>' +
+                ' <button onclick="sendEmailForRemote()" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-envelope"></span> Enviar por E-mail</button></p>' +
                 '</div>');
         },
         error: function (data) {
@@ -401,7 +400,6 @@ function sendEmailForRemote() {
     $("#form-url").empty();
 
     $("#email-form").html('<div class="alert alert-info" role="alert">' +
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
         '<label for="email-to">Remetentes:</label>' +
         '<input type="text" class="form-control" id="email-to">' +
         '<span class="help-block">Separe os remetentes por vírgula.</span>' +
@@ -421,14 +419,12 @@ function sendEmailForRemote() {
 
         if(userEmail == undefined || userEmail == "") {
             $("#email-messages").html('<div class="alert alert-danger" role="alert">' +
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                 '<p align="center"><strong>Erro!</strong> Não definiu nenhum e-mail com o seu utilizador. Por favor contacte o administrador.</p>' +
                 '</div>');
         }
         else if (getSenders == undefined || getSenders == "") {
 
             $("#email-messages").html('<div class="alert alert-danger" role="alert">' +
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                 '<p align="center"><strong>Erro!</strong> Por favor insira remetentes.</p>' +
                 '</div>');
 
@@ -448,7 +444,6 @@ function sendEmailForRemote() {
                 if (!validateEmail(senders[i])) {
                     errors++;
                     $("#email-messages").append('<div class="alert alert-danger" role="alert">' +
-                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                         '<p align="center"><strong>Erro!</strong> O e-mail ' + senders[i] + ' não é válido!</p>' +
                         '</div>');
                 }
@@ -466,7 +461,6 @@ function sendEmailForRemote() {
                     } catch (err) {
                         errors++;
                         $("#email-messages").append('<div class="alert alert-danger" role="alert">' +
-                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                             '<p align="center"><strong>Erro!</strong> Não foi possível enviar o e-mail para o remetente ' + senders[j] + '.</p>' +
                             '</div>');
                     }
@@ -477,7 +471,6 @@ function sendEmailForRemote() {
             if (errors == 0) {
                 console.log("pt 3");
                 $("#email-messages").html('<div class="alert alert-success" role="alert">' +
-                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                     '<p align="center"><strong>Sucesso!</strong> Os convites foram enviados!</p>' +
                     '</div>');
             }
@@ -511,11 +504,9 @@ function copyToClipboard() {
         var msg = successful ? 'successful' : 'unsuccessful';
         //console.log('Copying text command was ' + msg);
         $('#form-url').append('<div class="alert alert-success alert-dismissible" role="alert">' +
-            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
             '<strong>O link foi copiado!</strong></div>');
     } catch (err) {
         $('#form-url').append('<div class="alert alert-danger alert-dismissible" role="alert">' +
-            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
             '<strong>Não foi possível copiar o link.</strong></div>');
         //console.log('Oops, unable to copy');
     }
@@ -561,7 +552,7 @@ $('#modal-for-delete').on('show.bs.modal', function (e) {
     var formName = $(e.relatedTarget).data('form-name');
     url = $(e.relatedTarget).data('form-url');
 
-    $(e.currentTarget).find('#form-message').text('Tem certeza que deseja apagar o questionário "' + formName + '"?'); // populate the paragpraph
+    $(e.currentTarget).find('#form-message').text('Tem certeza que deseja eliminar o questionário "' + formName + '"?'); // populate the paragpraph
 });
 
 /**

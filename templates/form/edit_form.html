@@ -54,7 +54,7 @@
             <button type="button" class="btn btn-default navbar-btn btn-wide"
                     onclick="visualization()" data-toggle="modal"
                     data-target="#modal-for-full-screen">
-                <span class="glyphicon glyphicon-eye-open"></span> Pré-Visualizar
+                <span class="fa fa-search"></span> Pré-Visualizar
             </button>
 
             <button type="button" class="btn btn-info navbar-btn btn-wide"
@@ -89,7 +89,8 @@
 
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">Ajuda: Criar um Questionário</p>
+                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">Ajuda: Criar um
+                    Questionário</p>
             </div> <!-- ./modal-header -->
 
             <div class="modal-body">
@@ -106,21 +107,29 @@
                         <div id="collapse1" class="panel-collapse collapse in">
                             <div class="panel-body">
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Defina o Nome e a Descrição</label></br>
-                                O nome e descrição do questionário são apresentados aos participantes no começo de uma recolha.
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Defina o
+                                    Nome e a Descrição</label></br>
+                                O nome e descrição do questionário são apresentados aos participantes no começo de uma
+                                recolha.
                                 <ul>
                                     <li>Em <b>Nome do questionário</b> defina o nome que lhe deseja atribuir.</li>
-                                    <li>Em <b>Descrição do questionário</b> defina a descrição que lhe deseja atribuir.</li>
+                                    <li>Em <b>Descrição do questionário</b> defina a descrição que lhe deseja atribuir.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Defina a Cor de Fundo e Miniatura</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Defina a
+                                    Cor de Fundo e Miniatura</label></br>
                                 A cor de fundo do questionário é apresentada durante toda a recolha ao participante.
                                 <ul>
-                                    <li>Em <b>Estilo do questionário</b> selecione se deseja um fundo preto ou branco.</li>
+                                    <li>Em <b>Estilo do questionário</b> selecione se deseja um fundo preto ou branco.
+                                    </li>
                                 </ul>
-                                Pode definir uma miniatura para o seu questionário, que será apresentada no seu painel de utilizador. Esta é opcional.
+                                Pode definir uma miniatura para o seu questionário, que será apresentada no seu painel
+                                de utilizador. Esta é opcional.
                                 <ul>
-                                    <li>Em <b>Miniatura do questionário</b> pesquise a imagem que deseja utilizar e de seguida clique no botão <kbd><span class="glyphicon glyphicon-import"></span> Carregar</kbd>.</li>
+                                    <li>Em <b>Miniatura do questionário</b> pesquise a imagem que deseja utilizar e de
+                                        seguida clique no botão <kbd><span class="fa fa-upload"></span> Carregar</kbd>.
+                                    </li>
                                 </ul>
 
                             </div>
@@ -136,53 +145,104 @@
                         </div>
                         <div id="collapse2" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione Tarefas</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
+                                    Tarefas</label></br>
                                 As tarefas tornam o seu questionário fácil de ler e completar pelos participantes.
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-align-justify"></span> Criar Tarefa</kbd>.</li>
-                                    <li>Dê um nome à tarefa (opcional). Se o fizer irá facilitar o processo de edição e clonagem.</li>
-                                </ul>
-
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione uma Questão</label></br>
-                                Para adicionar uma ou mais questões a uma tarefa:
-                                <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span> Elementos</kbd> e escolha a opção <kbd><span
-                                            class="glyphicon glyphicon-pencil"></span> Questão</kbd>.</li>
-                                    <li>Em <b>Questão proposta</b> defina a pergunta que deseja apresentar aos participantes.
+                                    <li>Clique em <kbd><span class="fa fa-plus-square-o"></span> Criar
+                                        Tarefa</kbd>.
+                                    </li>
+                                    <li>Dê um nome à tarefa (opcional). Se o fizer irá facilitar o processo de edição e
+                                        clonagem.
                                     </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione um Estímulo de Imagem</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
+                                    uma Questão</label></br>
+                                Para adicionar uma ou mais questões a uma tarefa:
+                                <ul>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-pencil"></span> Questão</kbd>.
+                                    </li>
+                                    <li>Em <b>Questão proposta</b> defina a pergunta que deseja apresentar aos
+                                        participantes.
+                                    </li>
+                                </ul>
+
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione um
+                                    Estímulo de Imagem</label></br>
                                 Para adicionar um ou mais estímulos de imagem a uma tarefa:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span> Elementos</kbd> e escolha a opção <kbd><span
-                                            class="glyphicon glyphicon-picture"></span> Imagens</kbd>.</li>
-                                    <li>Em <b>Selecionar imagens a carregar</b> pesquise a imagem ou conjunto de imagens que pretende utilizar e de seguida clique no botão <kbd><span class="glyphicon glyphicon-import"></span> Carregar</kbd>.</li>
-                                    <li>Em <b>Tempo de apresentação definido</b> defina a quantidade de segundos que cada imagem irá estar presente para o participante.</li>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-picture"></span> Imagens</kbd>.
+                                    </li>
+                                    <li>Em <b>Selecionar imagens a carregar</b> pesquise a imagem ou conjunto de imagens
+                                        que pretende utilizar e de seguida clique no botão <kbd><span
+                                                class="fa fa-upload"></span> Carregar</kbd>.
+                                    </li>
+                                    <li>Em <b>Tempo de apresentação definido</b> defina a quantidade de segundos que
+                                        cada imagem irá estar presente para o participante.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione um Estímulo de Vídeo</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione um
+                                    Estímulo de Vídeo</label></br>
                                 Para adicionar um ou mais estímulos de vídeo a uma tarefa:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span> Elementos</kbd> e escolha a opção <kbd><span
-                                            class="glyphicon glyphicon-film"></span> Vídeos</kbd>.</li>
-                                    <li>Em <b>Selecionar vídeos a carregar</b> clique em <kbd><span class="glyphicon glyphicon-folder-open"></span> Pesquisar na Dropbox</kbd> e escola os vídeos que pretende utilizar que estejam na sua <i>Dropbox</i>.</li>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-film"></span> Vídeos</kbd>.
+                                    </li>
+                                    <li>Em <b>Selecionar vídeos a carregar</b> clique em <kbd><span
+                                            class="fa fa-dropbox"></span> Pesquisar na Dropbox</kbd> e
+                                        escola os vídeos que pretende utilizar que estejam na sua <i>Dropbox</i>.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione uma Escala</label></br>
-                                Para adicionar uma ou mais escalas <i>Self-Assessment Manikin</i> a uma tarefa com estímulo:
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
+                                    uma Escala SAM</label></br>
+                                Para adicionar uma ou mais dimensões da escala <i>Self-Assessment Manikin</i> a uma
+                                tarefa com
+                                estímulo:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span> Elementos</kbd> e escolha a opção <kbd><span
-                                            class="glyphicon glyphicon-record"></span> Escalas</kbd>.</li>
-                                    <li>Em <b>Escalas a apresentar</b> escolha as escalas que pretende apresentar aos participantes naquela tarefa.</li>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-record"></span> Escala SAM</kbd>.
+                                    </li>
+                                    <li>Em <b>Dimensões a apresentar</b> escolha as dimensões que pretende apresentar
+                                        aos
+                                        participantes naquela tarefa.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione Instruções</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
+                                    uma Escala <i>Likert</i></label></br>
+                                Para adicionar uma escala de <i>Likert</i> a uma tarefa:
+                                <ul>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-record"></span> Escala Likert</kbd>.
+                                    </li>
+                                    <li>Em <b>Tamanho da escala</b> escolha o número de pontos que pretende apresentar
+                                        aos participantes naquela tarefa.
+                                    </li>
+                                    <li>Em <b>Questões a apresentar com a escala</b> adicione quais as questões que pretende que
+                                    os participantes avaliem. Para adicionar novas questões clique em <kbd><span
+                                            class="glyphicon glyphicon-plus-sign"></span> Adicionar</kbd>.</li>
+                                </ul>
+
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
+                                    Instruções</label></br>
                                 Para adicionar um campo de Instruções:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span> Elementos</kbd> e escolha a opção <kbd><span
-                                            class="glyphicon glyphicon-font"></span> Instruções</kbd>.</li>
-                                    <li>Em <b>Instruções</b> escreva o texto que pretende apresentar aos participantes.</li>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-font"></span> Instruções</kbd>.
+                                    </li>
+                                    <li>Em <b>Instruções</b> escreva o texto que pretende apresentar aos participantes.
+                                    </li>
                                 </ul>
 
                             </div>
@@ -199,11 +259,14 @@
                         <div id="collapse3" class="panel-collapse collapse">
                             <div class="panel-body">
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Apagar Tarefas</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Apagar
+                                    Tarefas</label></br>
                                 Para apagar uma tarefa:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span> Elementos</kbd> e escolha a opção <kbd><span
-                                            class="glyphicon glyphicon-remove"></span> Apagar</kbd>.</li>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-remove"></span> Apagar</kbd>.
+                                    </li>
                                 </ul>
 
                             </div>
@@ -220,16 +283,24 @@
                         <div id="collapse4" class="panel-collapse collapse">
                             <div class="panel-body">
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Pré-visualizar questionário</label></br>
-                                Antes de guardar o seu questionário pode optar por gerar uma pré-visualização do mesmo e ver se este está do seu agrado. Não se esqueça de permitir ao seu <i>browser</i> abrir janelas de <i>pop-up</i>.
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span>
+                                    Pré-visualizar questionário</label></br>
+                                Antes de guardar o seu questionário pode optar por gerar uma pré-visualização do mesmo e
+                                ver se este está do seu agrado. Não se esqueça de permitir ao seu <i>browser</i> abrir
+                                janelas de <i>pop-up</i>.
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-eye-open"></span> Pré-visualizar</kbd> na barra superior.</li>
+                                    <li>Clique em <kbd><span class="fa fa-search"></span> Pré-visualizar</kbd>
+                                        na barra superior.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Guardar questionário</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Guardar
+                                    questionário</label></br>
                                 Para guardar o seu questionário:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-floppy-saved"></span> Guardar</kbd> na barra superior.</li>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-floppy-saved"></span>
+                                        Guardar</kbd> na barra superior.
+                                    </li>
                                 </ul>
 
                             </div>
@@ -281,7 +352,7 @@
             <div class="alert alert-info alert-dismissable">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span class="glyphicon glyphicon-info-sign"></span> Clique sempre no botão <strong><span
-                    class="glyphicon glyphicon-import"></span> Carregar</strong> quando fizer importação de imagens após
+                    class="fa fa-upload"></span> Carregar</strong> quando fizer importação de imagens após
                 a pesquisa, caso contrário estas não aparecerão no seu questionário.
             </div>
 
@@ -289,6 +360,17 @@
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span class="glyphicon glyphicon-info-sign"></span> Pode arrastar os painéis das tarefas e ordená-los na
                 ordem que achar mais conveniente.
+            </div>
+
+            <div class="alert alert-warning alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <span class="glyphicon glyphicon-warning-sign"></span> A ordem de apresentação dos elementos (caso eles existam) dentro das tarefas aos participantes processa-se sempre na seguinte ordem:
+                <ul>
+                    <li>1º Estímulo</li>
+                    <li>2º Escala SAM</li>
+                    <li>3º Escala de <i>Likert</i></li>
+                    <li>4º Questões</li>
+                </ul>
             </div>
 
             <div class="alert alert-success alert-dismissable">
@@ -338,7 +420,7 @@
                             <input style="display: none;" type="file" accept="image/gif, image/jpeg, image/png, image/jpg" id="input-thumbnail" onchange="getFileNames(0)">
                         </span>
                         <button id="btn-load-thumbnail" class="btn btn-primary" type="button" onclick="saveThumbnail()"><span
-                                class="glyphicon glyphicon-import"></span>Carregar
+                                class="fa fa-upload"></span>Carregar
                         </button>
                     </label>
                     <input id="files-selected" type="text" class="form-control" readonly>

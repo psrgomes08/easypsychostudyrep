@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="{% static 'css/new_form.css' %}">
     <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"> <!-- font awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <!-- font awesome -->
 
 </head>
 
@@ -36,7 +37,7 @@
             <button type="button" class="btn btn-default navbar-btn btn-wide"
                     onclick="visualization()" data-toggle="modal"
                     data-target="#modal-for-full-screen">
-                <span class="glyphicon glyphicon-eye-open"></span> Pré-Visualizar
+                <span class="fa fa-search"></span> Pré-Visualizar
             </button>
 
             <button type="button" class="btn btn-info navbar-btn btn-wide"
@@ -110,8 +111,7 @@
                                 de utilizador. Esta é opcional.
                                 <ul>
                                     <li>Em <b>Miniatura do questionário</b> pesquise a imagem que deseja utilizar e de
-                                        seguida clique no botão <kbd><span class="glyphicon glyphicon-import"></span>
-                                            Carregar</kbd>.
+                                        seguida clique no botão <kbd><span class="fa fa-upload"></span> Carregar</kbd>.
                                     </li>
                                 </ul>
 
@@ -132,7 +132,7 @@
                                     Tarefas</label></br>
                                 As tarefas tornam o seu questionário fácil de ler e completar pelos participantes.
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-align-justify"></span> Criar
+                                    <li>Clique em <kbd><span class="fa fa-plus-square-o"></span> Criar
                                         Tarefa</kbd>.
                                     </li>
                                     <li>Dê um nome à tarefa (opcional). Se o fizer irá facilitar o processo de edição e
@@ -163,7 +163,7 @@
                                     </li>
                                     <li>Em <b>Selecionar imagens a carregar</b> pesquise a imagem ou conjunto de imagens
                                         que pretende utilizar e de seguida clique no botão <kbd><span
-                                                class="glyphicon glyphicon-import"></span> Carregar</kbd>.
+                                                class="fa fa-upload"></span> Carregar</kbd>.
                                     </li>
                                     <li>Em <b>Tempo de apresentação definido</b> defina a quantidade de segundos que
                                         cada imagem irá estar presente para o participante.
@@ -179,23 +179,41 @@
                                             class="glyphicon glyphicon-film"></span> Vídeos</kbd>.
                                     </li>
                                     <li>Em <b>Selecionar vídeos a carregar</b> clique em <kbd><span
-                                            class="glyphicon glyphicon-folder-open"></span> Pesquisar na Dropbox</kbd> e
+                                            class="fa fa-dropbox"></span> Pesquisar na Dropbox</kbd> e
                                         escola os vídeos que pretende utilizar que estejam na sua <i>Dropbox</i>.
                                     </li>
                                 </ul>
 
                                 <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
-                                    uma Escala</label></br>
-                                Para adicionar uma ou mais escalas <i>Self-Assessment Manikin</i> a uma tarefa com
+                                    uma Escala SAM</label></br>
+                                Para adicionar uma ou mais dimensões da escala <i>Self-Assessment Manikin</i> a uma
+                                tarefa com
                                 estímulo:
                                 <ul>
                                     <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
                                         Elementos</kbd> e escolha a opção <kbd><span
-                                            class="glyphicon glyphicon-record"></span> Escalas</kbd>.
+                                            class="glyphicon glyphicon-record"></span> Escala SAM</kbd>.
                                     </li>
-                                    <li>Em <b>Escalas a apresentar</b> escolha as escalas que pretende apresentar aos
+                                    <li>Em <b>Dimensões a apresentar</b> escolha as dimensões que pretende apresentar
+                                        aos
                                         participantes naquela tarefa.
                                     </li>
+                                </ul>
+
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
+                                    uma Escala <i>Likert</i></label></br>
+                                Para adicionar uma escala de <i>Likert</i> a uma tarefa:
+                                <ul>
+                                    <li>Clique em <kbd><span class="glyphicon glyphicon-plus-sign"></span>
+                                        Elementos</kbd> e escolha a opção <kbd><span
+                                            class="glyphicon glyphicon-record"></span> Escala Likert</kbd>.
+                                    </li>
+                                    <li>Em <b>Tamanho da escala</b> escolha o número de pontos que pretende apresentar
+                                        aos participantes naquela tarefa.
+                                    </li>
+                                    <li>Em <b>Questões a apresentar com a escala</b> adicione quais as questões que pretende que
+                                    os participantes avaliem. Para adicionar novas questões clique em <kbd><span
+                                            class="glyphicon glyphicon-plus-sign"></span> Adicionar</kbd>.</li>
                                 </ul>
 
                                 <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Adicione
@@ -254,7 +272,7 @@
                                 ver se este está do seu agrado. Não se esqueça de permitir ao seu <i>browser</i> abrir
                                 janelas de <i>pop-up</i>.
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-eye-open"></span> Pré-visualizar</kbd>
+                                    <li>Clique em <kbd><span class="fa fa-search"></span> Pré-visualizar</kbd>
                                         na barra superior.
                                     </li>
                                 </ul>
@@ -318,7 +336,7 @@
             <div class="alert alert-info alert-dismissable">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span class="glyphicon glyphicon-info-sign"></span> Clique sempre no botão <strong><span
-                    class="glyphicon glyphicon-import"></span> Carregar</strong> quando fizer importação de imagens após
+                    class="fa fa-upload"></span> Carregar</strong> quando fizer importação de imagens após
                 a pesquisa, caso contrário estas não aparecerão no seu questionário.
             </div>
 
@@ -326,6 +344,18 @@
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span class="glyphicon glyphicon-info-sign"></span> Pode arrastar os painéis das tarefas e ordená-los na
                 ordem que achar mais conveniente.
+            </div>
+
+            <div class="alert alert-warning alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <span class="glyphicon glyphicon-warning-sign"></span> A ordem de apresentação dos elementos (caso eles
+                existam) dentro das tarefas aos participantes processa-se sempre na seguinte ordem:
+                <ul>
+                    <li>1º Estímulo</li>
+                    <li>2º Escala SAM</li>
+                    <li>3º Escala de <i>Likert</i></li>
+                    <li>4º Questões</li>
+                </ul>
             </div>
 
             <div class="alert alert-success alert-dismissable">
@@ -372,7 +402,7 @@
                                    onchange="getFileNames(0)">
                         </span>
                         <button id="btn-load-thumbnail" class="btn btn-primary" type="button" onclick="saveThumbnail()"><span
-                                class="glyphicon glyphicon-import"></span>Carregar
+                                class="fa fa-upload"></span> Carregar
                         </button>
                     </label>
                     <input id="files-selected" type="text" class="form-control" readonly>
@@ -389,7 +419,7 @@
     </div>
 
     <div class="btn-fixed-down">
-        <button class="btn btn-sq" id="add-break">
+        <button class="btn btn-sq btn-grey" id="add-break">
             <i class="fa fa-plus-square-o fa-2x"></i><br/>Criar<br/>Tarefa
         </button>
     </div>
@@ -461,13 +491,14 @@
         $("#break-1-panel").find('#fixed-break input[type="checkbox"]').prop("checked", true);
         $("#break-1-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", true);
         $("#break-1-scale-btn").prop("disabled", true);
+        $("#break-1-scale-likert-btn").prop("disabled", true);
         $("#break-1-image-btn").prop("disabled", true);
         $("#break-1-video-btn").prop("disabled", true);
         $("#break-1-description-btn").prop("disabled", true);
         document.getElementById("break-1-question-btn").click();
-        $('#question-0').val("Idade");
+        $('#question-1-0').val("Idade");
         document.getElementById("break-1-question-btn").click();
-        $('#question-1').val("Sexo (F/M)");
+        $('#question-1-1').val("Sexo (F/M)");
     });
 
 

@@ -8,13 +8,13 @@ toastr.options = {
     "debug": false,
     "newestOnTop": false,
     "progressBar": true,
-    "positionClass": "toast-top-center",
-    "preventDuplicates": false,
+    "positionClass": "toast-top-left",
+    "preventDuplicates": true,
     "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
+    "showDuration": "0",
+    "hideDuration": "0",
+    "timeOut": "10000",
+    "extendedTimeOut": "5000",
     "showEasing": "swing",
     "hideEasing": "linear",
     "showMethod": "fadeIn",
@@ -43,6 +43,9 @@ function displayStimulus(step) {
     var src = formConfiguration.passos[step - 1].fonteEstimulo;
 
     document.querySelector('#div-stimulus').innerHTML = '<p align="center"><img src="' + src + '" class="img-responsive"></p>'; // responsive image
+
+    var msg = "Image stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimulo + ".";
+    sendTrigger(msg);
 }
 
 /**
@@ -66,6 +69,9 @@ function displayStimulusVideo(step) {
         '</div>' +
         '</div><br/><br/>';
 
+    var msg = "Video stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimuloVideo + ".";
+    sendTrigger(msg);
+
     document.querySelector('#div-stimulus-video').innerHTML += buttonNext;
 }
 
@@ -76,55 +82,91 @@ function displayStimulusVideo(step) {
 function checkInfoInField(id) {
     var errors = [];
     switch (id) {
-        case 0: // for SAM scale
+        // SAM Scale
+        case 0:
             if ($("#valenceRadios").length == 1) {
                 if ($('input[name=optradio]:checked', '#valenceRadios').val() == null) {
-                    errors.push("Por favor atribua uma classificação à <b>Valência Afetiva</b>.");
+                    errors.push("Atribua uma classificação à dimensão <b>Valência Afetiva</b>.");
                 }
             }
             if ($("#arousalRadios").length == 1) {
                 if ($('input[name=optradio]:checked', '#arousalRadios').val() == null) {
-                    errors.push("Por favor atribua uma classificação à <b>Ativação Fisiológica</b>.");
+                    errors.push("Atribua uma classificação à dimensão <b>Ativação Fisiológica</b>.");
                 }
             }
             if ($("#dominanceRadios").length == 1) {
                 if ($('input[name=optradio]:checked', '#dominanceRadios').val() == null) {
-                    errors.push("Por favor atribua uma classificação à <b>Dominância</b>.");
+                    errors.push("Atribua uma classificação à dimensão <b>Dominância</b>.");
                 }
             }
+
             if (errors.length != 0) {
+                var stringErrors = "<ul>";
                 for (var i = 0; i < errors.length; i++) {
-                    toastr.warning(errors[i], "");
+                    stringErrors += ("<li>" + errors[i] + "</li>");
                 }
+                stringErrors += "</ul>";
+                toastr.warning(stringErrors);
             } else {
                 nextToDo("sam-scale-btn");
             }
 
             break;
 
-        case 1: // for questions
+        // Questions
+        case 1:
             for (var i = 0; i < formConfiguration.passos[step - 1].questoes.length; i++) {
                 if (document.getElementById("Q" + i).value == "") {
-                    errors.push("Por favor responda à questão n.º " + (i + 1));
+                    errors.push("Responda à questão <b>\"" + formConfiguration.passos[step - 1].questoes[i] + "\"</b>.");
+                }
+                if (document.getElementById("Q" + i).value.search('\"') > -1 || document.getElementById("Q" + i).value.search('\'') > -1 || document.getElementById("Q" + i).value.search(new RegExp("\\\\", 'g')) > -1) {
+                    errors.push("Caracteres inválidos (aspas, pelicas ou barras) na questão <b>\"" + formConfiguration.passos[step - 1].questoes[i] + "\"</b>.");
                 }
             }
 
             if (errors.length != 0) {
+                var stringErrors = "<ul>";
                 for (var i = 0; i < errors.length; i++) {
-                    toastr.warning(errors[i], "");
+                    stringErrors += ("<li>" + errors[i] + "</li>");
                 }
+                stringErrors += "</ul>";
+                toastr.warning(stringErrors);
             } else {
                 nextToDo("questions-btn");
             }
 
             break;
 
-        case 2: // for video stimulus
+        // Video stimulus
+        case 2:
             nextToDo("video-stimulus-btn");
             break;
 
+        // Description
         case 3:
             nextToDo("description-btn");
+            break;
+
+        // Likert scale
+        case 4:
+
+            for (var i = 0; i < formConfiguration.passos[step - 1].questoesLikert.length; i++) {
+                if ($("input[name=optLikertradio-" + i + "]:checked").val() == null) {
+                    errors.push("Atribua uma classificação à questão <b>\"" + formConfiguration.passos[step - 1].questoesLikert[i] + "\"</b>.");
+                }
+            }
+
+            if (errors.length != 0) {
+                var stringErrors = "<ul>";
+                for (var i = 0; i < errors.length; i++) {
+                    stringErrors += ("<li>" + errors[i] + "</li>");
+                }
+                stringErrors += "</ul>";
+                toastr.warning(stringErrors);
+            } else {
+                nextToDo("likert-btn");
+            }
+
             break;
     }
 }
@@ -265,6 +307,100 @@ function displayDescription(step) {
 }
 
 /**
+ * Displays a table with likert scale.
+ * @param step Step of the likert scale
+ */
+function displayLikertScale(step) {
+    $("#div-progress").show();
+
+    var buttonNext = '<button id="description-btn" class="btn btn-md btn-success" onclick="checkInfoInField(4)">' +
+        '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>';
+
+    var nLikertPoints = formConfiguration.passos[step - 1].nPontosLikert;
+
+    switch (nLikertPoints) {
+        case "5Pontos":
+            var likert5Points = ["Discordo<br/>Totalmente", "Discordo<br/>Parcialmente", "Indiferente", "Concordo<br/>Parcialmente", "Concordo<br/>Totalmente"];
+
+            var likert5Table = '<div class="table-responsive"><table class="table table-striped table-condensed css-table">'; // opens the table
+
+            // Appends the head of the table
+            likert5Table += '<thead>' +
+                '<tr>' +
+                '<th></th>' + // the first is empty
+                '<th>' + likert5Points[0] + '</th>' +
+                '<th>' + likert5Points[1] + '</th>' +
+                '<th>' + likert5Points[2] + '</th>' +
+                '<th>' + likert5Points[3] + '</th>' +
+                '<th>' + likert5Points[4] + '</th>' +
+                '</tr>' +
+                '</thead><tbody>';
+
+            var likertQuestionsForTable = formConfiguration.passos[step - 1].questoesLikert;
+
+            for (var l = 0; l < likertQuestionsForTable.length; l++) {
+                likert5Table += '<tr>' +
+                    '<td>' + likertQuestionsForTable[l] + '</td>' +
+                    '<form id="likert-question-' + l + '">' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
+                    '</form>' +
+                    '</tr>';
+            }
+
+            likert5Table += '</tbody></table></div>';
+
+            document.querySelector('#div-likert').innerHTML += likert5Table + buttonNext;
+
+            break;
+        case "7Pontos":
+            var likert7Points = ["Discordo<br/>Totalmente", "Discordo<br/>Moderadamente", "Discordo<br/>Ligeiramente", "Indiferente", "Concordo<br/>Ligeiramente", "Concordo<br/>Moderadamente", "Concordo<br/>Totalmente"];
+
+            var likert7Table = '<div class="table-responsive"><table class="table table-striped table-condensed css-table">'; // opens the table
+
+            // Appends the head of the table
+            likert7Table += '<thead>' +
+                '<tr>' +
+                '<th></th>' + // the first is empty
+                '<th>' + likert7Points[0] + '</th>' +
+                '<th>' + likert7Points[1] + '</th>' +
+                '<th>' + likert7Points[2] + '</th>' +
+                '<th>' + likert7Points[3] + '</th>' +
+                '<th>' + likert7Points[4] + '</th>' +
+                '<th>' + likert7Points[5] + '</th>' +
+                '<th>' + likert7Points[6] + '</th>' +
+                '</tr>' +
+                '</thead><tbody>';
+
+            var likertQuestionsForTable = formConfiguration.passos[step - 1].questoesLikert;
+
+            for (var l = 0; l < likertQuestionsForTable.length; l++) {
+                likert7Table += '<tr>' +
+                    '<td>' + likertQuestionsForTable[l] + '</td>' +
+                    '<form id="likert-question-' + l + '">' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="6" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="7" /></td>' +
+                    '</form>' +
+                    '</tr>';
+            }
+
+            likert7Table += '</tbody></table></div>';
+
+            document.querySelector('#div-likert').innerHTML += likert7Table + buttonNext;
+
+            break;
+    }
+}
+
+/**
  * Randomize array element order in-place.
  * Using Durstenfeld shuffle algorithm.
  * @param array array to be randomized
@@ -325,8 +461,8 @@ function displayScaleExplaining() {
             }
             else if (scalesPresent[i] == "Alerta") {
                 $("#div-instructions").append(
-                    "<br/><p><b style='color: #428BCA'>Ativação Fisiológica</b><br/><b>Calmo &#8212; Muito Impactado</b></p>" +
-                    "<p>Pode sentir-se tão impactado por um estímulo positivo quanto por um estímulo negativo.</p>" +
+                    "<br/><p><b style='color: #428BCA'>Ativação Fisiológica</b><br/><b>Pouco Ativado &#8212; Muito Ativado</b></p>" +
+                    "<p>Pode sentir-se tão ativado por um estímulo positivo quanto por um estímulo negativo.</p>" +
                     "<p align='center'><img class='img-responsive'  src=" + arousalImage + " ></p>");
             }
             else {
@@ -434,6 +570,8 @@ function cleanAndStart() {
 
         stepOrderForProgress++;
         updateProgress(stepOrderForProgress);
+        var msg = "Begin data collection for participant " + idParticipante + " in form " + idForm + ".";
+        sendTrigger(msg);
 
         if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
             passoColheita.fixo = "sim";
@@ -452,6 +590,65 @@ function nextToDo(id) {
     //var id = event.target.id; // to see which button triggered the function
 
     switch (id) {
+        case "likert-btn": // the trigget came from likert
+            var likertQuestionsForTable = formConfiguration.passos[step - 1].questoesLikert;
+            var likertRespostas = [];
+
+            for (var ql = 0; ql < likertQuestionsForTable.length; ql++) {
+                var qlValue = $("input[name=optLikertradio-" + ql + "]:checked").val();
+                likertRespostas.push(qlValue);
+            }
+
+            passoColheita.colheitaLikert = likertRespostas;
+
+            date = new Date();
+            passoColheita.timestampLikert = date.getDate() + "/"
+                + (date.getMonth() + 1) + "/"
+                + date.getFullYear() + " "
+                + date.getHours() + ":"
+                + date.getMinutes() + ":"
+                + date.getSeconds() + ":"
+                + date.getMilliseconds(); // collect the timestamp of the stimulus display
+
+            passoColheita.nPontosLikert = formConfiguration.passos[step - 1].nPontosLikert;
+
+            $("#div-likert").empty();
+
+            // Has questions next?
+            if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
+                displayQuestions(step);
+            }
+            // Likert is the last in step
+            else {
+                participantDataCollection.colheita.push(passoColheita); // when the likert is the last in the step
+
+                passoColheita = {};
+
+                currentIndex++;
+                if (currentIndex == newForm.length) { // If there are no more steps
+                    document.querySelector('#div-general-info').innerHTML = endMessage + endButton;
+                    $("#div-progress").hide();
+                } else {
+                    step = newForm[currentIndex];
+
+                    passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
+                    passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
+
+                    if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
+                        passoColheita.fixo = "sim";
+                    } else {
+                        passoColheita.fixo = "não";
+                    }
+
+                    nextDecider();
+                }
+            }
+
+            break;
+
         case "sam-scale-btn": // the trigger came from SAM, check if has question
             //colect data from scales
             var valenceValue = $('input[name=optradio]:checked', '#valenceRadios').val();
@@ -475,9 +672,15 @@ function nextToDo(id) {
 
             $("#div-SAMScales").empty();
 
-            if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
+            // Has Likert next?
+            if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+                displayLikertScale(step);
+            }
+            // Has questions next?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
                 displayQuestions(step);
             }
+            // SAM is the last in step
             else {
                 participantDataCollection.colheita.push(passoColheita); // when the stimulus is the last in the step
 
@@ -490,7 +693,6 @@ function nextToDo(id) {
                 } else {
                     step = newForm[currentIndex];
 
-                    //passoColheita.nPasso = step;
                     passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
 
@@ -595,11 +797,20 @@ function nextToDo(id) {
 
             $("#div-stimulus-video").empty();
 
+            // Has SAM scale?
             if ((formConfiguration.passos[step - 1].hasOwnProperty("escalasSAM")) && (formConfiguration.passos[step - 1].escalasSAM.length > 0)) {
                 displaySAMScale(step);
-            } else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
+            }
+            // Has Likert scale?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+                displayLikertScale(step);
+            }
+            // Has question?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
                 displayQuestions(step);
-            } else {
+            }
+            // Video stimulus is the last in step
+            else {
                 participantDataCollection.colheita.push(passoColheita); // when the stimulus is the last in the step
 
                 passoColheita = {};
@@ -641,6 +852,7 @@ function nextDecider() {
     $("#div-instructions").empty();
     $("#div-progress").show();
 
+    // Step begins with Image stimulus?
     if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[step - 1].fonteEstimulo.length > 0)) {
         var time = formConfiguration.passos[step - 1].tempoEstimulo;
 
@@ -660,12 +872,19 @@ function nextDecider() {
 
             $('#div-stimulus').empty();
 
+            // Has SAM scale?
             if ((formConfiguration.passos[step - 1].hasOwnProperty("escalasSAM")) && (formConfiguration.passos[step - 1].escalasSAM.length > 0)) {
                 displaySAMScale(step);
             }
-            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) { // if the stimulus doesn't have a scale check for questions
+            // Has Likert scale?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+                displayLikertScale(step);
+            }
+            // Has questions?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
                 displayQuestions(step);
             }
+            // Does not have anything
             else {
                 passoColheita = {};
                 currentIndex++;
@@ -674,7 +893,7 @@ function nextDecider() {
                     $("#div-progress").hide();
                 } else {
                     step = newForm[currentIndex];
-                    //passoColheita.nPasso = step;
+
                     passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso;
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
 
@@ -692,11 +911,21 @@ function nextDecider() {
             }
         }, time * 1000); // <-- time in milliseconds
 
-    } else if ((formConfiguration.passos[step - 1].hasOwnProperty("descricaoPasso")) && (formConfiguration.passos[step - 1].descricaoPasso.length > 0)) {
+    }
+    // Step begins with Step Description?
+    else if ((formConfiguration.passos[step - 1].hasOwnProperty("descricaoPasso")) && (formConfiguration.passos[step - 1].descricaoPasso.length > 0)) {
         displayDescription(step);
-    } else if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimuloVideo")) && (formConfiguration.passos[step - 1].fonteEstimuloVideo.length > 0)) {
+    }
+    // Step begins with Video stimulus?
+    else if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimuloVideo")) && (formConfiguration.passos[step - 1].fonteEstimuloVideo.length > 0)) {
         displayStimulusVideo(step);
-    } else {
+    }
+    // Step begins with Likert scale?
+    else if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+        displayLikertScale(step);
+    }
+    // Step begins with question?
+    else {
         if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
             displayQuestions(step);
         }
@@ -711,6 +940,7 @@ function endDataCollection() {
     document.getElementById('end-button').style.visibility = 'hidden'; // hides the submission button to avoid multiple posting
 
     dataCollection = JSON.stringify(participantDataCollection);
+    console.log(dataCollection);
 
     $.ajax({
         url: urlToPost,
@@ -722,10 +952,35 @@ function endDataCollection() {
             csrfmiddlewaretoken: csrfToken
         },
         success: function () {
+            var msg = "End data collection for participant " + idParticipante + " in form " + idForm + ".";
+            sendTrigger(msg);
             window.location.href = onSuccess;   // redirects to home
         },
         error: function () {
             toastr.error('Ocorreu um problema na submissão das suas respostas. <b>Por favor entre em contacto com o responsável.</b>');
+        }
+    });
+
+}
+
+/**
+ * Sends a trigger message for rabbit mq.
+ * @param msg identifier of element
+ */
+function sendTrigger(msg) {
+
+    $.ajax({
+        url: urlToPostTrigger,
+        type: 'POST',
+        data: {
+            message: msg,
+            csrfmiddlewaretoken: csrfToken
+        },
+        success: function (data) {
+            console.log(data.responseText);
+        },
+        error: function (data) {
+            console.log(data.responseText);
         }
     });
 

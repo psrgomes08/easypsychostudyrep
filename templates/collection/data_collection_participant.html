@@ -55,6 +55,8 @@
 
                 <div id="div-stimulus-video"></div>
 
+                <div id="div-likert"></div>
+
                 <div class="center-div">
                     <br/>
                     <div class="progress" id="div-progress" hidden>
@@ -148,6 +150,8 @@
     var urlToTrialForm = "{% url 'trial-form' trialFormID %}";
 
     var urlForPermission = "{% url 'check-token'%}";
+
+    var urlToPostTrigger = "{% url 'trigger' %}";
 
     /**
      * Loads the background color selected by the creator of the form.

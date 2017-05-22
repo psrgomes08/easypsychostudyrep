@@ -53,8 +53,8 @@
 
             <button class="btn btn-primary navbar-btn btn-wide" data-toggle="modal"
                     data-target="#modal-for-notifications" type="button">
-                <span class="glyphicon glyphicon-envelope"></span> Notificações <span class="badge"
-                                                                                      id="notifications-badge">0</span>
+                <span class="fa fa-bell"></span> Notificações <span class="badge"
+                                                                    id="notifications-badge">0</span>
             </button>
 
             <button class="btn btn-danger navbar-btn btn-wide" type="button" data-toggle="modal"
@@ -77,7 +77,8 @@
 
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">Ajuda: Painel Principal</p>
+                <p style="font-size: large; font-weight: bold;" align="center" class="modal-title">Ajuda: Painel
+                    Principal</p>
             </div> <!-- ./modal-header -->
 
             <div class="modal-body">
@@ -93,42 +94,98 @@
                         </div>
                         <div id="accordion-collapse1" class="panel-collapse collapse in">
                             <div class="panel-body">
-                                No painel <b>Os Meus Questinários</b> tem acesso aos questionários criados por si ou para os quais lhe deram permissão de Administrador.<br>
-                                Em qualquer questionário tem acesso às informações de <b>Número de Recolhas</b>, <b>Estado</b> e também pode <kbd><span class="glyphicon glyphicon-search"></span> Explorar Resultados</kbd> onde lhe são apresentadas informações gerais sobre os participantes.<br/><br/>
+                                No painel <b>Os Meus Questinários</b> tem acesso aos questionários criados por si ou
+                                para os quais lhe deram permissão de Administrador.<br>
+                                Em qualquer questionário tem acesso às informações de <b>Número de Recolhas</b>, <b>Estado</b>
+                                e também pode <kbd><span class="glyphicon glyphicon-search"></span> Explorar Resultados</kbd>
+                                onde lhe são apresentadas informações gerais sobre os participantes.<br/><br/>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado: Recolhas Abertas</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado:
+                                    Recolhas Abertas</label></br>
                                 Nos questionários com <b>Recolhas Abertas</b> é possível:
                                 <ul>
-                                    <li><kbd><span class="glyphicon glyphicon-play-circle"></span> Efetuar Recolha</kbd>: Efetuar uma recolha com um participante presencial.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-cog"></span> Configurar Recolhas</kbd>: Associar um questionário de treino e/ou uma explicação das escalas <i>Self-Assessment Manikin</i> ao questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os dados recolhidos dos participantes.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>: Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-lock"></span> Fechar Recolhas</kbd>: Proibir recolhas para o questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-user"></span> Convidar</kbd>: Verificar permissões de acesso ao questionário e convidar utilizadores para acesso ao mesmo.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-share"></span> Recolha Remota</kbd>: Gerar <i>link</i> para uma participação remota.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-duplicate"></span> Clonar</kbd>: Clonar o questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-edit"></span> Editar</kbd>: Editar o questionario se o mesmo ainda não tiver recolhas.</li>
+                                    <li><kbd><span class="glyphicon glyphicon-play-circle"></span> Efetuar Recolha</kbd>:
+                                        Efetuar uma recolha com um participante presencial.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-cog"></span> Configurar Recolhas</kbd>:
+                                        Associar um questionário de treino e/ou uma explicação das escalas <i>Self-Assessment
+                                            Manikin</i> ao questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar
+                                        Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os
+                                        dados recolhidos dos participantes.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>:
+                                        Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do
+                                        questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-lock"></span> Fechar Recolhas</kbd>:
+                                        Proibir recolhas para o questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-user"></span> Convidar</kbd>: Verificar
+                                        permissões de acesso ao questionário e convidar utilizadores para acesso ao
+                                        mesmo.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-share"></span> Recolha Remota</kbd>: Gerar
+                                        <i>link</i> para uma participação remota.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-duplicate"></span> Clonar</kbd>: Clonar o
+                                        questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-edit"></span> Editar</kbd>: Editar o
+                                        questionario se o mesmo ainda não tiver recolhas.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado: Recolhas Fechadas</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado:
+                                    Recolhas Fechadas</label></br>
                                 Nos questionários com <b>Recolhas Fechadas</b> é possível:
                                 <ul>
-                                    <li><kbd><span class="glyphicon glyphicon-check"></span> Abrir Recolhas</kbd>: Permitir recolhas para o questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-cog"></span> Configurar Recolhas</kbd>: Associar um questionário de treino e/ou uma explicação das escalas <i>Self-Assessment Manikin</i> ao questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os dados recolhidos dos participantes.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>: Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-folder-close"></span> Arquivar</kbd>: Arquivar o questionário. É impossível voltar a utilizá-lo após esta opção.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-user"></span> Convidar</kbd>: Verificar permissões de acesso ao questionário e convidar utilizadores para acesso ao mesmo.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-duplicate"></span> Clonar</kbd>: Clonar o questionário.</li>
+                                    <li><kbd><span class="glyphicon glyphicon-check"></span> Abrir Recolhas</kbd>:
+                                        Permitir recolhas para o questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-cog"></span> Configurar Recolhas</kbd>:
+                                        Associar um questionário de treino e/ou uma explicação das escalas <i>Self-Assessment
+                                            Manikin</i> ao questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar
+                                        Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os
+                                        dados recolhidos dos participantes.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>:
+                                        Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do
+                                        questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-folder-close"></span> Arquivar</kbd>:
+                                        Arquivar o questionário. É impossível voltar a utilizá-lo após esta opção.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-user"></span> Convidar</kbd>: Verificar
+                                        permissões de acesso ao questionário e convidar utilizadores para acesso ao
+                                        mesmo.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-duplicate"></span> Clonar</kbd>: Clonar o
+                                        questionário.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado: Arquivado</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado:
+                                    Arquivado</label></br>
                                 Nos questionários <b>Arquivados</b> é possível:
                                 <ul>
-                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os dados recolhidos dos participantes.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>: Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-duplicate"></span> Clonar</kbd>: Clonar o questionário.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-trash"></span> Apagar</kbd>: Apagar definitivamente o questionário.</li>
+                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar
+                                        Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os
+                                        dados recolhidos dos participantes.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>:
+                                        Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do
+                                        questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-duplicate"></span> Clonar</kbd>: Clonar o
+                                        questionário.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-trash"></span> Apagar</kbd>: Apagar
+                                        definitivamente o questionário.
+                                    </li>
                                 </ul>
 
                             </div>
@@ -145,29 +202,55 @@
                         <div id="accordion-collapse2" class="panel-collapse collapse">
                             <div class="panel-body">
 
-                                No painel <b>Questionários Partilhados Comigo</b> tem acesso aos questionários partilhados consigo e para os quais não tem permissões de Administrador.<br>
-                                Em qualquer questionário tem acesso às informações de <b>Número de Recolhas</b>, <b>Estado</b> e também pode <kbd><span class="glyphicon glyphicon-search"></span> Explorar Resultados</kbd> onde lhe são apresentadas informações gerais sobre os participantes.<br/><br/>
+                                No painel <b>Questionários Partilhados Comigo</b> tem acesso aos questionários
+                                partilhados consigo e para os quais não tem permissões de Administrador.<br>
+                                Em qualquer questionário tem acesso às informações de <b>Número de Recolhas</b>, <b>Estado</b>
+                                e também pode <kbd><span class="glyphicon glyphicon-search"></span> Explorar Resultados</kbd>
+                                onde lhe são apresentadas informações gerais sobre os participantes.<br/><br/>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado: Recolhas Abertas</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado:
+                                    Recolhas Abertas</label></br>
                                 Nos questionários com <b>Recolhas Abertas</b> é possível:
                                 <ul>
-                                    <li><kbd><span class="glyphicon glyphicon-play-circle"></span> Efetuar Recolha</kbd>: Efetuar uma recolha com um participante presencial.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os dados recolhidos dos participantes.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>: Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do questionário.</li>
+                                    <li><kbd><span class="glyphicon glyphicon-play-circle"></span> Efetuar Recolha</kbd>:
+                                        Efetuar uma recolha com um participante presencial.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar
+                                        Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os
+                                        dados recolhidos dos participantes.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>:
+                                        Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do
+                                        questionário.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado: Recolhas Fechadas</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado:
+                                    Recolhas Fechadas</label></br>
                                 Nos questionários com <b>Recolhas Fechadas</b> é possível:
                                 <ul>
-                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os dados recolhidos dos participantes.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>: Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do questionário.</li>
+                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar
+                                        Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os
+                                        dados recolhidos dos participantes.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>:
+                                        Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do
+                                        questionário.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado: Arquivado</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Estado:
+                                    Arquivado</label></br>
                                 Nos questionários <b>Arquivados</b> é possível:
                                 <ul>
-                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os dados recolhidos dos participantes.</li>
-                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>: Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do questionário.</li>
+                                    <li><kbd><span class="glyphicon glyphicon-list-alt"></span> Descarregar
+                                        Recolhas</kbd>: Descarregar um ficheiro de formato <i>.xlsx</i> com todos os
+                                        dados recolhidos dos participantes.
+                                    </li>
+                                    <li><kbd><span class="glyphicon glyphicon-save"></span> Exportar Questionário</kbd>:
+                                        Descarregar um ficheiro de formato <i>.psyconfig</i> com as definições do
+                                        questionário.
+                                    </li>
                                 </ul>
 
                             </div>
@@ -184,17 +267,25 @@
                         <div id="accordion-collapse3" class="panel-collapse collapse">
                             <div class="panel-body">
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Criar Questionário</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Criar
+                                    Questionário</label></br>
                                 Para criar um questionário:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-edit"></span> Criar Questionário</kbd> no canto inferior direito.</li>
+                                    <li>Clique em <kbd><span class="fa fa-cogs"></span> Criar Questionário</kbd> no
+                                        canto inferior direito.
+                                    </li>
                                 </ul>
 
-                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Importar Questionário</label></br>
+                                <label class="text-info"><span class="glyphicon glyphicon-info-sign"></span> Importar
+                                    Questionário</label></br>
                                 Para importar um questionário:
                                 <ul>
-                                    <li>Clique em <kbd><span class="glyphicon glyphicon-import"></span> Importar Questionário</kbd> no canto inferior direito.</li>
-                                    <li>Pesquise o questionário que pretende importar e de seguida clique no botão <kbd><span class="glyphicon glyphicon-import"></span> Carregar</kbd>.</li>
+                                    <li>Clique em <kbd><span class="fa fa-upload"></span> Importar Questionário</kbd> no
+                                        canto inferior direito.
+                                    </li>
+                                    <li>Pesquise o questionário que pretende importar e de seguida clique no botão <kbd><span
+                                            class="fa fa-upload"></span> Carregar</kbd>.
+                                    </li>
                                 </ul>
 
                             </div>
@@ -312,23 +403,30 @@
                                     <br/><br/>
                                     {% if ownedFormO.1 > 0 %}
                                     <a href="{% url 'form-dashboard' ownedFormO.0.idForm %}" role="button"
-                                       class="btn btn-sm btn-default btn-block"><span
-                                            class="glyphicon glyphicon-search"></span>
+                                       class="btn btn-sm btn-grey btn-block"><span
+                                            class="fa fa-bar-chart"></span>
                                         Explorar Resultados</a>
                                     {% else %}
-                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
-                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    <button type="button" class="btn btn-sm btn-grey btn-block" disabled><span
+                                            class="fa fa-bar-chart"></span> Explorar Resultados
                                     </button>
                                     {% endif %}
                                 </div> <!-- ./well well-sm -->
 
                                 <!-- buttons -->
                                 <a href="{% url 'data-collection' ownedFormO.0.idForm %}"
-                                   class="btn btn-sm btn-success btn-block"
+                                   class="btn btn-sm btn-primary btn-block"
                                    role="button">
-                                    <span class="glyphicon glyphicon-play-circle"></span> Efetuar Recolha</a>
+                                    <span class="fa fa-pencil-square-o"></span> Recolha Presencial</a>
 
                                 <button type="button" class="btn btn-sm btn-primary btn-block" data-toggle="modal"
+                                        data-target="#modal-for-link-share"
+                                        data-form-id="{{ownedFormO.0.idForm}}"
+                                        data-form-name="{{ownedFormO.0.idForm.formName}}"><span
+                                        class="glyphicon glyphicon-share"></span> Recolha Remota
+                                </button>
+
+                                <button type="button" class="btn btn-sm btn-info btn-block" data-toggle="modal"
                                         data-target="#modal-for-data-collected-management"
                                         data-form-id="{{ownedFormO.0.idForm}}"
                                         data-form-name="{{ownedFormO.0.idForm.formName}}"><span
@@ -336,44 +434,10 @@
                                     Configurar Recolhas
                                 </button>
 
-                                <button onclick="downloadDataCollection('{{ownedFormO.0.idForm}}')" type="button"
-                                        class="btn btn-sm btn-default btn-block"><span
-                                        class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
-                                </button>
-
-                                <a href="{% url 'download-json' ownedFormO.0.idForm %}"
-                                   class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
-
                                 <a href="{% url 'close-data-collection' ownedFormO.0.idForm %}"
                                    class="btn btn-sm btn-danger btn-block"
                                    role="button">
-                                    <span class="glyphicon glyphicon-lock"></span> Fechar Recolhas</a>
-
-                                <p>
-                                <div class="btn-group btn-group-justified">
-
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
-                                                data-target="#modal-for-access-granting"
-                                                data-form-id="{{ownedFormO.0.idForm}}"
-                                                data-form-name="{{ownedFormO.0.idForm.formName}}"><span
-                                                class="glyphicon glyphicon-user"></span>
-                                            Convidar
-                                        </button>
-                                    </div>
-
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-default" data-toggle="modal"
-                                                data-target="#modal-for-link-share"
-                                                data-form-id="{{ownedFormO.0.idForm}}"
-                                                data-form-name="{{ownedFormO.0.idForm.formName}}"><span
-                                                class="glyphicon glyphicon-share"></span> Recolha <span class="button-text">Remota</span>
-                                        </button>
-                                    </div>
-
-                                </div>
-                                </p>
+                                    <span class="fa fa-lock"></span> Fechar Recolhas</a>
 
                                 <p>
                                 <div class="btn-group btn-group-justified">
@@ -395,15 +459,32 @@
 
                                 </div>
                                 </p>
+
+                                <button onclick="downloadDataCollection('{{ownedFormO.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="fa fa-file-excel-o"></span> Descarregar Recolhas
+                                </button>
+
+                                <a href="{% url 'download-json' ownedFormO.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block" role="button">
+                                    <span class="fa fa-download"></span> Exportar Questionário</a>
+
+                                <button type="button" class="btn btn-sm btn-default btn-block" data-toggle="modal"
+                                        data-target="#modal-for-access-granting"
+                                        data-form-id="{{ownedFormO.0.idForm}}"
+                                        data-form-name="{{ownedFormO.0.idForm.formName}}"><span
+                                        class="glyphicon glyphicon-user"></span>
+                                    Permissões Acesso
+                                </button>
                                 <!-- end of buttons -->
 
                             </div> <!-- ./caption -->
 
                             <!-- Modal  for sharing link -->
+                            <!--
                             <div class="modal fade" id="modal-for-link-share" role="dialog">
                                 <div class="modal-dialog">
 
-                                    <!-- Modal content-->
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -419,7 +500,7 @@
                                     </div>
 
                                 </div>
-                            </div> <!-- ./modal-for-link-share -->
+                            </div> --><!-- ./modal-for-link-share -->
 
 
                         </div> <!-- ./thumbnail -->
@@ -454,12 +535,12 @@
                                     <br/><br/>
                                     {% if ownedFormC.1 > 0 %}
                                     <a href="{% url 'form-dashboard' ownedFormC.0.idForm %}" role="button"
-                                       class="btn btn-sm btn-default btn-block"><span
-                                            class="glyphicon glyphicon-search"></span>
+                                       class="btn btn-sm btn-grey btn-block"><span
+                                            class="fa fa-bar-chart"></span>
                                         Explorar Resultados</a>
                                     {% else %}
-                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
-                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    <button type="button" class="btn btn-sm btn-grey btn-block" disabled><span
+                                            class="fa fa-bar-chart"></span> Explorar Resultados
                                     </button>
                                     {% endif %}
                                 </div>
@@ -467,7 +548,7 @@
                                 <a href="{% url 'open-data-collection' ownedFormC.0.idForm %}"
                                    class="btn btn-sm btn-success btn-block"
                                    role="button">
-                                    <span class="glyphicon glyphicon-check"></span> Abrir Recolhas</a>
+                                    <span class="fa fa-unlock"></span> Abrir Recolhas</a>
 
                                 <button type="button" class="btn btn-sm btn-primary btn-block" data-toggle="modal"
                                         data-target="#modal-for-data-collected-management"
@@ -477,42 +558,50 @@
                                     Configurar Recolhas
                                 </button>
 
+                                <p>
+                                <div class="btn-group btn-group-justified">
+
+                                    <div class="btn-group">
+                                        <a href="{% url 'clone-form' ownedFormC.0.idForm %}"
+                                           class="btn btn-sm btn-default"
+                                           type="button">
+                                            <span class="glyphicon glyphicon-duplicate"></span> Clonar</a>
+                                    </div>
+
+                                    <div class="btn-group">
+                                        <button onclick="editForm('{{ownedFormC.0.idForm}}')" type="button"
+                                                class="btn btn-sm btn-default">
+                                            <span class="glyphicon glyphicon-edit"></span>
+                                            Editar
+                                        </button>
+                                    </div>
+
+                                </div>
+                                </p>
+
                                 <button onclick="downloadDataCollection('{{ownedFormC.0.idForm}}')" type="button"
                                         class="btn btn-sm btn-default btn-block"><span
-                                        class="glyphicon glyphicon-list-alt"></span>
+                                        class="fa fa-file-excel-o"></span>
                                     Descarregar Recolhas
                                 </button>
 
                                 <a href="{% url 'download-json' ownedFormC.0.idForm %}"
                                    class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
+                                    <span class="fa fa-download"></span> Exportar Questionário</a>
+
+                                <button type="button" class="btn btn-sm btn-default btn-block"
+                                        data-toggle="modal"
+                                        data-target="#modal-for-access-granting"
+                                        data-form-id="{{ownedFormC.0.idForm}}"
+                                        data-form-name="{{ownedFormC.0.idForm.formName}}"><span
+                                        class="glyphicon glyphicon-user"></span>
+                                    Permissões Acesso
+                                </button>
 
                                 <a href="{% url 'archive-form' ownedFormC.0.idForm %}"
                                    class="btn btn-sm btn-warning btn-block"
                                    role="button">
-                                    <span class="glyphicon glyphicon-folder-close"></span> Arquivar</a>
-
-                                <p>
-                                <div class="btn-group btn-group-justified">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-default btn-block"
-                                                data-toggle="modal"
-                                                data-target="#modal-for-access-granting"
-                                                data-form-id="{{ownedFormC.0.idForm}}"
-                                                data-form-name="{{ownedFormC.0.idForm.formName}}"><span
-                                                class="glyphicon glyphicon-user"></span>
-                                            Convidar
-                                        </button>
-                                    </div>
-
-                                    <div class="btn-group">
-                                        <a href="{% url 'clone-form' ownedFormC.0.idForm %}"
-                                           class="btn btn-sm btn-default btn-block"
-                                           role="button">
-                                            <span class="glyphicon glyphicon-duplicate"></span> Clonar</a>
-                                    </div>
-                                </div> <!-- ./btn-group btn-group-justified -->
-                                </p>
+                                    <span class="fa fa-folder"></span> Arquivar</a>
 
                                 <!-- end of buttons -->
 
@@ -653,37 +742,37 @@
                                     <br/><br/>
                                     {% if ownedArchived.1 > 0 %}
                                     <a href="{% url 'form-dashboard' ownedArchived.0.idForm %}" role="button"
-                                       class="btn btn-sm btn-default btn-block"><span
-                                            class="glyphicon glyphicon-search"></span>
+                                       class="btn btn-sm btn-grey btn-block"><span
+                                            class="fa fa-bar-chart"></span>
                                         Explorar Resultados</a>
                                     {% else %}
-                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
-                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    <button type="button" class="btn btn-sm btn-grey btn-block" disabled><span
+                                            class="fa fa-bar-chart"></span> Explorar Resultados
                                     </button>
                                     {% endif %}
                                 </div>
 
                                 <!-- buttons -->
-                                <button onclick="downloadDataCollection('{{ownedArchived.0.idForm}}')" type="button"
-                                        class="btn btn-sm btn-default btn-block"><span
-                                        class="glyphicon glyphicon-list-alt"></span>
-                                    Descarregar Recolhas
-                                </button>
-
-                                <a href="{% url 'download-json' ownedArchived.0.idForm %}"
-                                   class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
-
                                 <a href="{% url 'clone-form' ownedArchived.0.idForm %}"
                                    class="btn btn-sm btn-default btn-block"
                                    role="button">
                                     <span class="glyphicon glyphicon-duplicate"></span> Clonar Questionário</a>
 
+                                <button onclick="downloadDataCollection('{{ownedArchived.0.idForm}}')" type="button"
+                                        class="btn btn-sm btn-default btn-block"><span
+                                        class="fa fa-file-excel-o"></span>
+                                    Descarregar Recolhas
+                                </button>
+
+                                <a href="{% url 'download-json' ownedArchived.0.idForm %}"
+                                   class="btn btn-sm btn-default btn-block" role="button">
+                                    <span class="fa fa-download"></span> Exportar Questionário</a>
+
                                 <button type="button" class="btn btn-sm btn-danger btn-block" data-toggle="modal"
                                         data-target="#modal-for-delete"
                                         data-form-name="{{ownedArchived.0.idForm.formName}}"
                                         data-form-url="{% url 'delete-form' ownedArchived.0.idForm %}">
-                                    <span class="glyphicon glyphicon-trash"></span> Apagar
+                                    <span class="glyphicon glyphicon-trash"></span> Eliminar
                                 </button>
                                 <!-- end of buttons -->
 
@@ -701,7 +790,7 @@
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                                         <p style="font-size: large; font-weight: bold;" align="center"
                                            class="modal-title">
-                                            Apagar Questionário</p>
+                                            Eliminar Questionário</p>
                                     </div>
                                     <div class="modal-body">
                                         <p align="center" id="form-message"></p>
@@ -764,31 +853,34 @@
                                     <br/><br/>
                                     {% if sharedFormO.1 > 0 %}
                                     <a href="{% url 'form-dashboard' sharedFormO.0.idForm %}" role="button"
-                                       class="btn btn-sm btn-default btn-block"><span
-                                            class="glyphicon glyphicon-search"></span>
+                                       class="btn btn-sm btn-grey btn-block"><span
+                                            class="fa fa-bar-chart"></span>
                                         Explorar Resultados</a>
                                     {% else %}
-                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
-                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    <button type="button" class="btn btn-sm btn-grey btn-block" disabled><span
+                                            class="fa fa-bar-chart"></span> Explorar Resultados
                                     </button>
                                     {% endif %}
                                 </div>
 
                                 <!-- buttons -->
                                 <a href="{% url 'data-collection' sharedFormO.0.idForm %}"
-                                   class="btn btn-sm btn-success btn-block"
+                                   class="btn btn-sm btn-primary btn-block"
                                    role="button">
-                                    <span class="glyphicon glyphicon-edit"></span> Efetuar Recolha</a>
+                                    <span class="fa fa-pencil-square-o"></span> Recolha Presencial</a>
+
+                                <button type="button" class="btn btn-sm btn-primary btn-block" data-toggle="modal"
+                                        data-target="#modal-for-link-share"
+                                        data-form-id="{{sharedFormO.0.idForm}}"
+                                        data-form-name="{{sharedFormO.0.idForm.formName}}"><span
+                                        class="glyphicon glyphicon-share"></span> Recolha Remota
+                                </button>
 
                                 <button onclick="downloadDataCollection('{{sharedFormO.0.idForm}}')" type="button"
                                         class="btn btn-sm btn-default btn-block"><span
-                                        class="glyphicon glyphicon-list-alt"></span>
+                                        class="fa fa-file-excel-o"></span>
                                     Descarregar Recolhas
                                 </button>
-
-                                <a href="{% url 'download-json' sharedFormO.0.idForm %}"
-                                   class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
                                 <!-- end of buttons -->
 
                             </div> <!-- ./caption -->
@@ -820,12 +912,12 @@
                                     <br/><br/>
                                     {% if sharedFormC.1 > 0 %}
                                     <a href="{% url 'form-dashboard' sharedFormC.0.idForm %}" role="button"
-                                       class="btn btn-sm btn-default btn-block"><span
-                                            class="glyphicon glyphicon-search"></span>
+                                       class="btn btn-sm btn-grey btn-block"><span
+                                            class="fa fa-bar-chart"></span>
                                         Explorar Resultados</a>
                                     {% else %}
-                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
-                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    <button type="button" class="btn btn-sm btn-grey btn-block" disabled><span
+                                            class="fa fa-bar-chart"></span> Explorar Resultados
                                     </button>
                                     {% endif %}
                                 </div>
@@ -833,13 +925,9 @@
                                 <!-- buttons -->
                                 <button onclick="downloadDataCollection('{{sharedFormC.0.idForm}}')" type="button"
                                         class="btn btn-sm btn-default btn-block"><span
-                                        class="glyphicon glyphicon-list-alt"></span>
+                                        class="fa fa-file-excel-o"></span>
                                     Descarregar Recolhas
                                 </button>
-
-                                <a href="{% url 'download-json' sharedFormC.0.idForm %}"
-                                   class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
                                 <!-- end of buttons -->
 
                             </div> <!-- ./caption -->
@@ -879,12 +967,12 @@
                                     <br/><br/>
                                     {% if sharedArchive.1 > 0 %}
                                     <a href="{% url 'form-dashboard' sharedArchive.0.idForm %}" role="button"
-                                       class="btn btn-sm btn-default btn-block"><span
-                                            class="glyphicon glyphicon-search"></span>
+                                       class="btn btn-sm btn-grey btn-block"><span
+                                            class="fa fa-bar-chart"></span>
                                         Explorar Resultados</a>
                                     {% else %}
-                                    <button type="button" class="btn btn-sm btn-default btn-block" disabled><span
-                                            class="glyphicon glyphicon-search"></span> Explorar Resultados
+                                    <button type="button" class="btn btn-sm btn-grey btn-block" disabled><span
+                                            class="fa fa-bar-chart"></span> Explorar Resultados
                                     </button>
                                     {% endif %}
                                 </div>
@@ -892,12 +980,8 @@
                                 <!-- buttons -->
                                 <button onclick="downloadDataCollection('{{sharedArchive.0.idForm}}')" type="button"
                                         class="btn btn-sm btn-default btn-block"><span
-                                        class="glyphicon glyphicon-list-alt"></span> Descarregar Recolhas
+                                        class="fa fa-file-excel-o"></span> Descarregar Recolhas
                                 </button>
-
-                                <a href="{% url 'download-json' sharedArchive.0.idForm %}"
-                                   class="btn btn-sm btn-default btn-block" role="button">
-                                    <span class="glyphicon glyphicon-download-alt"></span> Exportar Questionário</a>
                                 <!-- end of buttons -->
 
                             </div> <!-- ./caption -->
@@ -914,13 +998,35 @@
 
 <div class="fixed-btn">
 
-    <a href="{% url 'new-form' %}" class="btn btn-block btn-grey" role="button">
-        <span class="glyphicon glyphicon-edit"></span> Criar Questionário</a>
+    <a href="{% url 'new-form' %}" class="btn btn-grey btn-block btn-sq-home" role="button">
+        <span class="fa fa-cogs"></span> <br/>Criar<br/>Questionário</a>
 
-    <a href="" class="btn btn-block btn-grey" role="button" data-toggle="modal" data-target="#importForm">
-        <span class="glyphicon glyphicon-import"></span> Importar Questionário</a>
+    <a href="" class="btn btn-grey btn-block btn-sq-home" role="button" data-toggle="modal" data-target="#importForm">
+        <span class="fa fa-upload"></span> <br/>Importar<br/>Questionário</a>
 
 </div> <!-- ./btn-group-vertical fixed-btn -->
+
+<!-- Modal  for sharing link -->
+<div class="modal fade" id="modal-for-link-share" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <p style="font-size: large; font-weight: bold;" align="center"
+                   class="modal-title">
+                    Recolha Remota</p>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center" id="form-url"></div>
+                <div style="text-align: center" id="email-form"></div>
+                <div style="text-align: center" id="email-messages"></div>
+            </div>
+        </div>
+
+    </div>
+</div> <!-- ./modal-for-link-share -->
 
 <!-- Modal for form import -->
 <div id="importForm" class="modal fade" role="dialog">
@@ -941,7 +1047,7 @@
                       <input style="display: none;" type="file" accept=".psyconfig" id="input-form-config"
                              onchange="getFileName()"></span>
                         <button class="btn btn-primary" type="button" onclick="getFileContent()"><span
-                                class="glyphicon glyphicon-import"></span> Carregar
+                                class="fa fa-upload"></span> Carregar
                         </button>
                     </label>
                     <input id="form-config-selected" type="text" class="form-control" readonly>

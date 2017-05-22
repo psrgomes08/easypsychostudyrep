@@ -1,12 +1,25 @@
 var divWhereToAdd = ""; // used in addQuestion(n)
 var breakNumber = 0; // used in addQuestion(n)
-//var images = []; // used in sendToJson()
 var typeOfStep = [];
 var x = 0; // used in addQuestion(n)
+var nQuestionLikert = 0; // used in addLikertScale(n)
 
-//var formID = Math.random().toString(36).substring(2);
+// Variables used for deleting fields
+var qField = 0;
+var samField = 0;
+var instField = 0;
+var likField = 0;
+var imgField = 0;
+var vidField = 0;
+
+var qDivField = "qDivField";
+var samDivField = "samDivField";
+var instDivField = "instDivField";
+var likDivField = "likDivField";
+var imgDivField = "imgDivField";
+var vidDivField = "vidDivField";
+
 var formID = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'); // used in sendToJson()
-// console.log("Este é o ID do Form: " + formID);
 
 var formName;
 var multipleImages = [];
@@ -66,6 +79,50 @@ function randomString(length, chars) {
 }
 
 /**
+ * Deletes element inside panel.
+ * @param type type of the element
+ * @param number special number of the element
+ * @param breakN div of the panel
+ */
+function deleteElementInsidePanel(type, number, breakN) {
+
+    switch (type) {
+        case "imgDivField":
+            $("#" + type + "-" + number).remove();
+            $("#samDivField-" + breakN).remove();
+            for (var i = 0, len = multipleImages.length; i < len; i++) {
+                if (multipleImages[i] !== undefined && multipleImages[i][0] === breakN) {
+                    delete multipleImages[i];
+                    typeOfStep[breakN] = "";
+                }
+            }
+            break;
+
+        case "vidDivField":
+            $("#" + type + "-" + breakN).remove();
+            $("#samDivField-" + breakN).remove();
+            for (var i = 0, len = multipleVideos.length; i < len; i++) {
+                if (multipleVideos[i] !== undefined && multipleVideos[i][0] === breakN) {
+                    delete multipleVideos[i];
+                    typeOfStep[breakN] = "";
+                }
+            }
+            break;
+
+        case "samDivField":
+        case "likDivField":
+            $("#" + type + "-" + breakN).remove();
+            break;
+
+        case "qDivField":
+        case "instDivField":
+            $("#" + type + "-" + number).remove();
+            break;
+    }
+
+}
+
+/**
  * Adds a textbox field in the form
  * @param n number of the step
  */
@@ -75,43 +132,15 @@ function addQuestion(n) {
     if ($(divWhereToAdd).find('#fixed-description').length == 1) { // if there is a description
         toastr.error('Não pode adicionar elementos extra numa tarefa que contenha instruções.');
     } else {
-        $(divWhereToAdd).append("<br/>" +
-            "<label>Questão proposta</label><input id='question-" + x + "' type='text' class='form-control'>" +
-            "<br/>");
+        $(divWhereToAdd).append("<div class='well well-sm' id='qDivField-" + qField + "'>" +
+            "<button type='button' class='btn btn-danger btn-xs btn-right' title='Apagar' onclick='deleteElementInsidePanel(" + qDivField + "," + qField + "," + n + ")'><span class='fa fa-trash-o'></span></button> " +
+            "<i class='title-in-well'><span class='glyphicon glyphicon-pencil'></span> Campo de questão</i><br/>" +
+            "<label>Questão a fazer:</label><input id='question-" + n + "-" + x + "' type='text' class='form-control'>" +
+            "</div>");
         x++;
+        qField++;
     }
 }
-
-/**
- * NOT BEING USED
- * Adds an open file option field to select a stimulus
- * @param n number of the step
- */
-/*
- function addStimulus(n) {
- divWhereToAdd = "#break-" + n;
-
- if ($(divWhereToAdd).find("#form-stimulus").length) {
- toastr.error('Já adicionou um estímulo nesta tarefa.');
- } else if ($(divWhereToAdd).find("#video-stimulus-" + n).length) { // if there is a video stimulus
- toastr.error('Não pode adicionar um estímulo de vídeo numa tarefa com estímulo de imagem.');
- } else if ($(divWhereToAdd).find('#fixed-description').length == 1) { // if there is a description
- toastr.error('Não pode adicionar elementos extra numa tarefa que contenha instruções.');
- }
- else {
- $(divWhereToAdd).append('<br/><p><b>Selecionar estímulo a carregar</b></p>' +
- '<div id="form-stimulus" class="input-group">' +
- '<label class="input-group-btn">' +
- '<span class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span> Pesquisar' +
- '<input style="display: none;" type="file" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
- '<button class="btn btn-primary" type="button" onclick="getBase64(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
- '</label>' +
- '<input id="files-selected" type="text" class="form-control" readonly>' +
- '</div>' +
- '<br/><br/><div class="form-group"><label for="form-stimulus-time">Tempo de apresentação definido</label><input type="text" class="form-control" id="form-stimulus-time"></div>');
- }
- }
- */
 
 /**
  * Adds a stimulus of the video type
@@ -132,20 +161,9 @@ function addStimulusVideo(n) {
                 }
             }
 
-            // If only one video was uploaded, let's the step be fixed. Else, does not.
-            /*
-            if (files.length > 1) {
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", true);
-            } else {
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", false);
-            }
-            */
-
             typeOfStep[n] = "video";
 
-            $("#loaded-videos-" + n).append("<br/><label>Vídeos carregados</label>" +
+            $("#loaded-videos-" + n).append("<br/><label>Vídeos carregados:</label>" +
                 "<ul class='list-group'");
             for (var i = 0; i < files.length; i++) {
                 multipleVideos.push([n, files[i].link, files[i].name]);
@@ -173,7 +191,7 @@ function addStimulusVideo(n) {
         // only be able to select files with these extensions. You may also specify
         // file types, such as "video" or "images" in the list. For more information,
         // see File types below. By default, all extensions are allowed.
-        extensions: ['video'],
+        extensions: ['video']
     };
 
     if ($(divWhereToAdd).find("#video-stimulus-" + n).length) {
@@ -183,12 +201,17 @@ function addStimulusVideo(n) {
     } else if ($(divWhereToAdd).find("#form-stimulus").length == 1) { // if there is an image stimulus
         toastr.error('Não pode adicionar um estímulo de vídeo numa tarefa com estímulo de imagem.');
     } else {
-        $(divWhereToAdd).append("<br/><p><b>Selecionar vídeos a carregar</b></p>" +
+        $(divWhereToAdd).append("<div class='well well-sm' id='vidDivField-" + n + "'>" +
+            "<button type='button' class='btn btn-danger btn-xs btn-right' title='Apagar' onclick='deleteElementInsidePanel(" + vidDivField + "," + vidField + "," + n + ")'><span class='fa fa-trash-o'></span></button> " +
+            "<i class='title-in-well'><span class='glyphicon glyphicon-film'></span> Campo de vídeo</i><br/>" +
+            "<label>Vídeos a carregar:</label>" +
             "<div class='input-group'>" +
             "<span class='input-group-addon'>Selecionar vídeos</span>" +
-            "<button class='form-control btn btn-primary' id='video-stimulus-" + n + "' type='button' onclick='Dropbox.choose(options);'><span class='glyphicon glyphicon-folder-open'></span> <span class='button-text'>Pesquisar na Dropbox</span></button>" +
+            "<button class='form-control btn btn-primary' id='video-stimulus-" + n + "' type='button' onclick='Dropbox.choose(options);'><span class='fa fa-dropbox'></span> <span class='button-text'>Pesquisar na Dropbox</span></button>" +
             "</div>" +
-            "<div id='loaded-videos-" + n + "'></div>");
+            "<div id='loaded-videos-" + n + "'></div></div>");
+
+        vidField++;
     }
 }
 
@@ -207,16 +230,19 @@ function addStimulusMultiple(n) {
         toastr.error('Não pode adicionar um estímulo de vídeo numa tarefa com estímulos de imagens.');
     }
     else {
-        $(divWhereToAdd).append('<br/><p><b>Selecionar imagens a carregar</b></p>' +
+        $(divWhereToAdd).append('<div class="well well-sm" id="imgDivField-' + imgField + '">' +
+            '<button type="button" class="btn btn-danger btn-xs btn-right" title="Apagar" onclick="deleteElementInsidePanel(' + imgDivField + ',' + imgField + ',' + n + ')"><span class="fa fa-trash-o"></span></button> ' +
+            '<i class="title-in-well"><span class="glyphicon glyphicon-picture"></span> Campo de imagem</i><br/>' +
+            '<label>Selecionar imagens a carregar:</label>' +
             '<div id="form-stimulus" class="input-group">' +
             '<label class="input-group-btn">' +
             '<span class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span> Pesquisar' +
             '<input style="display: none;" type="file" accept="image/gif, image/jpeg, image/png, image/jpg" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
-            '<button id="btn-load-' + n + '"  class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
+            '<button id="btn-load-' + n + '"  class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="fa fa-upload"></span> Carregar</button>' +
             '</label>' +
             '<input id="files-selected" type="text" class="form-control" readonly>' +
             '</div>' +
-            '<br/><br/><div class="form-group"><label for="form-stimulus-time">Tempo de apresentação definido</label><input type="text" class="form-control" id="form-stimulus-time"></div>');
+            '<br/><div class="form-group"><label>Tempo de apresentação por imagem (em seg.):</label><input type="text" class="form-control" id="form-stimulus-time-' + n + '"></div></div>');
     }
 }
 
@@ -230,7 +256,10 @@ function addDescriptionField(n) {
     if ($(divWhereToAdd).children().length > 1) {
         toastr.error('Só é possível adicionar instruções a uma tarefa que esteja vazia.');
     } else {
-        $(divWhereToAdd).append('<br/><label>Instruções</label><textarea class="form-control" rows="3" id="fixed-description"></textarea><br/>');
+        $(divWhereToAdd).append('<div class="well well-sm" id="instDivField-' + instField + '">' +
+            '<button type="button" class="btn btn-danger btn-xs btn-right" title="Apagar" onclick="deleteElementInsidePanel(' + instDivField + ',' + instField + ',' + n + ')"><span class="fa fa-trash-o"></span></button> ' +
+            '<i class="title-in-well"><span class="glyphicon glyphicon-font"></span> Campo de instrução</i><br/>' +
+            '<label>Instruções a apresentar:</label><textarea class="form-control" rows="3" id="fixed-description"></textarea></div>');
         $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", true); // a description field has to be fixed
         $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", true); // blocks the fixed attribute
     }
@@ -243,18 +272,74 @@ function addDescriptionField(n) {
 function addSAMScale(n) {
     divWhereToAdd = "#break-" + n;
 
-    if ($(divWhereToAdd).find("#form-sam-scales").length) { // if there is already a scale -> error
-        toastr.error('Já adicionou uma escala a esta tarefa.');
+    if ($(divWhereToAdd).find("#form-sam-scales").length) { // if there is already a sam scale -> error
+        toastr.error('Já associou uma escala a esta tarefa.');
     } else if (($(divWhereToAdd).find("#form-stimulus").length == 0) && ($(divWhereToAdd).find("#video-stimulus-" + n).length == 0)) { // if there is no stimulus -> error
-        toastr.error('Só pode adicionar escalas a uma tarefa que contenha um estímulo.');
+        toastr.error('Só pode associar escalas a uma tarefa que contenha estímulos.');
     } else {
-        $(divWhereToAdd).append("" +
-            "<br/><div id='form-sam-scales'><p><b>Escalas a apresentar</b></p>" +
+        $(divWhereToAdd).append("<div class='well well-sm' id='samDivField-" + n + "'>" +
+            "<button type='button' class='btn btn-danger btn-xs btn-right' title='Apagar' onclick='deleteElementInsidePanel(" + samDivField + "," + samField + "," + n + ")'><span class='fa fa-trash-o'></span></button> " +
+            "<i class='title-in-well'><span class='glyphicon glyphicon-record'></span> Campo de escala SAM</i><br/>" +
+            "<div id='form-sam-scales'><label>Dimensões a apresentar:</label><br/>" +
             "<label class='checkbox-inline'><input type='checkbox' value='Valência' id='sam-scale-val'>Valência</label>" +
             "<label class='checkbox-inline'><input type='checkbox' value='Alerta' id='sam-scale-awe'>Alerta</label>" +
             "<label class='checkbox-inline'><input type='checkbox' value='Dominância' id='sam-scale-dom'>Dominância</label>" +
-            "</div><br/>");
+            "</div></div>");
     }
+}
+
+/**
+ * Adds a likert scale in the form.
+ * @param n number of the step
+ */
+function addLikertScale(n) {
+    divWhereToAdd = "#break-" + n;
+
+    if ($(divWhereToAdd).find('#fixed-description').length) { // if there is a description
+        toastr.error('Não pode adicionar elementos extra numa tarefa que contenha instruções.');
+    }
+    else if ($(divWhereToAdd).find("#form-likert-scale").length) {
+        toastr.error('Só pode adicionar um grupo de questões com escala de <i>Likert</i> por tarefa.');
+    }
+    else {
+        $(divWhereToAdd).append("<div class='well well-sm' id='likDivField-" + n + "'>" +
+            "<button type='button' class='btn btn-danger btn-xs btn-right' title='Apagar' onclick='deleteElementInsidePanel(" + likDivField + "," + likField + "," + n + ")'><span class='fa fa-trash-o'></span></button> " +
+            "<i class='title-in-well'><span class='glyphicon glyphicon-record'></span> Campo de escala Likert</i><br/>" +
+            "<div id='form-likert-scale'><label>Tamanho da escala:</label><br/>" +
+            "<form id='likertRadios-" + n + "'><label class='radio-inline'><input type='radio' name='optLikertradio' value='5Pontos' id='likert-scale-5'>5 Pontos</label>" +
+            "<label class='radio-inline'><input type='radio' name='optLikertradio' value='7Pontos' id='likert-scale-7'>7 Pontos</label>" +
+            "</form></div>" +
+            "<br/><label>Questões a apresentar com a escala:</label><br/>" +
+            "<div id='likert-questions-" + n + "'>" +
+            "<ul style='display: none' class='list-group' id='list-in-likert-" + n + "'>" +
+            "</ul>" +
+            "</div>" +
+            "<div class='input-group'><input type='text' class='form-control' id='question-in-likert-" + n + "'>" +
+            "<div class='input-group-btn'><button class='btn btn-primary' type='button' onclick='addQuestionInLikert(" + n + ")'><span class='glyphicon glyphicon-plus-sign'></span> Adicionar</button></div></div>" +
+            "</div>");
+    }
+
+}
+
+/**
+ * Adds a question associated to the Likert scale field.
+ * @param n number of the step
+ */
+function addQuestionInLikert(n) {
+    $('#list-in-likert-' + n).show();
+    var question = $("#question-in-likert-" + n).val();
+
+    $("#list-in-likert-" + n).append("<li class='list-group-item' id='likert-" + n + "-" + nQuestionLikert + "'>" + question + "<button title='Apagar' onclick='deleteQuestionInLikert(" + nQuestionLikert + "," + n + ")' type='button' class='btn btn-xs btn-danger btn-right'><span class='fa fa-trash-o'></span></button></li>");
+    nQuestionLikert++;
+}
+
+/**
+ * Deletes a question inside the a Likert scale field.
+ * @param nQuestion identifier of the question
+ * @param n number of the step
+ */
+function deleteQuestionInLikert(nQuestion, n) {
+    $("#likert-" + n + "-" + nQuestion).remove();
 }
 
 /**
@@ -270,7 +355,6 @@ function deleteBreak(n) {
     for (var i = 0, len = multipleImages.length; i < len; i++) {
         if (multipleImages[i] !== undefined && multipleImages[i][0] === n) {
             delete multipleImages[i];
-            //images[n] = "";
             typeOfStep[n] = "";
         }
     }
@@ -305,7 +389,8 @@ $(document).ready(function () {
             "<button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='glyphicon glyphicon-plus-sign'></span> <span class='button-text'>Elementos</span> <span class='caret'></span></button>" +
             "<ul class='dropdown-menu'>" +
             "<li><button id='break-" + breakNumber + "-question-btn' class='btn btn-block btn-transparent' type='button' onclick='addQuestion(" + breakNumber + ")'><span class='glyphicon glyphicon-pencil'></span> Questão</button></li>" +
-            "<li><button id='break-" + breakNumber + "-scale-btn' class='btn btn-block btn-transparent' type='button' onclick='addSAMScale(" + breakNumber + ")'><span class='glyphicon glyphicon-record'></span> Escalas</button></li>" +
+            "<li><button id='break-" + breakNumber + "-scale-btn' class='btn btn-block btn-transparent' type='button' onclick='addSAMScale(" + breakNumber + ")'><span class='glyphicon glyphicon-record'></span> Escala SAM</button></li>" +
+            "<li><button id='break-" + breakNumber + "-scale-likert-btn' class='btn btn-block btn-transparent' type='button' onclick='addLikertScale(" + breakNumber + ")'><span class='glyphicon glyphicon-record'></span> Escala Likert</button></li>" +
             "<li><button id='break-" + breakNumber + "-image-btn' class='btn btn-block btn-transparent' type='button' onclick='addStimulusMultiple(" + breakNumber + ")'><span class='glyphicon glyphicon-picture'></span> Imagens</button></li>" +
             "<li><button id='break-" + breakNumber + "-video-btn' class='btn btn-block btn-transparent' type='button' onclick='addStimulusVideo(" + breakNumber + ")'><span class='glyphicon glyphicon-film'></span> Vídeos</button></li>" +
             "<li class='divider'></li>" +
@@ -330,41 +415,42 @@ function verifyStringFields() {
     var errors = [];
 
     // Verify if the form has elements
+
     if ($('#content-added-by-user').children().length < 1) {
-        errors.push("Tem de incluir elementos no seu questionário.");
+        errors.push("Questionário sem elementos.");
     }
 
     // Verify title of form
     var fName = $('#form-name').val();
 
     if (fName.search('\"') > -1 || fName.search('\'') > -1 || fName.search(new RegExp("\\\\", 'g')) > -1) {
-        errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) no campo <b>Nome do questionário</b>");
+        errors.push("Caracteres inválidos (aspas, pelicas ou barras) no campo <b>Nome do questionário</b>.");
     }
 
     if (fName == "") {
-        errors.push("Preencha o campo <b>Nome do questionário</b>.");
+        errors.push("<b>Nome do questionário</b> sem preencher.");
     }
 
     if (fName.length > 100) {
-        errors.push("O campo <b>Nome do questionário</b> não pode ter mais de 100 caracteres.");
+        errors.push("<b>Nome do questionário</b> com mais de 100 caracteres.");
     }
 
     // Verify description of form
     var fDescription = $('#form-description').val();
 
     if (fDescription.search('\"') > -1 || fDescription.search('\'') > -1 || fDescription.search(new RegExp("\\\\", 'g')) > -1) {
-        errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) no campo <b>Descrição do questionário</b>");
+        errors.push("Caracteres inválidos (aspas, pelicas ou barras) no campo <b>Descrição do questionário</b>.");
     }
 
     if (fDescription == "") {
-        errors.push("Preencha o campo <b>Descrição do questionário</b>.");
+        errors.push("<b>Descrição do questionário</b> sem preencher.");
     }
 
     // Verify style of form
     var formColor = $('input[name=optradio]:checked', '#form-questionnaire').val();
 
     if (formColor == undefined) {
-        errors.push("Escolha a cor do fundo no campo <b>Estilo do questionário</b>.");
+        errors.push("Cor do fundo no campo <b>Estilo do questionário</b> por escolher.");
     }
 
     for (i = 1; i <= breakNumber; i++) {
@@ -373,17 +459,17 @@ function verifyStringFields() {
         if (document.getElementById(breakDiv) != null) {
             // Verify if step has elements
             if ($('#' + breakDiv).children().length == 0) {
-                errors.push("Insira elementos na <b>Tarefa " + i + "</b>, ou então apague-a.");
+                errors.push("<b>Tarefa " + i + "</b> sem elementos.");
             }
 
             // Verify name of step
             var nPasso = $('#' + breakDiv + '-name').val();
 
             if (nPasso.search('\"') > -1 || nPasso.search('\'') > -1 || nPasso.search(new RegExp("\\\\", 'g')) > -1) {
-                errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no nome da Tarefa.");
+                errors.push("Caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b>, no nome da Tarefa.");
             }
             if (nPasso.search('Dados demográficos') > -1 && i > 1) {
-                errors.push("Não pode dar o nome \"Dados demográficos\" à <b>Tarefa " + i + "</b>.");
+                errors.push("Nome da <b>Tarefa " + i + "</b> inválido.");
             }
 
             // Verify description of step
@@ -391,38 +477,150 @@ function verifyStringFields() {
                 var dPasso = $('#' + breakDiv).find('#fixed-description').val();
 
                 if (dPasso.search('\"') > -1 || dPasso.search('\'') > -1 || dPasso.search(new RegExp("\\\\", 'g')) > -1) {
-                    errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no campo <b>Instruções</b>.");
+                    errors.push("Caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b>, no Campo de Instrução.");
                 }
                 if (dPasso == "") {
-                    errors.push("Preencha o campo <b>Instruções</b> na <b>Tarefa " + i + "</b>.");
+                    errors.push("Campo de instrução na <b>Tarefa " + i + "</b> por preencher.");
                 }
             }
 
             // Verify question fields
             if (document.getElementById(breakDiv) != null) {
-                var breakChildren = document.getElementById(breakDiv).children;
-                for (var j = 0; j < breakChildren.length; j++) {
-                    if (breakChildren[j].getAttribute('id') != null) {
-                        if (breakChildren[j].getAttribute('id').includes("question")) {
-                            var elem = "#" + breakChildren[j].getAttribute('id');
-                            var fQuestion = $("#" + breakDiv).find(elem).val();
+                for (var quest = 0; quest < x; quest++) {
 
-                            if (fQuestion.search('\"') > -1 || fQuestion.search('\'') > -1 || fQuestion.search(new RegExp("\\\\", 'g')) > -1) {
-                                errors.push("Foram detetados caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no campo <b>Questão proposta</b>")
-                            }
-
-                            if (fQuestion == "") {
-                                errors.push("Preencha o campo <b>Questão proposta</b> na <b>Tarefa " + i + "</b>.");
-                            }
+                    if ($("#question-" + i + "-" + quest).length) {
+                        var question = $("#question-" + i + "-" + quest).val();
+                        if (question.search('\"') > -1 || question.search('\'') > -1 || question.search(new RegExp("\\\\", 'g')) > -1) {
+                            errors.push("Caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no Campo de questão.");
                         }
+                        if (question == "") {
+                            errors.push("Campo de questão na <b>Tarefa " + i + "</b> por preencher.");
+                        }
+                    }
+
+                }
+            }
+
+            // Verify time set for images
+            if (document.getElementById(breakDiv) != null) {
+
+                if ($('#form-stimulus-time-' + i).length) {
+                    var stimulusTime = $('#form-stimulus-time-' + i).val();
+
+                    if (stimulusTime.match(/^\d+$/)) {
+                        //valid integer)
+                    }
+                    else if (stimulusTime == "") {
+                        errors.push("Tempo de apresentação das imagens na <b>Tarefa " + i + "</b> por preencher.");
+                    }
+                    else {
+                        errors.push("Tempo de apresentação das imagens na <b>Tarefa " + i + "</b> incorreto.");
+                    }
+                }
+
+            }
+
+            // Verify if images were loaded
+            if (document.getElementById(breakDiv) != null) {
+
+                if ($('#form-stimulus-time-' + i).length) { // if it is an image field, it has to have a time field too
+                    var imagesLoaded = false;
+
+                    for (var mi = 0; mi < multipleImages.length; mi++) {
+                        if (multipleImages[mi] != undefined && multipleImages[mi][0] == i) {
+                            imagesLoaded = true;
+                            break;
+                        }
+                    }
+
+                    if (!imagesLoaded) {
+                        errors.push("Não foram carregadas imagens na <b>Tarefa " + i + "</b>.");
+                    }
+
+                }
+
+            }
+
+            // Verify if videos were loaded
+            if (document.getElementById(breakDiv) != null) {
+
+                if ($('#vidDivField-' + i).length) {
+
+                    var videosLoaded = false;
+
+                    for (var mi = 0; mi < multipleVideos.length; mi++) {
+                        if (multipleVideos[mi] != undefined && multipleVideos[mi][0] == i) {
+                            videosLoaded = true;
+                            break;
+                        }
+                    }
+
+                    if (!videosLoaded) {
+                        errors.push("Não foram carregados vídeos na <b>Tarefa " + i + "</b>.");
+                    }
+
+                }
+
+            }
+
+            // Verify likert question fields
+            if (document.getElementById(breakDiv) != null) {
+
+                if ($("#likDivField-" + i).length > 0) {
+                    var nLikertQuestionsInDiv = 0;
+
+                    for (var questLik = 0; questLik < nQuestionLikert; questLik++) {
+                        if ($("#likert-" + i + "-" + questLik).length) {
+
+                            var likQuestion = $("#likert-" + i + "-" + questLik).text();
+
+                            if (likQuestion == "" || likQuestion == null) {
+                                errors.push("Questões vazias com a Escala de <i>Likert</i> na <b>Tarefa " + i + "</b>.");
+                            } else {
+                                if (likQuestion.search('\"') > -1 || likQuestion.search('\'') > -1 || likQuestion.search(new RegExp("\\\\", 'g')) > -1) {
+                                    errors.push("Caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b> no campo de questões a apresentar com a Escala de <i>Likert</i> na <b>Tarefa " + i + "</b>..");
+                                }
+                            }
+
+                            nLikertQuestionsInDiv++;
+
+                        }
+                    }
+
+                    if (nLikertQuestionsInDiv == 0) {
+                        errors.push("Nenhuma questão a apresentar com a Escala de <i>Likert</i> na <b>Tarefa " + i + "</b>.");
+                    }
+
+                    var likertPointValue = $('input[name=optLikertradio]:checked', '#likertRadios-' + i).val();
+                    if (likertPointValue == undefined) {
+                        errors.push("Nenhum tamanho de Escala de <i>Likert</i> selecionado na <b>Tarefa " + i + "</b>.");
+                    }
+                }
+
+            }
+
+            // Verify sam scale field
+            if (document.getElementById(breakDiv) != null) {
+                if ($('#' + breakDiv).find("#form-sam-scales").length > 0) {
+                    var selectedSAMScales = [];
+
+                    $('#' + breakDiv).find('#form-sam-scales input[type="checkbox"]').each(function () {
+                        if ($(this).is(":checked")) {
+                            selectedSAMScales.push($(this).prop("value"));
+                        }
+                    });
+
+                    if (selectedSAMScales.length == 0) {
+                        errors.push("Nenhuma dimensão da Escala SAM selecionado na <b>Tarefa " + i + "</b>.");
                     }
                 }
             }
+
         }
     }
 
 
-    var stringErrors = "Por favor corrija os seguintes erros:<br/><ul>";
+    var stringErrors = "Foram detetados os erros seguintes:<br/><ul>";
     if (errors.length == 0) { // if there are no errors
         return true;
     } else { // display all the errors
@@ -432,7 +630,7 @@ function verifyStringFields() {
             //toastr.warning(errors[i]);
         }
         stringErrors += "</ul>";
-        toastr.warning(stringErrors);
+        toastr.error(stringErrors);
         return false;
     }
 }
@@ -505,33 +703,36 @@ function sendToJSON() {
                         }
 
                         // Adds questions to JSON
-                        var breakChildren = document.getElementById(breakDiv).children;
-                        var questionsInBreak = [];
+                        var listOfQuestions = [];
 
-                        for (j = 0; j < breakChildren.length; j++) {
-                            if (breakChildren[j].getAttribute('id') != null) {
-                                if (breakChildren[j].getAttribute('id').includes("question")) {
-                                    var elem = "#" + breakChildren[j].getAttribute('id');
-                                    var formQuestion = $("#" + breakDiv).find(elem).val();
-                                    questionsInBreak.push(formQuestion);
-                                }
+                        for (var quest = 0; quest < x; quest++) {
+                            if ($("#question-" + i + "-" + quest).length) {
+                                listOfQuestions.push($("#question-" + i + "-" + quest).val());
                             }
                         }
 
-                        if (questionsInBreak.length > 0) {
-                            configPasso.questoes = questionsInBreak;
+                        if (listOfQuestions.length > 0) {
+                            configPasso.questoes = listOfQuestions;
                             //console.log("questoes: " + configPasso.questoes);
                         }
 
                         // Adds selected SAM scales to JSON
                         var selectedSAMScales = [];
-                        $('#' + breakDiv).find('#form-sam-scales input[type="checkbox"]').each(function () {
-                            if ($(this).is(":checked")) {
-                                selectedSAMScales.push($(this).prop("value"));
-                            }
-                        });
-                        configPasso.escalasSAM = selectedSAMScales;
-                        //console.log("escalasSAM: " + configPasso.escalasSAM);
+                        if ($('#' + breakDiv).find("#form-sam-scales").length > 0) {
+
+
+                            $('#' + breakDiv).find('#form-sam-scales input[type="checkbox"]').each(function () {
+                                if ($(this).is(":checked")) {
+                                    selectedSAMScales.push($(this).prop("value"));
+                                }
+                            });
+
+                        }
+
+                        if (selectedSAMScales.length > 0) {
+                            configPasso.escalasSAM = selectedSAMScales;
+                            //console.log("escalasSAM: " + configPasso.escalasSAM);
+                        }
 
                         // Adds video stimulus to JSON
                         // Video stimulus name
@@ -543,6 +744,22 @@ function sendToJSON() {
                             var res = multipleVideos[o][1].split("?");
                             configPasso.fonteEstimuloVideo = res[0];
                             //console.log("fonteEstimuloVideo: " + configPasso.fonteEstimuloVideo);
+                        }
+
+                        // Adds Likert Scale questions to JSON
+                        var likertPointValue = $('input[name=optLikertradio]:checked', '#likertRadios-' + i).val();
+                        configPasso.nPontosLikert = likertPointValue;
+
+                        var listOfLikertQuestions = [];
+
+                        for (var likQuest = 0; likQuest < nQuestionLikert; likQuest++) {
+                            if ($("#likert-" + i + "-" + likQuest).length) {
+                                listOfLikertQuestions.push($("#likert-" + i + "-" + likQuest).text());
+                            }
+                        }
+
+                        if (listOfLikertQuestions.length > 0) {
+                            configPasso.questoesLikert = listOfLikertQuestions;
                         }
 
                         auxPassos.push(configPasso);
@@ -584,33 +801,36 @@ function sendToJSON() {
                         }
 
                         // Adds questions to JSON
-                        var breakChildren = document.getElementById(breakDiv).children;
-                        var questionsInBreak = [];
+                        var listOfQuestions = [];
 
-                        for (j = 0; j < breakChildren.length; j++) {
-                            if (breakChildren[j].getAttribute('id') != null) {
-                                if (breakChildren[j].getAttribute('id').includes("question")) {
-                                    var elem = "#" + breakChildren[j].getAttribute('id');
-                                    var formQuestion = $("#" + breakDiv).find(elem).val();
-                                    questionsInBreak.push(formQuestion);
-                                }
+                        for (var quest = 0; quest < x; quest++) {
+                            if ($("#question-" + i + "-" + quest).length) {
+                                listOfQuestions.push($("#question-" + i + "-" + quest).val());
                             }
                         }
 
-                        if (questionsInBreak.length > 0) {
-                            configPasso.questoes = questionsInBreak;
+                        if (listOfQuestions.length > 0) {
+                            configPasso.questoes = listOfQuestions;
                             //console.log("questoes: " + configPasso.questoes);
                         }
 
                         // Adds selected SAM scales to JSON
                         var selectedSAMScales = [];
-                        $('#' + breakDiv).find('#form-sam-scales input[type="checkbox"]').each(function () {
-                            if ($(this).is(":checked")) {
-                                selectedSAMScales.push($(this).prop("value"));
-                            }
-                        });
-                        configPasso.escalasSAM = selectedSAMScales;
-                        //console.log("escalasSAM: " + configPasso.escalasSAM);
+                        if ($('#' + breakDiv).find("#form-sam-scales").length > 0) {
+
+
+                            $('#' + breakDiv).find('#form-sam-scales input[type="checkbox"]').each(function () {
+                                if ($(this).is(":checked")) {
+                                    selectedSAMScales.push($(this).prop("value"));
+                                }
+                            });
+
+                        }
+
+                        if (selectedSAMScales.length > 0) {
+                            configPasso.escalasSAM = selectedSAMScales;
+                            //console.log("escalasSAM: " + configPasso.escalasSAM);
+                        }
 
                         // Image stimulus name and extension
                         configPasso.nomeDoEstimulo = multipleImages[o][2];
@@ -620,8 +840,24 @@ function sendToJSON() {
                         configPasso.fonteEstimulo = multipleImages[o][1];
 
                         // Image stimulus time
-                        configPasso.tempoEstimulo = $('#' + breakDiv).find('#form-stimulus-time').val();
+                        configPasso.tempoEstimulo = $('#form-stimulus-time-' + i).val();
                         //console.log("tempoEstimulo: " + configPasso.tempoEstimulo);
+
+                        // Adds Likert Scale questions to JSON
+                        var likertPointValue = $('input[name=optLikertradio]:checked', '#likertRadios-' + i).val();
+                        configPasso.nPontosLikert = likertPointValue;
+
+                        var listOfLikertQuestions = [];
+
+                        for (var likQuest = 0; likQuest < nQuestionLikert; likQuest++) {
+                            if ($("#likert-" + i + "-" + likQuest).length) {
+                                listOfLikertQuestions.push($("#likert-" + i + "-" + likQuest).text());
+                            }
+                        }
+
+                        if (listOfLikertQuestions.length > 0) {
+                            configPasso.questoesLikert = listOfLikertQuestions;
+                        }
 
                         auxPassos.push(configPasso);
                     }
@@ -666,22 +902,33 @@ function sendToJSON() {
                 }
 
                 // Adds questions to JSON
-                var breakChildren = document.getElementById(breakDiv).children;
-                var questionsInBreak = [];
+                var listOfQuestions = [];
 
-                for (j = 0; j < breakChildren.length; j++) {
-                    if (breakChildren[j].getAttribute('id') != null) {
-                        if (breakChildren[j].getAttribute('id').includes("question")) {
-                            var elem = "#" + breakChildren[j].getAttribute('id');
-                            var formQuestion = $("#" + breakDiv).find(elem).val();
-                            questionsInBreak.push(formQuestion);
-                        }
+                for (var quest = 0; quest < x; quest++) {
+                    if ($("#question-" + i + "-" + quest).length) {
+                        listOfQuestions.push($("#question-" + i + "-" + quest).val());
                     }
                 }
 
-                if (questionsInBreak.length > 0) {
-                    configPasso.questoes = questionsInBreak;
+                if (listOfQuestions.length > 0) {
+                    configPasso.questoes = listOfQuestions;
                     //console.log("questoes: " + configPasso.questoes);
+                }
+
+                // Adds Likert Scale questions to JSON
+                var likertPointValue = $('input[name=optLikertradio]:checked', '#likertRadios-' + i).val();
+                configPasso.nPontosLikert = likertPointValue;
+
+                var listOfLikertQuestions = [];
+
+                for (var likQuest = 0; likQuest < nQuestionLikert; likQuest++) {
+                    if ($("#likert-" + i + "-" + likQuest).length) {
+                        listOfLikertQuestions.push($("#likert-" + i + "-" + likQuest).text());
+                    }
+                }
+
+                if (listOfLikertQuestions.length > 0) {
+                    configPasso.questoesLikert = listOfLikertQuestions;
                 }
 
                 auxPassos.push(configPasso);
@@ -701,7 +948,6 @@ function sendToJSON() {
         imgThumbnail = defaultThumbnail;
     }
 
-    console.log(JSON.stringify(studyConfig));
     return JSON.stringify(studyConfig);
 }
 
@@ -724,26 +970,6 @@ function saveThumbnail() {
         document.querySelector('#previous-thumbnail').innerHTML = "";
     }
 }
-
-/**
- * NOT BEING USED
- * Converts a file to base 64 format.
- * @param n number of the step
- */
-/*
- function getBase64(n) {
- var file = document.querySelector('#break-' + n + ' input[type=file]').files[0];
-
- if (file != null) {
- var reader = new FileReader();
- reader.onload = function (e) {
- images[n] = reader.result;
- }
- }
- reader.readAsDataURL(file);
- toastr.success('O estímulo selecionado foi carregado.');
- }
- */
 
 /**
  * Gets file names when files are selected to upload.
@@ -811,17 +1037,6 @@ function getBase64Multiple(n) {
 
     for (var x = 0; x < document.querySelector('#break-' + n + ' input[type=file]').files.length; x++) {
 
-        // If only one file was uploaded, let's the step be fixed. Else, does not.
-        /*
-        if (document.querySelector('#break-' + n + ' input[type=file]').files.length > 1) {
-            $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
-            $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", true);
-        } else {
-            $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
-            $("#" + breakDiv + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", false);
-        }
-        */
-
         file = document.querySelector('#break-' + n + ' input[type=file]').files[x];
 
         loadImage(file, n);
@@ -879,39 +1094,39 @@ function getOrderedDivs() {
  * Submits the created form in the database.
  */
 function submitForm() {
+
     var res = verifyStringFields();
 
     if (res == true) {
-        /*
-         }
-         $('#modal-for-saves').modal({
-         backdrop: 'static',
-         keyboard: false
-         });
-         $('#modal-for-saves').modal('show');
-         */
+
+        $('#modal-for-saves').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#modal-for-saves').modal('show');
+
         var configuration = sendToJSON();
 
-        /*
-         $.ajax({
-         url: urlToPost,
-         type: 'POST',
-         data: {
-         idForm: formID,
-         formName: formName,
-         formConfig: configuration,
-         formThumbnail: imgThumbnail,
-         csrfmiddlewaretoken: csrfToken
-         },
-         success: function () {
-         window.location.href = onSuccess;   // redirects to home
-         },
-         error: function () {
-         toastr.error('Ocorreu um erro na gravação do questionário.');
-         $('#modal-for-saves').modal('hide');
-         }
-         });
-         */
+
+        $.ajax({
+            url: urlToPost,
+            type: 'POST',
+            data: {
+                idForm: formID,
+                formName: formName,
+                formConfig: configuration,
+                formThumbnail: imgThumbnail,
+                csrfmiddlewaretoken: csrfToken
+            },
+            success: function () {
+                window.location.href = onSuccess;   // redirects to home
+            },
+            error: function () {
+                toastr.error('Ocorreu um erro na gravação do questionário.');
+                $('#modal-for-saves').modal('hide');
+            }
+        });
+
     }
 
 }
@@ -944,7 +1159,7 @@ function visualization() {
             },
             error: function () {
                 $('#modal-for-visualization').modal('hide');
-                toastr.error('Não é possível gerar uma pré-visualização do questionário.');
+                toastr.error('Não foi possível gerar uma pré-visualização do questionário.');
             }
         });
     }

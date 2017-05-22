@@ -62,9 +62,9 @@
 
         <div class="col-sm-3">
 
-            <div class="panel panel-default">
-                <div class="panel-heading" style="text-align: center"><strong><i class="fa fa-bar-chart"></i> Lista de
-                    Gráficos</strong></div>
+            <div class="panel panel-default" id="sam-scales" style="display: none">
+                <div class="panel-heading" style="text-align: center"><strong><i class="fa fa-bar-chart"></i> Gráficos
+                    Escala SAM</strong></div>
                 <div class="panel-body">
                     <button id="btn-box-plot" type="button" class="btn btn-default btn-block" onclick="showBoxPlots()">
                         Box Plots
@@ -74,6 +74,22 @@
                     </button>
 
                     <button type="button" class="btn btn-default btn-block" onclick="showAverages()">Gráficos de Média
+                    </button>
+
+                </div>
+            </div>
+
+            <div class="panel panel-default" id="likert-scales" style="display: none">
+                <div class="panel-heading" style="text-align: center"><strong><i class="fa fa-bar-chart"></i> Gráficos
+                    <i>Likert</i></strong></div>
+                <div class="panel-body">
+
+                    <button type="button" class="btn btn-default btn-block" onclick="showStimulusLikertAssociated()">
+                        Histogramas Associados
+                    </button>
+
+                    <button type="button" class="btn btn-default btn-block" onclick="showStimulusLikertAlone()">
+                        Histogramas Isolados
                     </button>
 
                 </div>
@@ -145,14 +161,25 @@
 
             </div> <!-- ./stimulus-list -->
 
-            <div id="histogram-graphics" style="display: none"> <!-- Histogram Graphics -->
+            <div id="histogram-graphics" style="display: none"><!-- Histogram Graphics --></div>
 
-            </div>
+            <div id="histogram-likert-alone" style="display: none"><p align="center" style="font-size: 20px">Escalas de
+                <i>Likert</i> Isoladas</p></div>
 
-        </div> <!-- ./col-sm-10 -->
+            <div id="histogram-likert-associated" style="display: none">
+                <p align="center" style="font-size: 20px">Escalas de <i>Likert</i> Associadas a Estímulos</p>
+                <p><b>Lista de Estímulos:</b></p>
+                <div id="list-of-stimulus-5-points" class='button-wrapper'>
+                </div>
+                <div id="list-of-stimulus-7-points" class='button-wrapper'>
+                </div>
+                <div id="list-of-graphs-5-points"></div>
+                <div id="list-of-graphs-7-points"></div>
 
-    </div> <!-- ./row -->
-</div> <!-- ./container -->
+            </div> <!-- ./col-sm-10 -->
+
+        </div> <!-- ./row -->
+    </div> <!-- ./container -->
 
 </body>
 </html>
@@ -162,7 +189,6 @@
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'js/toastr.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/form_dashboard.js' %}"></script>
 <script src="{% static 'js/Chart.min.js' %}"></script>
 <script src="{% static 'js/highcharts.js' %}"></script>
 <script src="{% static 'js/highcharts-more.js' %}"></script>
@@ -170,6 +196,15 @@
 <script src="https://smtpjs.com/smtp.js"></script>
 
 <script>
+
+    var listOfStimulusNames = {{listOfStimulusNames | safe}};
+    var stimulusListValence = {{stimulusListValence | safe}};
+    var stimulusListArousal = {{stimulusListArousal | safe}};
+    var stimulusListDominance = {{stimulusListDominance | safe}};
+    var stimulusListValenceHistogram = {{stimulusListValenceHistogram | safe}};
+    var stimulusListArousalHistogram = {{stimulusListArousalHistogram | safe}};
+    var stimulusListDominanceHistogram = {{stimulusListDominanceHistogram | safe}};
+    var sumOfLikert = {{sumOfLikert | safe}};
 
     // General configurations for Highcharts
     Highcharts.theme = {
@@ -185,10 +220,18 @@
     $(window).load(function () {
         // Animate loader off screen
         $(".se-pre-con").fadeOut();
-    });
+        if (listOfStimulusNames.length == 0) {
+            $("#sam-scales").hide();
+        } else {
+            $("#sam-scales").show();
+        }
 
-    // Automatically opens the box-plot window
-    document.getElementById("btn-box-plot").click();
+        if (sumOfLikert.length == 0) {
+            $("#likert-scales").hide();
+        } else {
+            $("#likert-scales").show();
+        }
+    });
 
     /**
      * Control what divs are shown when box plots are open.
@@ -198,6 +241,8 @@
         $("#average-graphics").hide();
         $("#stimulus-list").hide();
         $("#histogram-graphics").hide();
+        $("#histogram-likert-alone").hide();
+        $("#histogram-likert-associated").hide();
     }
 
     /**
@@ -208,6 +253,8 @@
         $("#box-plot-graphics").hide();
         $("#stimulus-list").hide();
         $("#histogram-graphics").hide();
+        $("#histogram-likert-alone").hide();
+        $("#histogram-likert-associated").hide();
     }
 
     /**
@@ -217,15 +264,272 @@
         $("#stimulus-list").show();
         $("#average-graphics").hide();
         $("#box-plot-graphics").hide();
+        $("#histogram-likert-alone").hide();
+        $("#histogram-likert-associated").hide();
     }
 
-    var listOfStimulusNames = {{listOfStimulusNames | safe}};
-    var stimulusListValence = {{stimulusListValence | safe}};
-    var stimulusListArousal = {{stimulusListArousal | safe}};
-    var stimulusListDominance = {{stimulusListDominance | safe}};
-    var stimulusListValenceHistogram = {{stimulusListValenceHistogram | safe}};
-    var stimulusListArousalHistogram = {{stimulusListArousalHistogram | safe}};
-    var stimulusListDominanceHistogram = {{stimulusListDominanceHistogram | safe}};
+    function showStimulusLikertAlone() {
+        $("#average-graphics").hide();
+        $("#box-plot-graphics").hide();
+        $("#stimulus-list").hide();
+        $("#histogram-graphics").hide();
+        $("#histogram-likert-alone").show();
+        $("#histogram-likert-associated").hide();
+    }
+
+    function showStimulusLikertAssociated() {
+        $("#average-graphics").hide();
+        $("#box-plot-graphics").hide();
+        $("#stimulus-list").hide();
+        $("#histogram-graphics").hide();
+        $("#histogram-likert-alone").hide();
+        $("#histogram-likert-associated").show();
+    }
+
+    // 5 Point Likert associated to stimulus
+    var likertAssociated5PtsArray = [];
+
+    if (sumOfLikert.likertAssociated5Pts != undefined) {
+        var k = 0;
+        sumOfLikert.likertAssociated5Pts.estimulos.forEach(function (entry) {
+            var nome_estimulo = entry.nome;
+            likertAssociated5PtsArray.push(nome_estimulo);
+            $("#list-of-stimulus-5-points").append('<button type="button" class="btn" onclick="showHistogram5Points(' + k + ')">' + nome_estimulo + '</button> ');
+            k++;
+        });
+
+    }
+
+    function showHistogram5Points(index) {
+        var labelsFor5Points = sumOfLikert.likertAssociated5Pts.labels;
+
+        sumOfLikert.likertAssociated5Pts.estimulos.forEach(function (entry) {
+            var nome_estimulo = entry.nome;
+
+            if (nome_estimulo == likertAssociated5PtsArray[index]) {
+                var li = 0;
+
+                $('#list-of-graphs-5-points').empty();
+                $('#list-of-graphs-7-points').empty();
+                entry.questoes.forEach(function (questao) {
+                    var nome_questao = questao.nome;
+                    var dados_questao = questao.dados;
+
+                    $('#list-of-graphs-5-points').append('<div id="histogram-likert-associated-5-' + li + '" class="well"><p align="center" style="font-size: 20px">' + nome_questao + '</p><p align="center" style="font-size: 12px">' + nome_estimulo + '</p><canvas id="histogramLikertAssociated5-' + li + '-Chart"></canvas></div>');
+                    var histogramLikertAssociated5PointData = {
+                        labels: labelsFor5Points,
+                        datasets: [
+                            {
+                                label: "Frequência",
+                                backgroundColor: '#4f372d',
+                                borderColor: '#4f372d',
+                                data: dados_questao
+                            }
+                        ]
+                    };
+                    var ctxLikertAssociated5PointDataHistogram = document.getElementById("histogramLikertAssociated5-" + li + "-Chart").getContext("2d");
+                    var histogramLikertAssociated5PointChart = new Chart(ctxLikertAssociated5PointDataHistogram, {
+                        type: 'bar',
+                        data: histogramLikertAssociated5PointData,
+                        options: {
+                            responsive: true,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }],
+                                xAxes: [{
+                                    categoryPercentage: 1.0,
+                                    barPercentage: 1.0
+                                }]
+                            }
+                        }
+                    });
+
+                    li++;
+                });
+            }
+        });
+
+    }
+    // End of 5 Point Likert associated to stimulus
+
+    // 7 Point Likert associated to stimulus
+    var likertAssociated7PtsArray = [];
+
+    if (sumOfLikert.likertAssociated7Pts != undefined) {
+        var k = 0;
+        sumOfLikert.likertAssociated7Pts.estimulos.forEach(function (entry) {
+            var nome_estimulo = entry.nome;
+            likertAssociated7PtsArray.push(nome_estimulo);
+            $("#list-of-stimulus-7-points").append('<button type="button" class="btn" onclick="showHistogram7Points(' + k + ')">' + nome_estimulo + '</button> ');
+            k++;
+        });
+
+    }
+
+    function showHistogram7Points(index) {
+        var labelsFor7Points = sumOfLikert.likertAssociated7Pts.labels;
+
+        sumOfLikert.likertAssociated7Pts.estimulos.forEach(function (entry) {
+            var nome_estimulo = entry.nome;
+
+            if (nome_estimulo == likertAssociated7PtsArray[index]) {
+                var li = 0;
+
+                $('#list-of-graphs-7-points').empty();
+                $('#list-of-graphs-5-points').empty();
+                entry.questoes.forEach(function (questao) {
+                    var nome_questao = questao.nome;
+                    var dados_questao = questao.dados;
+
+                    console.log(nome_questao);
+                    console.log(dados_questao);
+
+                    $('#list-of-graphs-7-points').append('<div id="histogram-likert-associated-7-' + li + '" class="well"><p align="center" style="font-size: 20px">' + nome_questao + '</p><p align="center" style="font-size: 12px">' + nome_estimulo + '</p><canvas id="histogramLikertAssociated7-' + li + '-Chart"></canvas></div>');
+                    var histogramLikertAssociated7PointData = {
+                        labels: labelsFor7Points,
+                        datasets: [
+                            {
+                                label: "Frequência",
+                                backgroundColor: '#4f372d',
+                                borderColor: '#4f372d',
+                                data: dados_questao
+                            }
+                        ]
+                    };
+                    var ctxLikertAssociated7PointDataHistogram = document.getElementById("histogramLikertAssociated7-" + li + "-Chart").getContext("2d");
+                    var histogramLikertAssociated7PointChart = new Chart(ctxLikertAssociated7PointDataHistogram, {
+                        type: 'bar',
+                        data: histogramLikertAssociated7PointData,
+                        options: {
+                            responsive: true,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }],
+                                xAxes: [{
+                                    categoryPercentage: 1.0,
+                                    barPercentage: 1.0
+                                }]
+                            }
+                        }
+                    });
+
+                    li++;
+                });
+            }
+        });
+
+    }
+    // End of 7 Point Likert associated to stimulus
+
+    // 5 Point Likert without stimulus
+    if (sumOfLikert.likertAlone5Pts != undefined) {
+        $('#histogram-likert-alone-5').remove();
+
+        var labelsFor5Points = sumOfLikert.likertAlone5Pts.labels;
+
+        var li = 0;
+        //por questao:
+        sumOfLikert.likertAlone5Pts.questoes.forEach(function (questao) {
+            var nome_questao = questao.nome;
+            var dados_questao = questao.dados;
+
+            $('#histogram-likert-alone').append('<div id="histogram-likert-alone-5" class="well"><p align="center" style="font-size: 20px">' + nome_questao + '</p><canvas id="histogramLikertAlone5-' + li + '-Chart"></canvas></div>');
+
+            var histogramLikertAlone5PointData = {
+                labels: labelsFor5Points,
+                datasets: [
+                    {
+                        label: "Frequência",
+                        backgroundColor: '#4f372d',
+                        borderColor: '#4f372d',
+                        data: dados_questao
+                    }
+                ]
+            };
+
+            var ctxLikertAlone5PointDataHistogram = document.getElementById("histogramLikertAlone5-" + li + "-Chart").getContext("2d");
+            var histogramLikertAlone5PointChart = new Chart(ctxLikertAlone5PointDataHistogram, {
+                type: 'bar',
+                data: histogramLikertAlone5PointData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            categoryPercentage: 1.0,
+                            barPercentage: 1.0
+                        }]
+                    }
+                }
+            });
+
+            li++;
+
+        });
+    }
+    // End of 5 Point Likert without stimulus
+
+    // 7 Point Likert without stimulus
+    if (sumOfLikert.likertAlone7Pts != undefined) {
+        $('#histogram-likert-alone-7').remove();
+
+        var labelsFor7Points = sumOfLikert.likertAlone7Pts.labels;
+
+        var li = 0;
+        //por questao:
+        sumOfLikert.likertAlone7Pts.questoes.forEach(function (questao) {
+            var nome_questao = questao.nome;
+            var dados_questao = questao.dados;
+
+            $('#histogram-likert-alone').append('<div id="histogram-likert-alone-7" class="well"><p align="center" style="font-size: 20px">' + nome_questao + '</p><canvas id="histogramLikertAlone7-' + li + '-Chart"></canvas></div>');
+
+            var histogramLikertAlone7PointData = {
+                labels: labelsFor7Points,
+                datasets: [
+                    {
+                        label: "Frequência",
+                        backgroundColor: '#4f372d',
+                        borderColor: '#4f372d',
+                        data: dados_questao
+                    }
+                ]
+            };
+
+            var ctxLikertAlone7PointDataHistogram = document.getElementById("histogramLikertAlone7-" + li + "-Chart").getContext("2d");
+            var histogramLikertAlone7PointChart = new Chart(ctxLikertAlone7PointDataHistogram, {
+                type: 'bar',
+                data: histogramLikertAlone7PointData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            categoryPercentage: 1.0,
+                            barPercentage: 1.0
+                        }]
+                    }
+                }
+            });
+
+            li++;
+
+        });
+    }
+    // End of 7 Point Likert without stimulus
 
     // Histogram
     var stimulusNameValence = [];
@@ -259,7 +563,7 @@
 
         if (iValence > -1) {
             $('#histogram-v-c').remove();
-            $('#histogram-graphics').append('<div id="histogram-v-c" class="well"><p align="center" style="font-size: 20px">Valência Afetiva</p><canvas id="histogramValenceChart"></canvas></div>');
+            $('#histogram-graphics').append('<div id="histogram-v-c" class="well"><p align="center" style="font-size: 20px">Valência Afetiva</p><p align="center" style="font-size: 12px">' + stimulusName + '</p><canvas id="histogramValenceChart"></canvas></div>');
 
             var valenceHistogramData = {
                 labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
@@ -296,7 +600,7 @@
 
         if (iArousal > -1) {
             $('#histogram-a-c').remove();
-            $('#histogram-graphics').append('<div id="histogram-a-c" class="well"><p align="center" style="font-size: 20px">Ativação Fisiológica</p><canvas id="histogramArousalChart"></canvas></div>');
+            $('#histogram-graphics').append('<div id="histogram-a-c" class="well"><p align="center" style="font-size: 20px">Ativação Fisiológica</p><p align="center" style="font-size: 12px">' + stimulusName + '</p><canvas id="histogramArousalChart"></canvas></div>');
 
             var arousalHistogramData = {
                 labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
@@ -333,7 +637,7 @@
 
         if (iDominance > -1) {
             $('#histogram-d-c').remove();
-            $('#histogram-graphics').append('<div id="histogram-d-c" class="well"><p align="center" style="font-size: 20px">Dominância</p><canvas id="histogramDominanceChart"></canvas></div>');
+            $('#histogram-graphics').append('<div id="histogram-d-c" class="well"><p align="center" style="font-size: 20px">Dominância</p><p align="center" style="font-size: 12px">' + stimulusName + '</p><canvas id="histogramDominanceChart"></canvas></div>');
 
             var dominanceHistogramData = {
                 labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],

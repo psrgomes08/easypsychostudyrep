@@ -176,3 +176,16 @@
         display: inline-block;
     }
 }
+
+/* Centers table contents */
+.css-table td {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.css-table th {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+}

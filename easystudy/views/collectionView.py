@@ -6,6 +6,7 @@ from django.http import HttpResponseServerError
 from django.contrib.auth.models import User
 import random
 import string
+import pika
 
 try:
     from BytesIO import BytesIO
@@ -20,6 +21,7 @@ except ImportError:
 def id_generator(size=32, chars=string.ascii_uppercase + string.ascii_lowercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+
 # ######################################################################## #
 # For data collection with attributed participantID
 # ######################################################################## #
@@ -29,7 +31,7 @@ class DataCollectionForRemoteView(View):
             selected_form = Form.objects.get(idForm=idForm)
 
             nParticipants = 1
-            while nParticipants != 0: # checks if the generated ID already exists
+            while nParticipants != 0:  # checks if the generated ID already exists
                 idParticipant = id_generator(18)
                 p = ParticipantInForm.objects.filter(idForm=idForm, idParticipant=idParticipant)
                 nParticipants = len(p)
@@ -47,8 +49,10 @@ class DataCollectionForRemoteView(View):
 
             # check if it data collection is open or if the form is not archived
             if selected_form.statusType == 'C' or selected_form.isArchived == 'Y':
-                print("ERROR DataCollectionForParticipantView: Either the data collection is not open or the form " + idForm + " is archived.")
-                return HttpResponseServerError("ERROR: Either the data collection is not open or the form " + idForm + " is archived.")
+                print(
+                    "ERROR DataCollectionForParticipantView: Either the data collection is not open or the form " + idForm + " is archived.")
+                return HttpResponseServerError(
+                    "ERROR: Either the data collection is not open or the form " + idForm + " is archived.")
 
             else:
                 formConfiguration = selected_form.formConfig
@@ -72,7 +76,8 @@ class DataCollectionForRemoteView(View):
         dataCollection = request.POST["dataCollection"]
 
         if ParticipantInForm.objects.filter(idParticipant=idParticipant, idForm=idForm):
-            print("ERROR DataCollectionForParticipantView: There is already a participant with the ID " + idParticipant + " in the data collection.")
+            print(
+                "ERROR DataCollectionForParticipantView: There is already a participant with the ID " + idParticipant + " in the data collection.")
             return HttpResponseServerError(
                 "ERROR: There is already a participant with the ID " + idParticipant + " in the data collection.")
 
@@ -169,7 +174,8 @@ class DataCollectionView(View):
 
         try:
             if ParticipantInForm.objects.filter(idParticipant=idParticipant, idForm=idForm):
-                response = HttpResponseServerError("ERROR DataCollectionView: The collected data could not be submited.")
+                response = HttpResponseServerError(
+                    "ERROR DataCollectionView: The collected data could not be submited.")
             else:
                 p = ParticipantInForm()
                 p.idForm = Form.objects.get(idForm=idForm)
@@ -207,8 +213,7 @@ def checkTokenForParticipant(request):
 # Generates a trial form for the participant.
 # ######################################################################## #
 def getTrialForm(request, idFormTrial):
-
-    if(idFormTrial == "NA"):
+    if (idFormTrial == "NA"):
         print("ERROR getTrialForm: The trial form you tried to open is not configured.")
         return HttpResponseServerError("ERROR getTrialForm: The trial form you tried to open is not configured.")
 
@@ -226,3 +231,31 @@ def getTrialForm(request, idFormTrial):
         except Exception as e:
             print("ERROR getTrialForm: " + str(e))
             return HttpResponseServerError("ERROR: " + str(e))
+
+
+# ######################################################################## #
+# Send a trigger message to the Rabbit mq server.
+# ######################################################################## #
+def sendTriggerToServer(request):
+    message = request.POST.get("message")
+
+    try:
+        url = "amqp://zxxxxysa:h_XxJbSxUCsTe_h9f9DG5JBH6GvZG0Gb@puma.rmq.cloudamqp.com/zxxxxysa"
+        params = pika.URLParameters(url)
+        params.socket_timeout = 5
+
+        connection = pika.BlockingConnection(params)  # Connect to CloudAMQP
+        channel = connection.channel()
+
+        channel.queue_declare(queue='easypsycho')  # Declare a queue if it does not exist. If it exists, this does nothing.
+
+        channel.basic_publish(exchange='', routing_key='easypsycho', body=message)
+        print("SUCCESS: Message sent to consumer -- " + message)
+
+        connection.close()
+
+        return HttpResponse("SUCCES: Message sent to consumer -- " + message)
+
+    except Exception as e:
+        print("ERROR sendTriggerToServer: " + str(e))
+        return HttpResponseServerError("ERROR sendTriggerToServer: " + str(e))

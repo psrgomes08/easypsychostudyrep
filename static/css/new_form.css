@@ -59,23 +59,49 @@
 
 /* Applies a grey style to the button */
 .btn-grey {
-    background-color: rgba(34, 34, 34, 1); /*where 1 stands for 100% opacity*/
-    color: #FFF;
+  color: #ffffff;
+  background-color: #222222;
+  border-color: #222;
 }
 
-.btn-grey:hover {
-    background-color: rgba(34, 34, 34, 0.9); /*where 0.5 stands for 50% opacity*/
-    color: #FFF;
+.btn-grey:hover,
+.btn-grey:focus,
+.btn-grey:active,
+.btn-grey.active,
+.open .dropdown-toggle.btn-grey {
+  color: #ffffff;
+  background-color: #000000;
+  border-color: #222;
 }
 
-.btn-grey:active {
-    background-color: rgba(34, 34, 34, 0.9);
-    color: #FFF;
+.btn-grey:active,
+.btn-grey.active,
+.open .dropdown-toggle.btn-grey {
+  background-image: none;
 }
 
-.btn-grey:visited {
-    background-color: rgba(34, 34, 34, 0.9);
-    color: #FFF;
+.btn-grey.disabled,
+.btn-grey[disabled],
+fieldset[disabled] .btn-grey,
+.btn-grey.disabled:hover,
+.btn-grey[disabled]:hover,
+fieldset[disabled] .btn-grey:hover,
+.btn-grey.disabled:focus,
+.btn-grey[disabled]:focus,
+fieldset[disabled] .btn-grey:focus,
+.btn-grey.disabled:active,
+.btn-grey[disabled]:active,
+fieldset[disabled] .btn-grey:active,
+.btn-grey.disabled.active,
+.btn-grey[disabled].active,
+fieldset[disabled] .btn-grey.active {
+  background-color: #222222;
+  border-color: #222;
+}
+
+.btn-grey .badge {
+  color: #222222;
+  background-color: #ffffff;
 }
 
 /* Transforms the cursor when hover a moving panel */
@@ -88,4 +114,14 @@
     width: 60px !important;
     height: 60px !important;
     font-size: 10px;
+}
+
+/* For description of field inside panel */
+.title-in-well {
+    font-size: 10px;
+}
+
+/* Puts button to the right of the panel */
+.btn-right {
+    float: right;
 }

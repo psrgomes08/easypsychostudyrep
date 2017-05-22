@@ -8,13 +8,13 @@ toastr.options = {
     "debug": false,
     "newestOnTop": false,
     "progressBar": true,
-    "positionClass": "toast-top-center",
-    "preventDuplicates": false,
+    "positionClass": "toast-top-left",
+    "preventDuplicates": true,
     "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
+    "showDuration": "0",
+    "hideDuration": "0",
+    "timeOut": "10000",
+    "extendedTimeOut": "5000",
     "showEasing": "swing",
     "hideEasing": "linear",
     "showMethod": "fadeIn",
@@ -86,8 +86,12 @@ function checkInfoInField(id) {
             nextToDo("video-stimulus-btn");
             break;
 
-        case 3:
+        case 3: // for description
             nextToDo("description-btn");
+            break;
+
+        case 4: // for Likert scale
+            nextToDo("likert-btn");
             break;
     }
 }
@@ -103,16 +107,16 @@ function displaySAMScale(step) {
         '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>' +
         ' <button class="btn btn-md btn-danger" title="Fechar pré-visualização" onclick="closeVisualization()"><span class="glyphicon glyphicon-remove-circle"></span> Fechar</button>';
 
-    var titleValence = '<p><b>Valência Afetiva</b></p>';
-    var titleArousal = '<p><b>Ativação Fisiológica</b></p>';
-    var titleDominance = '<p><b>Dominância</b></p>';
+    var titleValence = '<p>Avalie o estímulo que acabou de visualizar quanto à dimensão de<br/><b>Valência Afetiva</b></p>';
+    var titleArousal = '<p>Avalie o estímulo que acabou de visualizar quanto à dimensão de<br/><b>Ativação Fisiológica</b></p>';
+    var titleDominance = '<p>Avalie o estímulo que acabou de visualizar quanto à dimensão de<br/><b>Dominância</b></p>';
 
     var scale;
 
     for (var i = 0; i < formConfiguration.passos[step - 1].escalasSAM.length; i++) {
         scale = formConfiguration.passos[step - 1].escalasSAM[i];
 
-        var radioValence = '<form id="valenceRadios"><div class="cc-selector">' +
+        var radioValence = '<div class="stop-wrap"><form id="valenceRadios"><div class="cc-selector">' +
             '<input id="valence1" type="radio" name="optradio" value="1" />' +
             '<label class="drinkcard-cc valence1" for="valence1"></label>' +
             '<input id="valence2" type="radio" name="optradio" value="2" />' +
@@ -131,9 +135,9 @@ function displaySAMScale(step) {
             '<label class="drinkcard-cc valence8" for="valence8"></label>' +
             '<input id="valence9" type="radio" name="optradio" value="9" />' +
             '<label class="drinkcard-cc valence9" for="valence9"></label>' +
-            '</div></form>';
+            '</div></form></div><br/><br/>';
 
-        var radioArousal = '<form id="arousalRadios"><div class="cc-selector">' +
+        var radioArousal = '<div class="stop-wrap"><form id="arousalRadios"><div class="cc-selector">' +
             '<input id="arousal1" type="radio" name="optradio" value="1" />' +
             '<label class="drinkcard-cc arousal1" for="arousal1"></label>' +
             '<input id="arousal2" type="radio" name="optradio" value="2" />' +
@@ -152,9 +156,9 @@ function displaySAMScale(step) {
             '<label class="drinkcard-cc arousal8" for="arousal8"></label>' +
             '<input id="arousal9" type="radio" name="optradio" value="9" />' +
             '<label class="drinkcard-cc arousal9" for="arousal9"></label>' +
-            '</div></form>';
+            '</div></form></div><br/><br/>';
 
-        var radioDominance = '<form id="dominanceRadios"><div class="cc-selector">' +
+        var radioDominance = '<div class="stop-wrap"><form id="dominanceRadios"><div class="cc-selector">' +
             '<input id="dominance1" type="radio" name="optradio" value="1" />' +
             '<label class="drinkcard-cc dominance1" for="dominance1"></label>' +
             '<input id="dominance2" type="radio" name="optradio" value="2" />' +
@@ -173,7 +177,7 @@ function displaySAMScale(step) {
             '<label class="drinkcard-cc dominance8" for="dominance8"></label>' +
             '<input id="dominance9" type="radio" name="optradio" value="9" />' +
             '<label class="drinkcard-cc dominance9" for="dominance9"></label>' +
-            '</div></form>';
+            '</div></form></div><br/><br/>';
 
         if (scale == "Valência") {
             document.querySelector('#div-SAMScales').innerHTML += titleValence + radioValence;
@@ -224,6 +228,101 @@ function displayDescription(step) {
     var stepDescription = "<p>" + formatedStepDescription + "</p>";
 
     document.querySelector('#div-description').innerHTML += stepDescription + buttonNext;
+}
+
+/**
+ * Displays a table with likert scale.
+ * @param step Step of the likert scale
+ */
+function displayLikertScale(step) {
+    $("#div-progress").show();
+
+    var buttonNext = '<button id="description-btn" class="btn btn-md btn-success" onclick="checkInfoInField(4)">' +
+        '<span class="glyphicon glyphicon-ok-circle"></span> Seguinte</button>' +
+        ' <button class="btn btn-md btn-danger" title="Fechar pré-visualização" onclick="closeVisualization()"><span class="glyphicon glyphicon-remove-circle"></span> Fechar</button>';
+
+    var nLikertPoints = formConfiguration.passos[step - 1].nPontosLikert;
+
+    switch (nLikertPoints) {
+        case "5Pontos":
+            var likert5Points = ["Discordo<br/>Totalmente", "Discordo<br/>Parcialmente", "Indiferente", "Concordo<br/>Parcialmente", "Concordo<br/>Totalmente"];
+
+            var likert5Table = '<div class="table-responsive"><table class="table table-striped table-condensed css-table">'; // opens the table
+
+            // Appends the head of the table
+            likert5Table += '<thead>' +
+                '<tr>' +
+                '<th></th>' + // the first is empty
+                '<th>' + likert5Points[0] + '</th>' +
+                '<th>' + likert5Points[1] + '</th>' +
+                '<th>' + likert5Points[2] + '</th>' +
+                '<th>' + likert5Points[3] + '</th>' +
+                '<th>' + likert5Points[4] + '</th>' +
+                '</tr>' +
+                '</thead><tbody>';
+
+            var likertQuestionsForTable = formConfiguration.passos[step - 1].questoesLikert;
+
+            for (var l = 0; l < likertQuestionsForTable.length; l++) {
+                likert5Table += '<tr>' +
+                    '<td>' + likertQuestionsForTable[l] + '</td>' +
+                    '<form id="likert-question-' + l + '">' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
+                    '</form>' +
+                    '</tr>';
+            }
+
+            likert5Table += '</tbody></table></div>';
+
+            document.querySelector('#div-likert').innerHTML += likert5Table + buttonNext;
+
+            break;
+        case "7Pontos":
+            var likert7Points = ["Discordo<br/>Totalmente", "Discordo<br/>Moderadamente", "Discordo<br/>Ligeiramente", "Indiferente", "Concordo<br/>Ligeiramente", "Concordo<br/>Moderadamente", "Concordo<br/>Totalmente"];
+
+            var likert7Table = '<div class="table-responsive"><table class="table table-striped table-condensed css-table">'; // opens the table
+
+            // Appends the head of the table
+            likert7Table += '<thead>' +
+                '<tr>' +
+                '<th></th>' + // the first is empty
+                '<th>' + likert7Points[0] + '</th>' +
+                '<th>' + likert7Points[1] + '</th>' +
+                '<th>' + likert7Points[2] + '</th>' +
+                '<th>' + likert7Points[3] + '</th>' +
+                '<th>' + likert7Points[4] + '</th>' +
+                '<th>' + likert7Points[5] + '</th>' +
+                '<th>' + likert7Points[6] + '</th>' +
+                '</tr>' +
+                '</thead><tbody>';
+
+            var likertQuestionsForTable = formConfiguration.passos[step - 1].questoesLikert;
+
+            for (var l = 0; l < likertQuestionsForTable.length; l++) {
+                likert7Table += '<tr>' +
+                    '<td>' + likertQuestionsForTable[l] + '</td>' +
+                    '<form id="likert-question-' + l + '">' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="1" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="2" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="3" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="4" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="5" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="6" /></td>' +
+                    '<td><input type="radio" name="optLikertradio-' + l + '" value="7" /></td>' +
+                    '</form>' +
+                    '</tr>';
+            }
+
+            likert7Table += '</tbody></table></div>';
+
+            document.querySelector('#div-likert').innerHTML += likert7Table + buttonNext;
+
+            break;
+    }
 }
 
 /**
@@ -286,6 +385,65 @@ function nextToDo(id) {
     //var id = event.target.id; // to see which button triggered the function
 
     switch (id) {
+        case "likert-btn": // the trigget came from likert
+            var likertQuestionsForTable = formConfiguration.passos[step - 1].questoesLikert;
+            var likertRespostas = [];
+
+            for (var ql = 0; ql < likertQuestionsForTable.length; ql++) {
+                var qlValue = $("input[name=optLikertradio-" + ql + "]:checked").val();
+                likertRespostas.push(qlValue);
+            }
+
+            passoColheita.colheitaLikert = likertRespostas;
+            //console.log(passoColheita.colheitaLikert);
+
+            date = new Date();
+            passoColheita.timestampLikert = date.getDate() + "/"
+                + (date.getMonth() + 1) + "/"
+                + date.getFullYear() + " "
+                + date.getHours() + ":"
+                + date.getMinutes() + ":"
+                + date.getSeconds() + ":"
+                + date.getMilliseconds(); // collect the timestamp of the stimulus display
+
+            $("#div-likert").empty();
+
+            // Has questions next?
+            if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
+                displayQuestions(step);
+            }
+            // Likert is the last in step
+            else {
+                participantDataCollection.colheita.push(passoColheita); // when the likert is the last in the step
+
+                passoColheita = {};
+
+                currentIndex++;
+                if (currentIndex == newForm.length) { // If there are no more steps
+                    document.querySelector('#div-general-info').innerHTML = endMessage + endButton;
+                    $("#div-progress").hide();
+                } else {
+                    step = newForm[currentIndex];
+
+                    //passoColheita.nPasso = step;
+                    passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso; // test
+                    passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
+
+                    stepOrderForProgress++;
+                    updateProgress(stepOrderForProgress);
+
+                    if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
+                        passoColheita.fixo = "sim";
+                    } else {
+                        passoColheita.fixo = "não";
+                    }
+
+                    nextDecider();
+                }
+            }
+
+            break;
+
         case "sam-scale-btn": // the trigger came from SAM, check if has question
             //colect data from scales
             var valenceValue = $('input[name=optradio]:checked', '#valenceRadios').val();
@@ -309,9 +467,15 @@ function nextToDo(id) {
 
             $("#div-SAMScales").empty();
 
-            if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
+            // Has Likert next?
+            if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+                displayLikertScale(step);
+            }
+            // Has questions next?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
                 displayQuestions(step);
             }
+            // SAM is the last in step
             else {
                 participantDataCollection.colheita.push(passoColheita); // when the stimulus is the last in the step
 
@@ -429,11 +593,20 @@ function nextToDo(id) {
 
             $("#div-stimulus-video").empty();
 
+            // Has SAM scale?
             if ((formConfiguration.passos[step - 1].hasOwnProperty("escalasSAM")) && (formConfiguration.passos[step - 1].escalasSAM.length > 0)) {
                 displaySAMScale(step);
-            } else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
+            }
+            // Has Likert scale?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+                displayLikertScale(step);
+            }
+            // Has question?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
                 displayQuestions(step);
-            } else {
+            }
+            // Video stimulus is the last in step
+            else {
                 participantDataCollection.colheita.push(passoColheita); // when the stimulus is the last in the step
 
                 passoColheita = {};
@@ -475,6 +648,7 @@ function nextDecider() {
     $("#div-instructions").empty();
     $("#div-progress").show();
 
+    // Step begins with Image stimulus?
     if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[step - 1].fonteEstimulo.length > 0)) {
         var time = formConfiguration.passos[step - 1].tempoEstimulo;
 
@@ -494,22 +668,29 @@ function nextDecider() {
 
             $('#div-stimulus').empty();
 
+            // Has SAM scale?
             if ((formConfiguration.passos[step - 1].hasOwnProperty("escalasSAM")) && (formConfiguration.passos[step - 1].escalasSAM.length > 0)) {
                 displaySAMScale(step);
             }
-            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) { // if the stimulus doesn't have a scale check for questions
+            // Has Likert scale?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+                displayLikertScale(step);
+            }
+            // Has questions?
+            else if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
                 displayQuestions(step);
             }
+            // Does not have anything
             else {
                 passoColheita = {};
                 currentIndex++;
                 if (currentIndex == newForm.length) { // if there are no more steps
                     document.querySelector('#div-general-info').innerHTML = endMessage + endButton; // presents end message
                     $("#div-progress").hide();
-
                 } else {
                     step = newForm[currentIndex];
-                    passoColheita.nPasso = step;
+                    //passoColheita.nPasso = step;
+                    passoColheita.nPasso = formConfiguration.passos[step - 1].nPasso;
                     passoColheita.nomePasso = formConfiguration.passos[step - 1].nomePasso;
 
                     stepOrderForProgress++;
@@ -526,11 +707,21 @@ function nextDecider() {
             }
         }, time * 1000); // <-- time in milliseconds
 
-    } else if ((formConfiguration.passos[step - 1].hasOwnProperty("descricaoPasso")) && (formConfiguration.passos[step - 1].descricaoPasso.length > 0)) { // if the step has no stimulus, it can have a description
+    }
+    // Step begins with Step Description?
+    else if ((formConfiguration.passos[step - 1].hasOwnProperty("descricaoPasso")) && (formConfiguration.passos[step - 1].descricaoPasso.length > 0)) {
         displayDescription(step);
-    } else if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimuloVideo")) && (formConfiguration.passos[step - 1].fonteEstimuloVideo.length > 0)) {
+    }
+    // Step begins with Video stimulus?
+    else if ((formConfiguration.passos[step - 1].hasOwnProperty("fonteEstimuloVideo")) && (formConfiguration.passos[step - 1].fonteEstimuloVideo.length > 0)) {
         displayStimulusVideo(step);
-    } else { // if the step has no stimulus and no description, it has to have questions
+    }
+    // Step begins with Likert scale?
+    else if ((formConfiguration.passos[step - 1].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[step - 1].questoesLikert.length > 0)) {
+        displayLikertScale(step);
+    }
+    // Step begins with question?
+    else {
         if ((formConfiguration.passos[step - 1].hasOwnProperty("questoes")) && (formConfiguration.passos[step - 1].questoes.length > 0)) {
             displayQuestions(step);
         }

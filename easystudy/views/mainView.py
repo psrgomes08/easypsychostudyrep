@@ -427,6 +427,11 @@ def uploadJSON(request):
                                        idForm=Form.objects.get(idForm=idForm), permissionType='O')
                         p.save()
 
+                        t = ParticipantToken()
+                        t.idForm = Form.objects.get(idForm=idForm)
+                        t.token = id_generator(10)
+                        t.save()
+
                     else:  # there is already a form with that ID
                         size = len(fAux)
                         newID = ""
@@ -446,6 +451,11 @@ def uploadJSON(request):
                         p = Permission(username=User.objects.get(username=request.session['username']),
                                        idForm=Form.objects.get(idForm=idForm), permissionType='O')
                         p.save()
+
+                        t = ParticipantToken()
+                        t.idForm = Form.objects.get(idForm=idForm)
+                        t.token = id_generator(10)
+                        t.save()
 
                 except Exception as e:
                     print("ERROR uploadJSON: " + str(e))
@@ -601,8 +611,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
                         if step['escalasSAM'][e] == 'Dominância' and 'Dominância' not in scalesInForm:
                             scalesInForm.append('Dominância')
 
-            # print(scalesInForm)
-
             if 'Valência' in scalesInForm:
                 worksheetValence.write_string(v_row, v_col, "ID Participante", hFormat)
                 worksheetValence.set_column(v_col, v_col, 20)
@@ -656,11 +664,11 @@ def downloadParticipantsDataCollectedData(request, idForm):
 
             # Add headers
             worksheet.write_string(row, col, "Timestamp Recolha", hFormat)
-            worksheet.set_column(col, col, 20)  # Width of column set to 20.
+            worksheet.set_column(col, col, 20)
             col += 1
 
             worksheet.write_string(row, col, "ID Participante", hFormat)
-            worksheet.set_column(col, col, 15)  # Width of column set to 20.
+            worksheet.set_column(col, col, 15)
             col += 1
 
             presentSteps = []
@@ -671,35 +679,35 @@ def downloadParticipantsDataCollectedData(request, idForm):
 
                 if 'descricaoPasso' not in step:
                     worksheet.write_string(row, col, "Ordem Tarefa", oFormat)
-                    worksheet.set_column(col, col, 10)  # Width of column set to 20.
+                    worksheet.set_column(col, col, 10)
                     col += 1
 
                 if 'nomeDoEstimuloVideo' in step:
                     worksheet.write_string(row, col, "Timestamp Estímulo", hFormat)
-                    worksheet.set_column(col, col, 20)  # Width of column set to 20.
+                    worksheet.set_column(col, col, 20)
                     col += 1
 
                     worksheet.write_string(row, col, "Estímulo", hFormat)
-                    worksheet.set_column(col, col, 20)  # Width of column set to 20.
+                    worksheet.set_column(col, col, 20)
                     col += 1
 
                 if 'nomeDoEstimulo' in step:
                     worksheet.write_string(row, col, "Timestamp Estímulo", hFormat)
-                    worksheet.set_column(col, col, 20)  # Width of column set to 20.
+                    worksheet.set_column(col, col, 20)
                     col += 1
 
                     worksheet.write_string(row, col, "Estímulo", hFormat)
-                    worksheet.set_column(col, col, 20)  # Width of column set to 20.
+                    worksheet.set_column(col, col, 20)
                     col += 1
 
                 if 'escalasSAM' in step and len(step['escalasSAM']) > 0:
-                    worksheet.write_string(row, col, "Timestamp Escalas", hFormat)
-                    worksheet.set_column(col, col, 20)  # Width of column set to 20.
+                    worksheet.write_string(row, col, "Timestamp SAM", hFormat)
+                    worksheet.set_column(col, col, 20)
                     col += 1
 
                     for e in range(0, len(step['escalasSAM'])):
                         worksheet.write_string(row, col, step['escalasSAM'][e], hFormat)
-                        worksheet.set_column(col, col, 10)  # Width of column set to 20.
+                        worksheet.set_column(col, col, 10)
                         col += 1
 
                         # Worksheet Valence
@@ -707,12 +715,10 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetValence.write_string(v_row, v_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetValence.set_column(v_col, v_col, 20)
-                                # print("Valência - " + step['nomeDoEstimulo'] + ": " + str(v_row) + "," + str(v_col))
                                 v_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetValence.write_string(v_row, v_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetValence.set_column(v_col, v_col, 20)
-                                # print("Valência - " + step['nomeDoEstimuloVideo'] + ": " + str(v_row) + "," + str(v_col))
                                 v_col += 1
 
                         # Worksheet Arousal
@@ -720,12 +726,10 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetArousal.set_column(a_col, a_col, 20)
-                                # print("Alerta - " + step['nomeDoEstimulo'] + ": " + str(a_row) + "," + str(a_col))
                                 a_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetArousal.write_string(a_row, a_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetArousal.set_column(a_col, a_col, 20)
-                                # print("Alerta - " + step['nomeDoEstimuloVideo'] + ": " + str(a_row) + "," + str(a_col))
                                 a_col += 1
 
                         # Worksheet Dominance
@@ -733,22 +737,34 @@ def downloadParticipantsDataCollectedData(request, idForm):
                             if 'nomeDoEstimulo' in step:
                                 worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimulo'], hFormat)
                                 worksheetDominance.set_column(d_col, d_col, 20)
-                                # print("Dominância - " + step['nomeDoEstimulo'] + ": " + str(d_row) + "," + str(d_col))
                                 d_col += 1
                             if 'nomeDoEstimuloVideo' in step:
                                 worksheetDominance.write_string(d_row, d_col, step['nomeDoEstimuloVideo'], hFormat)
                                 worksheetDominance.set_column(d_col, d_col, 20)
-                                # print("Dominância - " + step['nomeDoEstimuloVideo'] + ": " + str(d_row) + "," + str(d_col))
                                 d_col += 1
+
+                if 'nPontosLikert' in step:
+                    worksheet.write_string(row, col, "Timestamp Likert", hFormat)
+                    worksheet.set_column(col, col, 20)
+                    col += 1
+
+                    worksheet.write_string(row, col, "N. Pontos Likert", hFormat)
+                    worksheet.set_column(col, col, 20)
+                    col += 1
+
+                    for lq in range(0, len(step['questoesLikert'])):
+                        worksheet.write_string(row, col, step['questoesLikert'][lq], hFormat)
+                        worksheet.set_column(col, col, 30)
+                        col += 1
 
                 if 'questoes' in step:
                     worksheet.write_string(row, col, "Timestamp Questões", hFormat)
-                    worksheet.set_column(col, col, 20)  # Width of column set to 20.
+                    worksheet.set_column(col, col, 20)
                     col += 1
 
                     for q in range(0, len(step['questoes'])):
                         worksheet.write_string(row, col, step['questoes'][q], hFormat)
-                        worksheet.set_column(col, col, 30)  # Width of column set to 20.
+                        worksheet.set_column(col, col, 30)
                         col += 1
 
             # Headers finished
@@ -822,8 +838,6 @@ def downloadParticipantsDataCollectedData(request, idForm):
                                                            pFormat)
                                     col += 1
 
-                                    # a_row = 1
-                                    # a_col = 1
                                     worksheetArousal.write_number(a_row, a_col,
                                                                   int(collection[j]['colheitaEscalas']['alerta']),
                                                                   pFormat)
@@ -839,6 +853,23 @@ def downloadParticipantsDataCollectedData(request, idForm):
                                                                     int(collection[j]['colheitaEscalas']['dominancia']),
                                                                     pFormat)
                                     d_col += 1
+
+                            if 'colheitaLikert' in collection[j]:
+                                arrayLikertAnswers = collection[j]['colheitaLikert']
+
+                                worksheet.write_string(row, col, collection[j]['timestampLikert'], pFormat)
+                                col += 1
+
+                                if collection[j]['nPontosLikert'] == "5Pontos":
+                                    worksheet.write_number(row, col, 5, pFormat)
+                                    col += 1
+                                else:
+                                    worksheet.write_number(row, col, 7, pFormat)
+                                    col += 1
+
+                                for la in range(0, len(arrayLikertAnswers)):
+                                    worksheet.write_string(row, col, arrayLikertAnswers[la], pFormat)
+                                    col += 1
 
                             if 'colheitaQuestoes' in collection[j]:
                                 arrayQuestoes = collection[j]['colheitaQuestoes']
@@ -1267,6 +1298,8 @@ def formDashboardView(request, idForm):
         try:
             f = Form.objects.get(idForm=idForm)
 
+            sumOfLikert = getSumOfLikertScales(idForm)
+
             p = ParticipantInForm.objects.filter(idForm=idForm)
             participantIDs = []
 
@@ -1376,15 +1409,18 @@ def formDashboardView(request, idForm):
                 stimulusListValence[i][3] = min(values)  # minimum
                 stimulusListValence[i][4] = statistics.median(values)  # median
 
-                dev = []
-                for x in values:
-                    dev.append(x - stimulusListValence[i][1])
+                if len(values) == 1:
+                    stimulusListValence[i][5] = 0 # standard deviation
+                else:
+                    dev = []
+                    for x in values:
+                        dev.append(x - stimulusListValence[i][1])
 
-                sqr = []
-                for x in dev:
-                    sqr.append(x * x)
+                    sqr = []
+                    for x in dev:
+                        sqr.append(x * x)
 
-                stimulusListValence[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
+                    stimulusListValence[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
 
                 sortedValues = sorted(values)
                 stimulusListValence[i][6] = percentile(sortedValues, 0.25)  # 1st quartile
@@ -1399,15 +1435,18 @@ def formDashboardView(request, idForm):
                 stimulusListArousal[i][3] = min(values)  # minimum
                 stimulusListArousal[i][4] = statistics.median(values)  # median
 
-                dev = []
-                for x in values:
-                    dev.append(x - stimulusListArousal[i][1])
+                if len(values) == 1:
+                    stimulusListArousal[i][5] = 0 #standard deviation
+                else:
+                    dev = []
+                    for x in values:
+                        dev.append(x - stimulusListArousal[i][1])
 
-                sqr = []
-                for x in dev:
-                    sqr.append(x * x)
+                    sqr = []
+                    for x in dev:
+                        sqr.append(x * x)
 
-                stimulusListArousal[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
+                    stimulusListArousal[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
 
                 sortedValues = sorted(values)
                 stimulusListArousal[i][6] = percentile(sortedValues, 0.25)  # 1st quartile
@@ -1422,15 +1461,18 @@ def formDashboardView(request, idForm):
                 stimulusListDominance[i][3] = min(values)  # minimum
                 stimulusListDominance[i][4] = statistics.median(values)  # median
 
-                dev = []
-                for x in values:
-                    dev.append(x - stimulusListArousal[i][1])
+                if len(values) == 1:
+                    stimulusListDominance[i][5] = 0 #standard deviation
+                else:
+                    dev = []
+                    for x in values:
+                        dev.append(x - stimulusListArousal[i][1])
 
-                sqr = []
-                for x in dev:
-                    sqr.append(x * x)
+                    sqr = []
+                    for x in dev:
+                        sqr.append(x * x)
 
-                stimulusListDominance[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
+                    stimulusListDominance[i][5] = round((math.sqrt(sum(sqr) / (len(sqr) - 1))), 3)  # standard deviation
 
                 sortedValues = sorted(values)
                 stimulusListDominance[i][6] = percentile(sortedValues, 0.25)  # 1st quartile
@@ -1503,6 +1545,7 @@ def formDashboardView(request, idForm):
                 "stimulusListValenceHistogram": stimulusListValenceHistogram,
                 "stimulusListArousalHistogram": stimulusListArousalHistogram,
                 "stimulusListDominanceHistogram": stimulusListDominanceHistogram,
+                "sumOfLikert": sumOfLikert,
             }
             return render(request, "main/form_dashboard.html", context)
 
@@ -1513,7 +1556,76 @@ def formDashboardView(request, idForm):
 
 
 # ######################################################################## #
-# Retrieves average value of sam scales.
+# Retrieves values of likert scales.
+# ######################################################################## #
+def getLikertScalesFromParticipant(idParticipant, idForm):
+    try:
+        f = Form.objects.get(idForm=idForm)
+        p = ParticipantInForm.objects.get(idParticipant=idParticipant, idForm=f)
+
+        pData = json.loads(p.dataCollection)
+        fData = json.loads(f.formConfig)
+
+        likertAlone5Pts = []  # [question, evaluation]
+        likertAlone7Pts = []
+        likertAssociated5Pts = []  # [stimulus, question, evaluation]
+        likertAssociated7Pts = []
+
+        for i in range(0, len(fData['passos'])):
+            stimulus = ""
+            step = fData['passos'][i]
+            stepNumber = fData['passos'][i]['nPasso']
+
+            if 'nomeDoEstimulo' in step:
+                stimulus = step['nomeDoEstimulo']
+            if 'nomeDoEstimuloVideo' in step:
+                stimulus = step['nomeDoEstimuloVideo']
+
+            if 'questoesLikert' in step:
+                for i in range(0, len(pData['colheita'])):
+                    if pData['colheita'][i]['nPasso'] == stepNumber:
+                        if stimulus == "":
+                            if step['nPontosLikert'] == "5Pontos":
+                                for ql in range(0, len(step['questoesLikert'])):
+                                    likertAlone5Pts.append(
+                                        [step['questoesLikert'][ql], pData['colheita'][i]['colheitaLikert'][ql]])
+                            else:
+                                for ql in range(0, len(step['questoesLikert'])):
+                                    likertAlone7Pts.append(
+                                        [step['questoesLikert'][ql], pData['colheita'][i]['colheitaLikert'][ql]])
+                        else:
+                            if step['nPontosLikert'] == "5Pontos":
+                                for ql in range(0, len(step['questoesLikert'])):
+                                    likertAssociated5Pts.append([stimulus, step['questoesLikert'][ql],
+                                                                 pData['colheita'][i]['colheitaLikert'][ql]])
+                            else:
+                                for ql in range(0, len(step['questoesLikert'])):
+                                    likertAssociated7Pts.append([stimulus, step['questoesLikert'][ql],
+                                                                 pData['colheita'][i]['colheitaLikert'][ql]])
+
+        response = {}
+        if len(likertAlone5Pts) > 0:
+            response['likertAlone5Pts'] = likertAlone5Pts
+        if len(likertAlone7Pts) > 0:
+            response['likertAlone7Pts'] = likertAlone7Pts
+
+        if len(likertAssociated5Pts) > 0:
+            response['likertAssociated5Pts'] = likertAssociated5Pts
+        if len(likertAssociated7Pts) > 0:
+            response['likertAssociated7Pts'] = likertAssociated7Pts
+
+        # print("Likert alone: " + str(likertAlone))
+        # print("Likert associated: " + str(likertAssociated))
+
+        return json.dumps(response)
+
+    except Exception as e:
+        print("ERROR getLikertScalesFromParticipant: " + str(e))
+        return json.dumps({})
+
+
+# ######################################################################## #
+# Retrieves values of sam scales.
 # (aux function of formDashboardView)
 # ######################################################################## #
 def getScalesFromParticipant(idParticipant, idForm):
@@ -1578,3 +1690,143 @@ def percentile(N, percent, key=lambda x: x):
     d1 = key(N[int(c)]) * (k - f)
 
     return d0 + d1
+
+
+# ######################################################################## #
+# Retrieves values of likert scales.
+# ######################################################################## #
+def getSumOfLikertScales(idForm):
+    try:
+        f = Form.objects.get(idForm=idForm)
+        p = ParticipantInForm.objects.filter(idForm=f)
+
+        participantIDs = []
+
+        # loads info of each participant into an array of dictionaries
+        for i in range(0, len(p)):
+            pData = json.loads(p[i].dataCollection)
+            participantIDs.append(pData['idParticipante'])
+
+        temp = {}
+        for i in range(0, len(participantIDs)):
+            data = json.loads(getLikertScalesFromParticipant(participantIDs[i], idForm))
+
+            if 'likertAlone5Pts' in data:
+
+                if 'likertAlone5Pts' not in temp:
+                    temp['likertAlone5Pts'] = {}
+                    temp['likertAlone5Pts']['labels'] = ["1", "2", "3", "4", "5"]
+                    temp['likertAlone5Pts']['questoes'] = []
+                for likertData in data['likertAlone5Pts']:
+                    questoes = temp['likertAlone5Pts']['questoes']
+                    if not any(d['nome'] == likertData[0] for d in questoes):
+                        questoes.append({'nome': likertData[0], 'dados': [0, 0, 0, 0, 0]})
+                    dados = find(questoes, likertData[0])
+                    dados = dados['dados']
+                    if likertData[1] == '1':
+                        dados[0] += 1
+                    if likertData[1] == '2':
+                        dados[1] += 1
+                    if likertData[1] == '3':
+                        dados[2] += 1
+                    if likertData[1] == '4':
+                        dados[3] += 1
+                    if likertData[1] == '5':
+                        dados[4] += 1
+
+            if 'likertAlone7Pts' in data:
+
+                if 'likertAlone7Pts' not in temp:
+                    temp['likertAlone7Pts'] = {}
+                    temp['likertAlone7Pts']['labels'] = ["1", "2", "3", "4", "5", "6", "7"]
+                    temp['likertAlone7Pts']['questoes'] = []
+                for likertData in data['likertAlone7Pts']:
+                    questoes = temp['likertAlone7Pts']['questoes']
+                    if not any(d['nome'] == likertData[0] for d in questoes):
+                        questoes.append({'nome': likertData[0], 'dados': [0, 0, 0, 0, 0, 0, 0]})
+                    dados = find(questoes, likertData[0])
+                    dados = dados['dados']
+                    if likertData[1] == '1':
+                        dados[0] += 1
+                    if likertData[1] == '2':
+                        dados[1] += 1
+                    if likertData[1] == '3':
+                        dados[2] += 1
+                    if likertData[1] == '4':
+                        dados[3] += 1
+                    if likertData[1] == '5':
+                        dados[4] += 1
+                    if likertData[1] == '6':
+                        dados[5] += 1
+                    if likertData[1] == '7':
+                        dados[6] += 1
+
+            if 'likertAssociated5Pts' in data:
+
+                if 'likertAssociated5Pts' not in temp:
+                    temp['likertAssociated5Pts'] = {}
+                    temp['likertAssociated5Pts']['labels'] = ["1", "2", "3", "4", "5"]
+                    temp['likertAssociated5Pts']['estimulos'] = []
+                for likertData in data['likertAssociated5Pts']:
+                    estimulos = temp['likertAssociated5Pts']['estimulos']
+                    if not any(d['nome'] == likertData[0] for d in estimulos):
+                        estimulos.append({'nome': likertData[0], 'questoes': []})
+                    estimulo = find(estimulos, likertData[0])
+
+                    if not any(d['nome'] == likertData[1] for d in estimulo['questoes']):
+                        estimulo['questoes'].append({'nome': likertData[1], 'dados': [0, 0, 0, 0, 0]})
+                    dados = find(estimulo['questoes'], likertData[1])
+                    dados = dados['dados']
+                    if likertData[2] == '1':
+                        dados[0] += 1
+                    if likertData[2] == '2':
+                        dados[1] += 1
+                    if likertData[2] == '3':
+                        dados[2] += 1
+                    if likertData[2] == '4':
+                        dados[3] += 1
+                    if likertData[2] == '5':
+                        dados[4] += 1
+
+            if 'likertAssociated7Pts' in data:
+                if 'likertAssociated7Pts' not in temp:
+                    temp['likertAssociated7Pts'] = {}
+                    temp['likertAssociated7Pts']['labels'] = ["1", "2", "3", "4", "5", "6", "7"]
+                    temp['likertAssociated7Pts']['estimulos'] = [];
+                for likertData in data['likertAssociated7Pts']:
+                    estimulos = temp['likertAssociated7Pts']['estimulos']
+                    if not any(d['nome'] == likertData[0] for d in estimulos):
+                        estimulos.append({'nome': likertData[0], 'questoes': []})
+                    estimulo = find(estimulos, likertData[0])
+
+                    if not any(d['nome'] == likertData[1] for d in estimulo['questoes']):
+                        estimulo['questoes'].append({'nome': likertData[1], 'dados': [0, 0, 0, 0, 0, 0, 0]})
+                    dados = find(estimulo['questoes'], likertData[1])
+                    dados = dados['dados']
+                    if likertData[2] == '1':
+                        dados[0] += 1
+                    if likertData[2] == '2':
+                        dados[1] += 1
+                    if likertData[2] == '3':
+                        dados[2] += 1
+                    if likertData[2] == '4':
+                        dados[3] += 1
+                    if likertData[2] == '5':
+                        dados[4] += 1
+                    if likertData[2] == '6':
+                        dados[5] += 1
+                    if likertData[2] == '7':
+                        dados[6] += 1
+
+        print("SUCCESS: " + str(json.dumps(temp)))
+        return json.dumps(temp)
+
+    except Exception as e:
+        print("ERROR getSumOfLikertScales: " + str(e))
+        return json.dumps({})
+
+
+def find(lst, value):
+    for dic in lst:
+        if dic['nome'] == value:
+            return dic

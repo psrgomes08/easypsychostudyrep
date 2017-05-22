@@ -18,10 +18,6 @@ $(document).ready(function () {
                 // Adds Image
                 if ((formConfiguration.passos[i].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[i].fonteEstimulo.length > 0)) {
 
-                    /*
-                    document.querySelector('#ul-step-' + stepNumber).innerHTML += "<li class='list-group-item'>" + formConfiguration.passos[i].nomeDoEstimulo + "</li>";
-                    */
-
                     document.querySelector('#ul-step-' + stepNumber).innerHTML += "<li class='list-group-item'>" +
                         "<a class='thumb'>" + formConfiguration.passos[i].nomeDoEstimulo + "<span><img src='" + formConfiguration.passos[i].fonteEstimulo + "'>" +
                         "</span></a></li>";
@@ -69,47 +65,38 @@ $(document).ready(function () {
             // Adds Image
             if ((formConfiguration.passos[i].hasOwnProperty("fonteEstimulo")) && (formConfiguration.passos[i].fonteEstimulo.length > 0)) {
 
-                /*
-                document.querySelector('#' + breakDiv).innerHTML += "<br/><div id='previous-images-" + stepNumber + "'><p><b>Imagens previamente carregadas</b></p>" +
-                    "<ul class='list-group' id='ul-step-" + stepNumber + "'>" +
-                    "<li class='list-group-item'>" + formConfiguration.passos[i].nomeDoEstimulo + "</li>" +
-                    "</ul></div>";
-                    */
+                addStimulusMultipleCloneForm(stepNumber);
+                $('#' + breakDiv).find('#form-stimulus-time-' + stepNumber).val(formConfiguration.passos[i].tempoEstimulo);
 
-                document.querySelector('#' + breakDiv).innerHTML += "<br/><div id='previous-images-" + stepNumber + "'><p><b>Imagens previamente carregadas</b></p>" +
+                multipleImages.push([stepNumber, formConfiguration.passos[i].fonteEstimulo, formConfiguration.passos[i].nomeDoEstimulo]);
+                typeOfStep[stepNumber] = "image";
+
+                document.querySelector('#previously-added-images-' + stepNumber).innerHTML += "<br/><div id='previous-images-" + stepNumber + "'><p><b>Imagens previamente carregadas:</b></p>" +
                     "<ul class='list-group' id='ul-step-" + stepNumber + "'>" +
                     "<li class='list-group-item'><a class='thumb'>" + formConfiguration.passos[i].nomeDoEstimulo + "" +
                     "<span><img src='" + formConfiguration.passos[i].fonteEstimulo + "'>" +
                     "</span></a></li>" +
                     "</ul></div>";
-
-                /*
-                <a class="thumb">Ola<span><img src="http://static-files1.modthesims2.com/customavatars/avatar1232227_2.gif"></span></a>
-                 */
-
-                addStimulusMultipleCloneForm(stepNumber);
-                $('#' + breakDiv).find('#form-stimulus-time').val(formConfiguration.passos[i].tempoEstimulo);
-
-                multipleImages.push([stepNumber, formConfiguration.passos[i].fonteEstimulo, formConfiguration.passos[i].nomeDoEstimulo]);
-                typeOfStep[stepNumber] = "image";
             }
 
             // Adds Video
             if ((formConfiguration.passos[i].hasOwnProperty("fonteEstimuloVideo")) && (formConfiguration.passos[i].fonteEstimuloVideo.length > 0)) {
 
-                document.querySelector('#' + breakDiv).innerHTML += "<br/><div id='previous-videos-" + stepNumber + "'><p><b>Vídeos previamente carregados</b></p>" +
+                addStimulusVideoCloneForm(stepNumber);
+                multipleVideos.push([stepNumber, formConfiguration.passos[i].fonteEstimuloVideo, formConfiguration.passos[i].nomeDoEstimuloVideo]);
+                typeOfStep[stepNumber] = "video";
+
+                document.querySelector('#previously-added-videos-' + stepNumber).innerHTML += "<br/><div id='previous-videos-" + stepNumber + "'><p><b>Vídeos previamente carregados:</b></p>" +
                     "<ul class='list-group' id='ul-video-step-" + stepNumber + "'>" +
                     "<li class='list-group-item'>" + formConfiguration.passos[i].nomeDoEstimuloVideo + "</li>" +
                     "</ul></div>";
 
-                addStimulusVideoCloneForm(stepNumber);
-                multipleVideos.push([stepNumber, formConfiguration.passos[i].fonteEstimuloVideo, formConfiguration.passos[i].nomeDoEstimuloVideo]);
-                typeOfStep[stepNumber] = "video";
+                console.log("Os já carregados:\n" + multipleVideos);
             }
 
-            // Adds scale
+            // Adds SAM scale
             if ((formConfiguration.passos[i].hasOwnProperty("escalasSAM")) && (formConfiguration.passos[i].escalasSAM.length > 0)) {
-                addSAMScale((stepNumber));
+                addSAMScale(stepNumber);
 
                 for (var k = 0; k < formConfiguration.passos[i].escalasSAM.length; k++) {
                     var scale = formConfiguration.passos[i].escalasSAM[k];
@@ -129,11 +116,32 @@ $(document).ready(function () {
                 }
             }
 
+            // Adds Likert scale
+            if ((formConfiguration.passos[i].hasOwnProperty("nPontosLikert")) && (formConfiguration.passos[i].questoesLikert.length > 0)) {
+                addLikertScale(stepNumber);
+
+                switch (formConfiguration.passos[i].nPontosLikert) {
+                    case "5Pontos":
+                        $("#" + breakDiv).find("#likert-scale-5").prop("checked", true);
+                        break;
+                    case "7Pontos":
+                        $("#" + breakDiv).find("#likert-scale-7").prop("checked", true);
+                        break;
+                }
+
+                if ((formConfiguration.passos[i].hasOwnProperty("questoesLikert")) && (formConfiguration.passos[i].questoesLikert.length > 0)) {
+                    for (var ql = 0; ql < formConfiguration.passos[i].questoesLikert.length; ql++) {
+                        addQuestionInLikertCloneForm(formConfiguration.passos[i].questoesLikert[ql], stepNumber);
+                    }
+                }
+
+            }
+
             // Adds questions
             if ((formConfiguration.passos[i].hasOwnProperty("questoes")) && (formConfiguration.passos[i].questoes.length > 0)) {
                 for (var k = 0; k < formConfiguration.passos[i].questoes.length; k++) {
                     addQuestion(stepNumber);
-                    document.getElementById("question-" + qN).value = document.getElementById("question-" + qN).defaultValue = formConfiguration.passos[i].questoes[k];
+                    document.getElementById("question-" + stepNumber + "-" + qN).value = document.getElementById("question-" + stepNumber + "-" + qN).defaultValue = formConfiguration.passos[i].questoes[k];
                     qN++;
                 }
             }
@@ -147,6 +155,19 @@ $(document).ready(function () {
 });
 
 /**
+ * Adds a question associated to the Likert scale field in the clone form.
+ * @param q question to add
+ * @param n number of the step
+ */
+function addQuestionInLikertCloneForm(q, n) {
+    $('#list-in-likert-' + n).show();
+    var question = q;
+
+    $("#list-in-likert-" + n).append("<li class='list-group-item' id='likert-" + n + "-" + nQuestionLikert + "'>" + question + "<button title='Apagar' onclick='deleteQuestionInLikert(" + nQuestionLikert + "," + n + ")' type='button' class='btn btn-xs btn-danger btn-right'><span class='fa fa-trash-o'></span></button></li>");
+    nQuestionLikert++;
+}
+
+/**
  * Adds an open multiple files option field to select multiple stimuli.
  * @param n number of the step
  */
@@ -154,23 +175,28 @@ function addStimulusMultipleCloneForm(n) {
     divWhereToAdd = "#break-" + n;
 
     if ($(divWhereToAdd).find("#form-stimulus").length) {
-        toastr.error('Já adicionou um estímulo nesta tarefa.', '');
+        toastr.error('Já adicionou um estímulo nesta tarefa.');
     } else if ($(divWhereToAdd).find('#fixed-description').length == 1) { // if there is a description
         toastr.error('Não pode adicionar elementos extra numa tarefa que contenha instruções.');
     } else if ($(divWhereToAdd).find("#video-stimulus-" + n).length == 1) { // if there is a video stimulus
         toastr.error('Não pode adicionar um estímulo de vídeo numa tarefa com estímulos de imagens.');
     }
     else {
-        $(divWhereToAdd).append('<p><b>Selecionar imagens a carregar</b><br/><b>Obs.:</b> Ao carregar imagens novas, irá apagar as previamente carregadas nesta tarefa.</p>' +
+        $(divWhereToAdd).append('<div class="well well-sm" id="imgDivField-' + imgField + '">' +
+            '<button type="button" class="btn btn-danger btn-xs btn-right" title="Apagar" onclick="deleteElementInsidePanel(' + imgDivField + ',' + imgField + ',' + n + ')"><span class="fa fa-trash-o"></span></button> ' +
+            '<i class="title-in-well"><span class="glyphicon glyphicon-picture"></span> Campo de imagem</i><br/>' +
+            '<label>Selecionar imagens a carregar (<b>Obs.:</b> Ao carregar imagens novas nesta tarefa, irá apagar as previamente carregadas):</label>' +
             '<div id="form-stimulus" class="input-group">' +
             '<label class="input-group-btn">' +
             '<span class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span> Pesquisar' +
-            '<input style="display: none;" type="file" accept="image/gif, image/jpeg, image/jpg, image/png" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
-            '<button id="btn-load-' + n + '" class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="glyphicon glyphicon-import"></span> Carregar</button>' +
+            '<input style="display: none;" type="file" accept="image/gif, image/jpeg, image/png, image/jpg" multiple id="input-stimulus-multiple" onchange="getFileNames(' + n + ')"></span>' +
+            '<button id="btn-load-' + n + '"  class="btn btn-primary" type="button" onclick="getBase64Multiple(' + n + ')"><span class="fa fa-upload"></span> Carregar</button>' +
             '</label>' +
             '<input id="files-selected" type="text" class="form-control" readonly>' +
             '</div>' +
-            '<br/><br/><div class="form-group"><label for="form-stimulus-time">Tempo de apresentação definido</label><input type="text" class="form-control" id="form-stimulus-time"></div>');
+            '<br/><div class="form-group"><label>Tempo de apresentação por imagem (em seg.):</label><input type="text" class="form-control" id="form-stimulus-time-' + n + '"></div>' +
+            '<div id="previously-added-images-' + n + '"></div>' +
+            '</div>');
     }
 }
 
@@ -197,15 +223,6 @@ function addStimulusVideoCloneForm(n) {
                 }
             }
 
-            // If only one video was uploaded, let's the step be fixed. Else, does not.
-            if (files.length > 1) {
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", true);
-            } else {
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("checked", false);
-                $(divWhereToAdd + "-panel").find('#fixed-break input[type="checkbox"]').prop("disabled", false);
-            }
-
             typeOfStep[n] = "video";
 
             $("#loaded-videos-" + n).append("<br/><label>Vídeos carregados</label>" +
@@ -215,6 +232,8 @@ function addStimulusVideoCloneForm(n) {
                 $("#loaded-videos-" + n).append("<li class='list-group-item'>" + files[i].name + "</li>");
             }
             $("#loaded-videos-" + n).append("</ul>");
+
+            console.log("Os carregados agora:\n" + multipleVideos);
         },
 
         // Optional. Called when the user closes the dialog without selecting a file
@@ -246,11 +265,15 @@ function addStimulusVideoCloneForm(n) {
     } else if ($(divWhereToAdd).find("#form-stimulus").length == 1) { // if there is an image stimulus
         toastr.error('Não pode adicionar um estímulo de vídeo numa tarefa com estímulo de imagem.');
     } else {
-        $(divWhereToAdd).append("<p><b>Selecionar vídeos a carregar</b><br/><b>Obs.:</b> Ao carregar vídeos novos, irá apagar os previamente carregados nesta tarefa.</p>" +
+        $(divWhereToAdd).append("<div class='well well-sm' id='vidDivField-" + n + "'>" +
+            "<button type='button' class='btn btn-danger btn-xs btn-right' title='Apagar' onclick='deleteElementInsidePanel(" + vidDivField + "," + vidField + "," + n + ")'><span class='fa fa-trash-o'></span></button> " +
+            "<i class='title-in-well'><span class='glyphicon glyphicon-film'></span> Campo de vídeo</i><br/>" +
+            "<label>Vídeos a carregar (<b>Obs.:</b> Ao carregar vídeos novos, irá apagar os previamente carregados nesta tarefa):</label>" +
             "<div class='input-group'>" +
             "<span class='input-group-addon'>Selecionar vídeos</span>" +
-            "<button class='form-control btn btn-primary' id='video-stimulus-" + n + "' type='button' onclick='Dropbox.choose(options);'><span class='glyphicon glyphicon-folder-open'></span> <span class='button-text'>Pesquisar na Dropbox</span></button>" +
+            "<button class='form-control btn btn-primary' id='video-stimulus-" + n + "' type='button' onclick='Dropbox.choose(options);'><span class='fa fa-dropbox'></span> <span class='button-text'>Pesquisar na Dropbox</span></button>" +
             "</div>" +
-            "<div id='loaded-videos-" + n + "'></div>");
+            "<div id='loaded-videos-" + n + "'></div>" +
+            "<div id='previously-added-videos-" + n + "'></div></div>");
     }
 }

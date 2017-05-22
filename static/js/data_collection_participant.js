@@ -27,6 +27,8 @@ function cleanAndStartCP() {
 
     stepOrderForProgress++;
     updateProgress(stepOrderForProgress);
+    var msg = "Begin data collection for participant " + participantID + " in form " + formConfiguration.id + ".";
+    sendTrigger(msg);
 
     if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
         passoColheita.fixo = "sim";
@@ -85,6 +87,8 @@ function endDataCollectionCP() {
             csrfmiddlewaretoken: csrfToken
         },
         success: function () {
+            var msg = "End data collection for participant " + participantID + " in form " + formConfiguration.id + ".";
+            sendTrigger(msg);
             toastr.success('As suas respostas foram submetidas com sucesso! <b>Pode fechar esta janela.</b>');
             $("#end-button").hide();
         },
