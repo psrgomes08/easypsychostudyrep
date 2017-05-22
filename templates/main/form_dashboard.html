@@ -205,7 +205,7 @@
     var stimulusListArousalHistogram = {{stimulusListArousalHistogram | safe}};
     var stimulusListDominanceHistogram = {{stimulusListDominanceHistogram | safe}};
     var sumOfLikert = {{sumOfLikert | safe}};
-
+    
     // General configurations for Highcharts
     Highcharts.theme = {
         chart: {
@@ -226,7 +226,7 @@
             $("#sam-scales").show();
         }
 
-        if (sumOfLikert.length == 0) {
+        if (jQuery.isEmptyObject(sumOfLikert)) {
             $("#likert-scales").hide();
         } else {
             $("#likert-scales").show();
@@ -383,9 +383,6 @@
                 entry.questoes.forEach(function (questao) {
                     var nome_questao = questao.nome;
                     var dados_questao = questao.dados;
-
-                    console.log(nome_questao);
-                    console.log(dados_questao);
 
                     $('#list-of-graphs-7-points').append('<div id="histogram-likert-associated-7-' + li + '" class="well"><p align="center" style="font-size: 20px">' + nome_questao + '</p><p align="center" style="font-size: 12px">' + nome_estimulo + '</p><canvas id="histogramLikertAssociated7-' + li + '-Chart"></canvas></div>');
                     var histogramLikertAssociated7PointData = {
