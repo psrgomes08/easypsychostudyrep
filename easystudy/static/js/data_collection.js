@@ -361,7 +361,7 @@ function displayLikertScale(step) {
             //var likert7Points = ["Discordo<br/>Totalmente", "Discordo<br/>Moderadamente", "Discordo<br/>Ligeiramente", "Indiferente", "Concordo<br/>Ligeiramente", "Concordo<br/>Moderadamente", "Concordo<br/>Totalmente"];
             var likert7Points = ["DT", "DM", "DL", "I", "CL", "CM", "CT"];
 
-            var likert7Table = '<div class="table-responsive"><table style="width:100%" class="table table-striped table-condensed css-table">'; // opens the table
+            var likert7Table = '<div><table style="width:100%" class="table table-striped table-condensed css-table">'; // opens the table
 
             // Appends the head of the table
             likert7Table += '<thead>' +
