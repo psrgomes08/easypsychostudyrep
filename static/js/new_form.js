@@ -253,7 +253,7 @@ function addStimulusMultiple(n) {
 function addDescriptionField(n) {
     divWhereToAdd = "#break-" + n;
 
-    if ($(divWhereToAdd).children().length > 1) {
+    if ($(divWhereToAdd).children().length >= 1) {
         toastr.error('Só é possível adicionar instruções a uma tarefa que esteja vazia.');
     } else {
         $(divWhereToAdd).append('<div class="well well-sm" id="instDivField-' + instField + '">' +
