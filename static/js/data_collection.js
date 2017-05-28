@@ -44,7 +44,16 @@ function displayStimulus(step) {
 
     document.querySelector('#div-stimulus').innerHTML = '<p align="center"><img src="' + src + '" class="img-responsive"></p>'; // responsive image
 
-    var msg = "Image stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimulo + ".";
+    date = new Date();
+    var m_timestamp = date.getDate() + "/"
+        + (date.getMonth() + 1) + "/"
+        + date.getFullYear() + " "
+        + date.getHours() + ":"
+        + date.getMinutes() + ":"
+        + date.getSeconds() + ":"
+        + date.getMilliseconds();
+
+    var msg = "Image stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimulo + "; Timestamp: " + m_timestamp;
     sendTrigger(msg);
 }
 
@@ -69,7 +78,16 @@ function displayStimulusVideo(step) {
         '</div>' +
         '</div><br/><br/>';
 
-    var msg = "Video stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimuloVideo + ".";
+    date = new Date();
+    var m_timestamp = date.getDate() + "/"
+        + (date.getMonth() + 1) + "/"
+        + date.getFullYear() + " "
+        + date.getHours() + ":"
+        + date.getMinutes() + ":"
+        + date.getSeconds() + ":"
+        + date.getMilliseconds();
+
+    var msg = "Video stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimuloVideo + "; Timestamp: " + m_timestamp;
     sendTrigger(msg);
 
     document.querySelector('#div-stimulus-video').innerHTML += buttonNext;
@@ -572,7 +590,7 @@ function cleanAndStart() {
 
         stepOrderForProgress++;
         updateProgress(stepOrderForProgress);
-        var msg = "Begin data collection for participant " + idParticipante + " in form " + idForm + ".";
+        var msg = "Begin data collection for participant " + idParticipante + " in form " + idForm + "; Timestamp: " + participantDataCollection.timestampRecolha;
         sendTrigger(msg);
 
         if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
@@ -942,7 +960,7 @@ function endDataCollection() {
     document.getElementById('end-button').style.visibility = 'hidden'; // hides the submission button to avoid multiple posting
 
     dataCollection = JSON.stringify(participantDataCollection);
-    console.log(dataCollection);
+    //console.log(dataCollection);
 
     $.ajax({
         url: urlToPost,
@@ -954,7 +972,15 @@ function endDataCollection() {
             csrfmiddlewaretoken: csrfToken
         },
         success: function () {
-            var msg = "End data collection for participant " + idParticipante + " in form " + idForm + ".";
+            var m_timestamp = date.getDate() + "/"
+                + (date.getMonth() + 1) + "/"
+                + date.getFullYear() + " "
+                + date.getHours() + ":"
+                + date.getMinutes() + ":"
+                + date.getSeconds() + ":"
+                + date.getMilliseconds();
+
+            var msg = "End data collection for participant " + idParticipante + " in form " + idForm + "; Timestamp: " + m_timestamp;
             sendTrigger(msg);
             window.location.href = onSuccess;   // redirects to home
         },
