@@ -248,14 +248,19 @@ function deleteNotifications() {
 $('#save-form-options').click(function () {
     var idForm = formIDForSpecialConfigs;
     var f = document.getElementById("trial-form");
-    var idTrialForm = f.options[f.selectedIndex].value;
+
+    var idTrialForm;
+
+    if(f.selectedIndex == -1) {
+        idTrialForm = "NA";
+    } else {
+        idTrialForm = f.options[f.selectedIndex].value;
+    }
 
     var scaleExplained = 'N';
     if (document.getElementById('display-scale').checked) {
         scaleExplained = 'Y';
     }
-
-    console.log(idTrialForm);
 
     $.ajax({
         url: urlToPostSpecialConfigs,
@@ -439,7 +444,6 @@ function sendEmailForRemote() {
             var errors = 0;
 
             for (var i = 0; i < senders.length; i++) {
-                console.log("pt 1");
                 senders[i].replace(" ", ""); // removes whitespaces
                 if (!validateEmail(senders[i])) {
                     errors++;
@@ -450,7 +454,6 @@ function sendEmailForRemote() {
             }
 
             if (errors == 0) {
-                console.log("pt 2");
                 for (var j = 0; j < senders.length; j++) {
                     try {
                         Email.send(userEmail,
@@ -469,7 +472,6 @@ function sendEmailForRemote() {
 
 
             if (errors == 0) {
-                console.log("pt 3");
                 $("#email-messages").html('<div class="alert alert-success" role="alert">' +
                     '<p align="center"><strong>Sucesso!</strong> Os convites foram enviados!</p>' +
                     '</div>');

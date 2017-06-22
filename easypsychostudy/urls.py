@@ -20,7 +20,7 @@ from easystudy import views
 from easystudy.views import *
 
 urlpatterns = [
-    url(r'^4e9mtpG8DvblBOwcWwNI/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
     url(r'^painel$', HomeView.as_view(), name='home'),
     url(r'^$', UserLoginView.as_view(), name='login'),
     url(r'^registar$', UserRegisterView.as_view(), name='register'),

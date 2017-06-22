@@ -983,6 +983,7 @@ function getFileNames(n) {
 
         // Checks if the file extension is valid
         var fileExtension = file.substr(file.lastIndexOf('.') + 1);
+        fileExtension = fileExtension.toLowerCase();
         if (fileExtension != "gif" && fileExtension != "jpeg" && fileExtension != "png" && fileExtension != "jpg") {
             $('#btn-load-thumbnail').attr("disabled", true);
             toastr.error('<strong>Erro na leitura do ficheiro ' + file + '.</strong> Por favor carregue um ficheiro com extensão <i>.gif</i>, <i>.jpeg</i>, <i>.jpg</i> ou <i>.png</i>.');
@@ -1000,6 +1001,7 @@ function getFileNames(n) {
 
             // Checks if the file extension is valid
             var fileExtension = file.substr(file.lastIndexOf('.') + 1);
+            fileExtension = fileExtension.toLowerCase();
             if (fileExtension != "gif" && fileExtension != "jpeg" && fileExtension != "png" && fileExtension != "jpg") {
                 $('#btn-load-' + n).attr("disabled", true);
                 toastr.error('<strong>Erro na leitura do ficheiro ' + file + '.</strong> Por favor carregue um ficheiro com extensão <i>.gif</i>, <i>.jpeg</i>, <i>.jpg</i> ou <i>.png</i>.');
