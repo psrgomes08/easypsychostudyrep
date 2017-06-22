@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
-from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken
+from easystudy.models import Form, Permission, ParticipantInForm, ParticipantToken, FormSpecialConfigs
 from django.http import HttpResponseServerError
 import random
 import string
@@ -178,6 +178,12 @@ class NewFormView(View):
                 t.token = id_generator(10)
                 t.save()
 
+                sc = FormSpecialConfigs() # creates special form config row
+                sc.idForm = Form.objects.get(idForm=idForm)
+                sc.idTrialForm = None
+                sc.scaleExplained = 'N'
+                sc.save()
+
                 # Delete the session form preview because it was saved.
                 if request.session.has_key('form_config_preview'):
                     del request.session['form_config_preview']
@@ -246,6 +252,12 @@ class CloneFormView(View):
                 t.idForm = Form.objects.get(idForm=idForm)
                 t.token = id_generator(10)
                 t.save()
+
+                sc = FormSpecialConfigs() # creates special form config row
+                sc.idForm = Form.objects.get(idForm=idForm)
+                sc.idTrialForm = None
+                sc.scaleExplained = 'N'
+                sc.save()
 
                 # Delete the session form preview because it was saved.
                 if request.session.has_key('form_config_preview'):

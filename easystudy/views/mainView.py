@@ -432,6 +432,12 @@ def uploadJSON(request):
                         t.token = id_generator(10)
                         t.save()
 
+                        sc = FormSpecialConfigs()  # creates special form config row
+                        sc.idForm = Form.objects.get(idForm=idForm)
+                        sc.idTrialForm = None
+                        sc.scaleExplained = 'N'
+                        sc.save()
+
                     else:  # there is already a form with that ID
                         size = len(fAux)
                         newID = ""
@@ -1104,8 +1110,14 @@ class SpecialConfigsView(View):
             return HttpResponse(json.dumps(response), content_type="application/json")
 
         except Exception as e:
-            print("ERROR SpecialConfigsView: " + str(e))
-            return HttpResponseServerError("ERROR: " + str(e))
+            sc = FormSpecialConfigs()  # creates special form config row
+            sc.idForm = Form.objects.get(idForm=idForm)
+            sc.idTrialForm = None
+            sc.scaleExplained = 'N'
+            sc.save()
+
+            print("SUCCESS SpecialConfigsView: there were no previous special form configurations, but they were created.")
+            return HttpResponse("SUCCESS SpecialConfigsView: there were no previous special form configurations, but they were created.")
 
     def post(self, request):
         if not request.session.has_key('username'):  # if the user is not logged in redirects to login page
