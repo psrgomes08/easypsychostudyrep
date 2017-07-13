@@ -512,9 +512,11 @@
     var onSuccess = "{% url 'home' %}";
     var defaultThumbnail = "{% static 'images/forms_icon.png' %}";
     var urlToVisualization = "{% url 'preview-form' %}";
-    var formThumbnail = "{{formThumbnail}}";
 
     var src = ('{{formConfig|safe}}').replace(/[\n]/g, '\\n');
+
+    var formThumbnail = "{{formThumbnail}}";
+    var imgThumbnail;
 
     var formConfiguration = JSON.parse(src);
 
@@ -523,6 +525,7 @@
 
     if (formThumbnail != "" && formThumbnail != "/static/images/forms_icon.png") {
         document.querySelector("#previous-thumbnail").innerHTML += '<img height="100" src="' + formThumbnail + '"><br/><br/>';
+        imgThumbnail = formThumbnail;
     }
     else {
         document.querySelector("#previous-thumbnail").innerHTML += '<img height="100" src="' + defaultThumbnail + '"><br/><br/>';

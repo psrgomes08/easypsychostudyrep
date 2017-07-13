@@ -468,9 +468,9 @@ function verifyStringFields() {
             if (nPasso.search('\"') > -1 || nPasso.search('\'') > -1 || nPasso.search(new RegExp("\\\\", 'g')) > -1) {
                 errors.push("Caracteres inválidos (aspas, pelicas ou barras) na <b>Tarefa " + i + "</b>, no nome da Tarefa.");
             }
-            if (nPasso.search('Dados demográficos') > -1 && i > 1) {
-                errors.push("Nome da <b>Tarefa " + i + "</b> inválido.");
-            }
+            //if (nPasso.search('Dados demográficos') > -1 && i > 1) {
+            //    errors.push("Nome da <b>Tarefa " + i + "</b> inválido.");
+            //}
 
             // Verify description of step
             if ($('#' + breakDiv).find('#fixed-description').length == 1) {

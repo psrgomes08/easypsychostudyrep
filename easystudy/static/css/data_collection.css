@@ -206,3 +206,9 @@ table {
 input[type=radio]{
     margin: 0 !important;
 }
+
+/* Fixes table coloring in a black background */
+.table-striped>tbody>tr:nth-child(odd)>td,
+.table-striped>tbody>tr:nth-child(odd)>th {
+    color: black;
+ }
