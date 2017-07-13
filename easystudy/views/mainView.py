@@ -123,17 +123,17 @@ def grantAccess(request):
             # Start of Trial Permission handling
             fsc = FormSpecialConfigs.objects.filter(idForm=idForm)
 
-            if len(fsc) == 0:  # does not have a trial form associated - END
-                print("SUCCESS: The permission was granted and this form has no trial form associated with it.")
+            #if len(fsc) == 0:  # does not have a trial form associated - END
+            #    print("SUCCESS: The permission was granted and this form has no trial form associated with it.")
                 # return HttpResponse("SUCCESS_2: The permission was granted and this form has no trial form associated with it.")
-                if permissionType == 'R':
-                    return HttpResponse(
-                        "Foi concedida a permissão de Leitor ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
-                else:
-                    return HttpResponse(
-                        "Foi concedida a permissão de Administrador ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
+            #    if permissionType == 'R':
+            #        return HttpResponse(
+            #            "Foi concedida a permissão de Leitor ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
+            #    else:
+            #        return HttpResponse(
+            #            "Foi concedida a permissão de Administrador ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
 
-            if len(fsc) == 1:  # has trial
+            if (len(fsc) == 1) and (fsc[0].idTrialForm != None):  # has trial
                 idT = fsc[0].idTrialForm.idForm  # id of the trial form
                 idTN = fsc[0].idTrialForm.formName  # name of the trial form
                 pForT = Permission.objects.filter(username=user,
@@ -178,6 +178,14 @@ def grantAccess(request):
                                 "Foi concedida a permissão de Administrador ao utilizador " + username + " para o questionário \"" + f.formName + "\" e a permissão de Leitor para o respetivo questionário de treino associado.")
 
                             # End of Trial Permission handling
+            else:   #trial form is of type None
+                print("SUCCESS: The permission was granted and this form has no trial form associated with it.")
+                if permissionType == 'R':
+                    return HttpResponse(
+                        "Foi concedida a permissão de Leitor ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
+                else:
+                    return HttpResponse(
+                        "Foi concedida a permissão de Administrador ao utilizador " + username + " para o questionário \"" + f.formName + "\".")
 
         except Exception as e:
             print("ERROR grantAccess: " + str(e))
