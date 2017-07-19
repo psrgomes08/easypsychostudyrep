@@ -3,6 +3,9 @@ var idParticipante;
 var date;
 var stepOrderForProgress = 0;
 
+var img_timestamp;
+var vid_timestamp;
+
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -45,7 +48,7 @@ function displayStimulus(step) {
     document.querySelector('#div-stimulus').innerHTML = '<p align="center"><img src="' + src + '" class="img-responsive"></p>'; // responsive image
 
     date = new Date();
-    var m_timestamp = date.getDate() + "/"
+    img_timestamp = date.getDate() + "/"
         + (date.getMonth() + 1) + "/"
         + date.getFullYear() + " "
         + date.getHours() + ":"
@@ -53,7 +56,8 @@ function displayStimulus(step) {
         + date.getSeconds() + ":"
         + date.getMilliseconds();
 
-    var msg = "Image stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimulo + "; Timestamp: " + m_timestamp;
+    //console.log(img_timestamp);
+    var msg = "Image stimulus presented in questionnaire " + idForm + " for participant " + idParticipante + ": " + formConfiguration.passos[step - 1].nomeDoEstimulo + "; Timestamp: " + img_timestamp;
     sendTrigger(msg);
 }
 
@@ -79,7 +83,7 @@ function displayStimulusVideo(step) {
         '</div><br/><br/>';
 
     date = new Date();
-    var m_timestamp = date.getDate() + "/"
+    vid_timestamp = date.getDate() + "/"
         + (date.getMonth() + 1) + "/"
         + date.getFullYear() + " "
         + date.getHours() + ":"
@@ -87,7 +91,7 @@ function displayStimulusVideo(step) {
         + date.getSeconds() + ":"
         + date.getMilliseconds();
 
-    var msg = "Video stimulus presented: " + formConfiguration.passos[step - 1].nomeDoEstimuloVideo + "; Timestamp: " + m_timestamp;
+    var msg = "Video stimulus presented in questionnaire " + idForm + " for participant " + idParticipante + ": " + formConfiguration.passos[step - 1].nomeDoEstimuloVideo + "; Timestamp: " + vid_timestamp;
     sendTrigger(msg);
 
     document.querySelector('#div-stimulus-video').innerHTML += buttonNext;
@@ -590,7 +594,8 @@ function cleanAndStart() {
 
         stepOrderForProgress++;
         updateProgress(stepOrderForProgress);
-        var msg = "Begin data collection for participant " + idParticipante + " in form " + idForm + "; Timestamp: " + participantDataCollection.timestampRecolha;
+
+        var msg = "Begin data collection in questionnaire " + idForm + " for participant " + idParticipante + "; Timestamp: " + participantDataCollection.timestampRecolha;
         sendTrigger(msg);
 
         if (formConfiguration.passos[step - 1].hasOwnProperty("fixo")) {
@@ -806,14 +811,15 @@ function nextToDo(id) {
         case "video-stimulus-btn":
             passoColheita.nomeDoEstimuloVideo = formConfiguration.passos[step - 1].nomeDoEstimuloVideo;
 
-            date = new Date();
+            /*date = new Date();
             passoColheita.timestampEstimuloVideo = date.getDate() + "/"
                 + (date.getMonth() + 1) + "/"
                 + date.getFullYear() + " "
                 + date.getHours() + ":"
                 + date.getMinutes() + ":"
                 + date.getSeconds() + ":"
-                + date.getMilliseconds(); // collect the timestamp of the video stimulus display
+                + date.getMilliseconds(); */// collect the timestamp of the video stimulus display
+            passoColheita.timestampEstimuloVideo = vid_timestamp;
 
             $("#div-stimulus-video").empty();
 
@@ -881,6 +887,7 @@ function nextDecider() {
         setTimeout(function () {
             passoColheita.nomeDoEstimulo = formConfiguration.passos[step - 1].nomeDoEstimulo; // collect the name of the stimulus
 
+            /*
             date = new Date();
             passoColheita.timestampEstimulo = date.getDate() + "/"
                 + (date.getMonth() + 1) + "/"
@@ -888,7 +895,10 @@ function nextDecider() {
                 + date.getHours() + ":"
                 + date.getMinutes() + ":"
                 + date.getSeconds() + ":"
-                + date.getMilliseconds(); // collect the timestamp of the stimulus display
+                + date.getMilliseconds(); */ // collect the timestamp of the stimulus display
+            //console.log(img_timestamp);
+             passoColheita.timestampEstimulo = img_timestamp;
+            //console.log(passoColheita.timestampEstimulo);
 
             $('#div-stimulus').empty();
 
@@ -980,7 +990,7 @@ function endDataCollection() {
                 + date.getSeconds() + ":"
                 + date.getMilliseconds();
 
-            var msg = "End data collection for participant " + idParticipante + " in form " + idForm + "; Timestamp: " + m_timestamp;
+            var msg = "End data collection in questionnaire " + idForm + " for participant " + idParticipante + "; Timestamp: " + m_timestamp;
             sendTrigger(msg);
             window.location.href = onSuccess;   // redirects to home
         },

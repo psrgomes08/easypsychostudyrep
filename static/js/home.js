@@ -405,9 +405,9 @@ function sendEmailForRemote() {
     $("#form-url").empty();
 
     $("#email-form").html('<div class="alert alert-info" role="alert">' +
-        '<label for="email-to">Remetentes:</label>' +
+        '<label for="email-to">Destinatários:</label>' +
         '<input type="text" class="form-control" id="email-to">' +
-        '<span class="help-block">Separe os remetentes por vírgula.</span>' +
+        '<span class="help-block">Separe os destinatários por vírgula.</span>' +
         '<label for="email-subject">Assunto:</label>' +
         '<input type="text" class="form-control" id="email-subject"><br/>' +
         '<label for="email-body">Mensagem:</label>' +
@@ -430,7 +430,7 @@ function sendEmailForRemote() {
         else if (getSenders == undefined || getSenders == "") {
 
             $("#email-messages").html('<div class="alert alert-danger" role="alert">' +
-                '<p align="center"><strong>Erro!</strong> Por favor insira remetentes.</p>' +
+                '<p align="center"><strong>Erro!</strong> Por favor insira destinatários.</p>' +
                 '</div>');
 
         }
@@ -464,7 +464,7 @@ function sendEmailForRemote() {
                     } catch (err) {
                         errors++;
                         $("#email-messages").append('<div class="alert alert-danger" role="alert">' +
-                            '<p align="center"><strong>Erro!</strong> Não foi possível enviar o e-mail para o remetente ' + senders[j] + '.</p>' +
+                            '<p align="center"><strong>Erro!</strong> Não foi possível enviar o e-mail para o destinatário ' + senders[j] + '.</p>' +
                             '</div>');
                     }
                 }
